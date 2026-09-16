@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 529 (M07) - Network Fundamentals for Low Voltage Technicians
+  Lesson 529.4 - PoE Device Connection and Verification (Async Reading)
+  VERSION: v0.2.0  (2026-09-04)  DRAFT - for review
+
+  CHANGES IN v0.2.0
+  Version bump only, 2026-09-04. No content changed at the bump. The number was
+  raised because the file had already absorbed the cold-read corrections while
+  still reading v0.1.0, so the version no longer described the content.
+
+  Corrections applied 2026-09-02, recorded in
+  _FINDINGS_re-read-529.1-529.4-529.6_2026-09-02.md. Thirteen findings, all
+  applied; both auditors and the extractor report clean. The heaviest items:
+  - Duplex mismatch given one consistent sign across 529.4.4, 529.4.6 and
+    529.4.10, with the alternative cause restored rather than dropped.
+  - PoE class brackets: Class 0 lower bound corrected to 0.44 W, and the 21.5 W
+    example reconciled between 529.4.1, its matching exercise, and the 529.4.3
+    option and its feedback.
+  - The "A good result rules out" column now rules out rather than confirms.
+  - Late collisions defined, the counter-reading command given, Cisco Discovery
+    Protocol (CDP) and Link Layer Discovery Protocol (LLDP) expanded on first
+    use in 529.4.5, and the untaught transcript fields glossed.
+  - Two stalled sentences rewritten, including the default-port VLAN claim:
+    supplying power hides a wrong VLAN, it does not cause one.
+  Seven of the thirteen were damage introduced by the same day's earlier edits.
+
+  Also 2026-09-04: the WCAG conformance sentence removed from the overview.
+
+  Engine (CSS, JS, header, sidebar, navigation, lightbox) reused verbatim from
+  the Lesson 529.1 async reading page. Two component stylesheets are appended
+  after the engine stylesheet - the console transcript block from build_529_3.py
+  and the port map panel from build_529_2.py; the engine itself is untouched.
+
+  OBJECTIVES, one verb each, taken from the D08 7.4 subtask wording verbatim.
+  All six subtasks are single-verb as written, so nothing is split and nothing
+  is added beyond the subtask list.
+
+    Identify the PoE class and power budget for the device     7.4 subtask 1
+    Patch    the device through the installed link             7.4 subtask 2
+    Verify   PoE delivery at the switch and the device         7.4 subtask 3
+    Confirm  link speed and duplex                             7.4 subtask 4
+    Verify   the device reaches the network                    7.4 subtask 5
+    Record   the connection on the port map                    7.4 subtask 6
+
+  ONE WORD CHANGED. Subtask 2 reads "Patch the device through the LEARNER-INSTALLED
+  link." On the page it reads "the installed link". The house rule against referencing
+  work learners have already done makes "learner-installed" unusable in learner-facing
+  content, because the module may run in a course where that install did not happen.
+  The verb, the object and the crosswalk are unchanged.
+
+  TOPIC OUTLINE, with the subtask each topic delivers.
+    Section 1  Sizing the Device to the Port
+      529.4.1   What the device draws, and what the port sets aside   subtask 1
+      529.4.2   Reading power from a specification sheet              subtask 1
+      529.4.3   Sizing the switch against a work order                subtask 1
+    Section 2  Connecting and Proving It
+      529.4.4   Patching the device through the link                  subtask 2
+      529.4.5   Power, read at both ends                              subtask 3
+      529.4.6   Confirming speed and duplex                           subtask 4
+      529.4.7   Reaching the network, and where your part ends        subtask 5
+    Section 3  Closing the Ticket
+      529.4.8   Recording the connection                              subtask 6
+      529.4.9   Reading the four checks together                      integrative
+    Section 4  Wrapping Up
+      529.4.10  What you covered                                      summary
+
+  Four sections. The summary sits alone in Wrapping Up and no content section
+  holds a single topic.
+
+  ACTIVITY GATES: 11 - eight knowledge checks, one reveal-card set, one matching,
+  one acknowledgement. Topic 529.4.3 carries two, because it holds both halves of
+  subtask 1: reading a class off a stated draw, and sizing a work order against a pool.
+  The acknowledgement on the last topic counts as an activity, as it does in the other
+  readings in this module.
+
+  NO ordering activity. The four verification checks can be taken in any order and
+  every order works, so an ordering exercise would have more than one correct answer.
+  ONE matching activity only. An integrative matching was drafted for 529.4.9 and
+  replaced with a knowledge check: two of its five left-hand items were not the pairs
+  of readings the instruction described, one keyed a branch the teaching topic had
+  deliberately left open, and a second matching in the same lesson repeats the first.
+
+  DIAGRAMS: 3 original SVG, each with a full text description.
+    529.4.1  the two power figures on one link, and the shared pool
+    529.4.6  which cable pairs carry data at 100 Mbps and at 1000 Mbps
+    529.4.7  where the technician's part of the path ends
+
+  BUILD NOTES - what is asserted about equipment, and what is not
+  - The class comparison is delivered as specification-sheet reading plus budget
+    arithmetic, per the recorded decision covering objective 7.4. Nothing on the page
+    implies two device classes are compared on live equipment, and no device is named.
+  - The specification extract in 529.4.2 carries the power lines of a real indoor
+    access point datasheet - PoE, 44 to 57 V DC, 9 W maximum - unbranded, so the page
+    does not go stale when the instructor's chosen datasheets change.
+  - Interface type is not hard-coded. The prose under the one transcript naming an
+    interface says the other form may apply. The note sits in the read-back strip rather
+    than inside the transcript, because an exec line will not accept a trailing comment.
+  - Per-port ceiling and shared pool are taught as readings taken from the switch,
+    not as figures carried in the content. The sample output uses the same switch
+    persona as the Lesson 529.3 page for continuity: a gigabit PoE-capable switch
+    with a 370 W pool and a 30.0 W port ceiling.
+  - The 802.3af and 802.3at class figures are the standard values, verified against
+    the IEEE class table. Both bounds of each bracket are printed, because the matching
+    activity in 529.4.3 is not solvable from maxima alone: 0.44 to 3.84 / 3.84 to 6.49 /
+    6.49 to 12.95 / 12.95 to 25.5 W at the device, against reservations of 4.0 / 7.0 /
+    15.4 / 30.0 W at the port. A device presenting no classification signature signals
+    class 0, which carries the class 3 reservation - it is not "treated as class 3".
+  - ⚠ OPEN, NEEDS THE EQUIPMENT. The Power column of `show power inline` is written here
+    as the power the switch has COMMITTED to the port, and the sample row shows the class
+    figure (15.4 W for a class 3 `Ieee PD`). An earlier draft described it as a live
+    measurement of what the device is drawing, which cannot be reconciled with the class
+    reservation taught two topics earlier. Which reading is right on the MIR switches has
+    not been confirmed against hardware. The Lesson 529.3 page carries the same open
+    question in its own transcript, where a class 3 `Ieee PD` shows 12.9 W.
+  - Duplex reporting was corrected during review. `show interfaces status` describes the
+    LOCAL port: a value with no `a-` prefix means this port is set to a fixed value, and
+    `a-half` where full duplex was expected is the far-end-forced mismatch signature.
+    An earlier draft had the causality reversed.
+  - The two speeds are distinguished by PIN pairs (1/2 and 3/6 carry data at 100 Mbps;
+    4/5 and 7/8 do not) rather than by pair numbers. An earlier draft said "pair 3 or
+    pair 4", which under ANSI/TIA-568 numbering names the wrong conductors. The page also
+    states that the 4/5 and 7/8 pairs may be the ones carrying the PoE current, so a fault
+    there can stop power without affecting a 100 Mbps data link.
+  - Not asserted anywhere: the model of the access point in the room, its class, or
+    its draw. That SKU is unconfirmed on the resource register, so the page teaches
+    the method and leaves the device to be read on the day.
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 529.4 &mdash; PoE Device Connection and Verification &middot; Async Reading &middot; UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+<style>
+  /* Console transcript block. Light card, navy title bar, monospace body that
+     scrolls sideways on a narrow screen rather than wrapping a command line.
+     Appended after the engine stylesheet so the engine stays untouched. */
+  .cli{background:#fbfcfd;border:1.6px solid #c8d4de;border-radius:8px;
+    margin:18px 0;box-shadow:var(--shadow);overflow:hidden}
+  .cli .cli-ttl{background:#09507C;color:#fff;font-weight:700;font-size:.95rem;
+    padding:9px 14px;letter-spacing:.01em}
+  .cli .cli-body{overflow-x:auto;padding:12px 14px}
+  .cli pre{margin:0;min-width:520px;color:#1b2a3a;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.94rem;line-height:1.8}
+  .cli .pr{color:#5a6772}
+  .cli .cmd{color:#09507C;font-weight:700}
+  .cli .cmt{color:#5a6772;font-style:italic}
+  .cli .out{color:#3c4956}
+  .cli .cli-foot{border-top:1px solid #dbe4ec;padding:10px 14px;
+    color:#3c4956;font-size:.95rem;background:#f4f7fa}
+  .cli .cli-foot p{margin:0}
+  /* Inline command names in running prose and in table cells. */
+  .topic code, .overview code, .longdesc code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.92em;color:#09507C;background:#eef4f9;border:1px solid #dbe4ec;
+    border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .tbl th code, .tbl td code{background:#f4f7fa}
+  kbd{font-family:inherit;font-size:.9em;color:#1b2a3a;background:#f4f7fa;
+    border:1px solid #c8d4de;border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+</style>
+<style>
+  /* Port map panel - white card, blue rule, navy title, plain gray column labels. */
+  .portmap-panel{background:#fff;border:1.6px solid var(--green);border-radius:8px;
+    padding:14px 16px 6px;margin:18px 0;box-shadow:var(--shadow)}
+  .portmap-panel .tbl-scroll{overflow-x:auto}
+  .portmap-panel table.tbl{border:none;border-radius:0;margin:0;background:transparent}
+  .portmap-panel table.tbl caption{color:var(--green-d);font-weight:700;font-size:1.05rem;
+    text-align:left;padding:0 0 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="col"]{background:transparent;color:var(--muted);font-weight:400;
+    padding:10px 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="row"]{background:transparent;color:var(--ink);font-weight:400;
+    padding:10px 10px;border-top:none}
+  .portmap-panel .tbl td{padding:10px 10px;border-top:none;color:var(--ink)}
+  .portmap-panel .tbl tr:nth-child(even) td{background:transparent}
+  .portmap-panel .tbl tbody tr + tr th,
+  .portmap-panel .tbl tbody tr + tr td{border-top:1px solid var(--line)}
+</style>
+
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false"
+          aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div class="head-title"><b>Module 529</b> &middot; Lesson 529.4 &mdash; PoE Device Connection and Verification</div>
+  </div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.2.0</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel"
+              aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList"
+              aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel"
+             aria-labelledby="tab-overview" hidden>
+      <p class="crumb"><b>UCI 2107.1 &middot; Low Voltage Fiber Technician</b>
+         &middot; Module 529 &mdash; Network Fundamentals</p>
+      <h2 id="ovh" tabindex="-1">Lesson 529.4 &mdash; PoE Device Connection and Verification</h2>
+      <p class="lead-in">The written half of this lesson.</p>
+
+      <p>This lesson prepares you for connecting a powered device to a Power over Ethernet
+         (PoE) switch port and proving it works.</p>
+
+      <p>You read the device&rsquo;s specification sheet to find out whether the port can power it.
+         You size a set of devices against the power the switch has to share. You patch the device
+         through the run, then take four readings that say what the drop is doing.</p>
+
+      <p>Those four readings also tell you which stage failed when one comes back bad &mdash;
+         powering, linking, or reaching the network &mdash; and whether the fix is yours or
+         somebody else&rsquo;s.</p>
+
+      <h3>How the lesson is organized</h3>
+      <ul>
+        <li><b>Sizing the Device to the Port.</b> A powered device draws a certain number of
+            watts. The switch port sets aside a figure of its own &mdash; normally the larger of
+            the two, taken from the PoE class the device reports, and trimmed where the device
+            negotiates for less. This section covers where to find both numbers,
+            and how to work out how many devices one switch can power.</li>
+        <li><b>Connecting and Proving It.</b> You patch the device through the run without
+            disturbing the cords already in the rack. The switch then tells you whether power is
+            flowing, and at what speed and duplex the link came up. A ping from the same Virtual
+            Local Area Network (VLAN) shows whether anything can reach the device.</li>
+        <li><b>Closing the Ticket.</b> The port map row says which outlet is patched to which
+            switch port. You add the four readings to it, plus the date and your name. Read
+            together, those readings also narrow a fault to one place.</li>
+        <li><b>Wrapping Up.</b> The whole lesson in one place.</li>
+      </ul>
+
+      <div class="ov-grid">
+        <div class="ov-stat"><b>4</b><span>Sections</span></div>
+        <div class="ov-stat"><b>10</b><span>Topics</span></div>
+        <div class="ov-stat"><b>11</b><span>Activities</span></div>
+        <div class="ov-stat"><b>3</b><span>Diagrams</span></div>
+      </div>
+
+      <h3>A note on the equipment</h3>
+      <p>Switches differ in two ways that affect what you will see on the equipment in front of
+         you. Port names differ, so a command shown here may take a different form on your switch. They also do not all supply the same
+         amount of power: a port built to the Institute of Electrical and Electronics Engineers
+         (IEEE) 802.3af standard supplies up to 15.4 W, and one built to 802.3at supplies up to
+         30.0 W. Both the per-port ceiling and the shared pool are read from the switch in front
+         of you rather than carried over from the last one.</p>
+
+      <h3>How this page works</h3>
+      <p>Work through the topics in order using the <strong>Next</strong> button, or jump
+         about using the <strong>Curriculum</strong> tab in the sidebar. Some topics contain
+         an activity you need to complete before <strong>Next</strong> unlocks &mdash; a
+         knowledge check, a set of cards to open, or a matching exercise. Getting a knowledge
+         check wrong never blocks you: the answer is shown
+         and you can try again. Your progress through the lesson is shown in the header and
+         in the contents list.</p>
+
+      <h3>Working without a mouse, or with a screen reader</h3>
+      <p>Everything here is operable from the keyboard. <kbd>Tab</kbd> moves between
+         controls and <kbd>Enter</kbd> or <kbd>Space</kbd> activates them; the arrow keys
+         move between the sidebar tabs. In the matching activity every item is
+         a button, and your selections are announced as you make them. Right and wrong answers
+         are always labeled in words as well as by color. Each diagram carries a full text
+         description, console output is plain text rather than an image, and tables have
+         headings and captions that read correctly aloud.</p>
+
+      <button class="btn" id="ovBegin" type="button">Begin Lesson 529.4</button>
+    </section>
+
+    <div id="topicWrap">
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="1" data-group-title="Sizing the Device to the Port" data-num="529.4.1" data-title="What the device draws, and what the port sets aside">
+  <p class="crumb">Lesson 529.4 &middot; Section 1 Sizing the Device to the Port</p>
+  <h2><span class="tnum">529.4.1</span> What the device draws, and what the port sets aside</h2>
+  <div class="les-banner">
+    <span class="lb-k">Lesson 529.4</span>
+    <h3>PoE Device Connection and Verification</h3>
+    <p>A configured port is not a working drop. This lesson takes you from a device in a box to a device that is powered, linked at the speed the run supports, reachable by something else on its network, and written into the record that the next technician will read. It also gives you the four readings that tell you which stage failed when one comes back bad.</p>
+    <p class="lb-meta"><b>4</b> sections &nbsp;&middot;&nbsp;
+       <b>10</b> topics &nbsp;&middot;&nbsp;
+       <b>11</b> activities</p>
+  </div>
+  <div class="note note"><div class="nt">By the end of Lesson 529.4 you will be able to</div>
+    <ul>
+      <li><b>Identify</b> the Power over Ethernet (PoE) class and power budget for the device.</li>
+      <li><b>Patch</b> the device through the installed link.</li>
+      <li><b>Verify</b> PoE delivery at the switch and the device.</li>
+      <li><b>Confirm</b> link speed and duplex.</li>
+      <li><b>Verify</b> the device reaches the network.</li>
+      <li><b>Record</b> the connection on the port map.</li>
+    </ul></div>
+  <p class="lead-in">Two numbers decide whether a powered device will run on a given port. They are usually different, and treating them as one is how a switch runs out of power with half its ports empty.</p>
+  <p>A switch supplying Power over Ethernet does not energize a port and hope. It tests the port, finds out what is on the far end, asks how much power that device needs, and sets that much aside from a shared pool before it supplies anything. The device then draws what it draws.</p>
+  <p>So there are two figures on one link, and they belong to different parties.</p>
+  <ul>
+    <li><strong>What the device draws.</strong> The figure on its specification sheet.</li>
+    <li><strong>What the port sets aside.</strong> Normally a number the switch picks from a short list, based on the class the device reports, and less where the device negotiates for less. This is what comes out of the pool.</li>
+  </ul>
+  <p>The reservation is normally the larger, and it is the one that governs how many devices a switch can carry.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:900px" viewBox="0 0 900 372" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram of one powered link showing three separate figures: what the switch port sets aside, what the device draws, and what the reservation takes out of the switch power pool. A full text description follows.">
+    <defs>
+      <marker id="a5294a" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#0079C0"/>
+      </marker>
+    </defs>
+
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">TWO FIGURES ON ONE LINK</text>
+
+    <rect x="24" y="52" width="300" height="86" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="44" y="80" font-size="15" font-weight="700" fill="#09507C">Switch port</text>
+    <text x="44" y="102" font-size="14" fill="#5a6772">Power Sourcing Equipment</text>
+    <text x="44" y="126" font-size="14" fill="#5a6772">Supplies the power</text>
+
+    <line x1="336" y1="95" x2="560" y2="95" stroke="#0079C0" stroke-width="2.4" marker-end="url(#a5294a)"/>
+    <text x="448" y="80" font-size="14" fill="#5a6772" text-anchor="middle">one cabling path</text>
+    <text x="448" y="120" font-size="14" fill="#5a6772" text-anchor="middle">power and data together</text>
+
+    <rect x="572" y="52" width="304" height="86" rx="7" fill="#fff" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="592" y="80" font-size="15" font-weight="700" fill="#09507C">Powered device</text>
+    <text x="592" y="102" font-size="14" fill="#5a6772">Powered Device</text>
+    <text x="592" y="126" font-size="14" fill="#5a6772">Consumes the power</text>
+
+    <rect x="24" y="154" width="300" height="60" rx="7" fill="#fff" stroke="#B45309" stroke-width="1.6"/>
+    <text x="44" y="178" font-size="14" font-weight="700" fill="#8a4a06">SETS ASIDE</text>
+    <text x="304" y="196" font-size="20" font-weight="700" fill="#8a4a06" text-anchor="end">15.4 W</text>
+    <text x="44" y="200" font-size="14" fill="#5a6772">from the pool</text>
+
+    <rect x="572" y="154" width="304" height="60" rx="7" fill="#fff" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="592" y="178" font-size="14" font-weight="700" fill="#09507C">DRAWS</text>
+    <text x="856" y="196" font-size="20" font-weight="700" fill="#09507C" text-anchor="end">9.0 W</text>
+    <text x="592" y="200" font-size="14" fill="#5a6772">stated on the specification sheet</text>
+
+    <text x="24" y="248" font-size="14" font-weight="700" fill="#B45309">The two are usually different, and the switch works from the reservation.</text>
+
+    <rect x="24" y="268" width="852" height="90" rx="7" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="44" y="294" font-size="15" font-weight="700" fill="#09507C">The switch power pool, shared by every port</text>
+    <rect x="44" y="306" width="812" height="26" rx="4" fill="#fff" stroke="#7f8b95" stroke-width="1.2"/>
+    <rect x="44" y="306" width="34" height="26" rx="4" fill="#f7f1e4" stroke="#B45309" stroke-width="1.4"/>
+    <text x="86" y="325" font-size="14" fill="#8a4a06">15.4 W held for this one port</text>
+    <text x="856" y="325" font-size="14" fill="#5a6772" text-anchor="end">the rest remains available</text>
+    <text x="44" y="350" font-size="14" fill="#5a6772">The 9.0 W the device draws never appears in this line. The reservation does.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram is headed Two figures on one link and is drawn in three bands.</p>
+    <p><b>The top band</b> shows one powered link. On the left, a box labeled Switch port supplies the power. On the right, a box labeled Powered device consumes it. An arrow runs from the switch port to the device, labeled one cabling path above and power and data together below.</p>
+    <p><b>The middle band</b> places one figure under each end. Under the switch port, a box headed SETS ASIDE reads 15.4 W, from the pool. Under the device, a box headed DRAWS reads 9.0 W, stated on the specification sheet. A line beneath both reads: the two are usually different, and the switch works from the reservation.</p>
+    <p><b>The bottom band</b> is a single long bar headed The switch power pool, shared by every port. A small slice at the left-hand end of the bar is marked 15.4 W held for this one port, and the remainder of the bar is marked the rest remains available. A closing line reads: the 9.0 W the device draws never appears in this line; the reservation does.</p>
+  </details>
+
+  <h3>The classes, and what each one costs the pool</h3>
+  <p>The class is a bracket rather than a measurement, so a device drawing 7.1 W and a device drawing 12.9 W both land in class 3 and both cost the pool the same 15.4 W. Read a stated draw against the class 1 to 4 brackets below and you have the class the device should declare. Class 0 is not a bracket you read a draw into &mdash; it is what the port assumes when the device declares nothing.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Power classes, read from both ends of the link.</caption>
+      <thead><tr>
+        <th scope="col">Class</th><th scope="col">What the device may draw</th><th scope="col">What the port sets aside</th><th scope="col">Devices that usually land here</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">0</th><td>Any draw from 0.44 to 12.95 W</td><td>15.4 W</td><td>The default, where a device presents no classification signature</td></tr>
+        <tr><th scope="row">1</th><td>0.44 to 3.84 W</td><td>4.0 W</td><td>Low-draw sensors and card readers</td></tr>
+        <tr><th scope="row">2</th><td>above 3.84 to 6.49 W</td><td>7.0 W</td><td>Desk phones, fixed indoor cameras</td></tr>
+        <tr><th scope="row">3</th><td>above 6.49 to 12.95 W</td><td>15.4 W</td><td>Indoor access points, feature phones</td></tr>
+        <tr><th scope="row">4</th><td>above 12.95 to 25.5 W</td><td>30.0 W</td><td>Outdoor cameras with heaters, higher-draw access points</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Classes 0 through 3 are defined by the Institute of Electrical and Electronics Engineers (IEEE) in <strong>802.3af</strong>. Class 4 arrives with <strong>802.3at</strong>. An 802.3af port cannot run a class 4 device however much the pool has left: it supplies up to its own ceiling, which is less than the device needs. The device may fail to start, may start and restart, or may run with some functions off.</p>
+  <div class="note note"><div class="nt">The class is reported, not measured</div>
+    <p>The device states its class during classification. That is usually consistent with what it draws, but a manufacturer may report a higher class to leave headroom for a later firmware release or an attached accessory.</p>
+    <p>So the class off a specification sheet is a planning figure; the class the switch reports is the device in front of you. Where they disagree, believe the switch.</p></div>
+  <div class="note tip"><div class="nt">Some switches trim the reservation afterward</div>
+    <p>On some equipment the initial reservation is the class figure. The two ends then exchange a more precise requirement, and the switch reduces what it holds. On other equipment the class figure stands for as long as the device is connected.</p>
+    <p>Size a job on the class figure either way: it is the worst case.</p></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="The class sets the reservation, not the draw. A device reporting class 3 costs the pool 15.4 W whether it draws 9.0 W, 12.9 W, or anything in between, and the 9.0 W figure never appears in the switch’s power accounting. Rounding the draw up to 10 W invents a figure the switch does not use, and 12.95 W is the top of the class 3 draw bracket rather than the amount held for the port.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A specification sheet gives a device a maximum draw of 9.0 W. On the link, the device reports class 3. How much does the switch take out of its shared power pool for that port?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>9.0 W, the figure the manufacturer states</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>10.0 W, the stated draw rounded up</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>15.4 W, the reservation that goes with class 3</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>12.95 W, the most a class 3 device may draw</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="1" data-group-title="Sizing the Device to the Port" data-num="529.4.2" data-title="Reading power from a specification sheet">
+  <p class="crumb">Lesson 529.4 &middot; Section 1 Sizing the Device to the Port</p>
+  <h2><span class="tnum">529.4.2</span> Reading power from a specification sheet</h2>
+  <p class="lead-in">A specification sheet lists what a device needs. Three of its lines cover power, usually in a block headed Hardware or Electrical.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The power lines from one indoor access point&rsquo;s specification sheet.</caption>
+      <thead><tr>
+        <th scope="col">Line</th><th scope="col">Value</th><th scope="col">What it tells you</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Power method</th><td>PoE</td><td>The device takes its power from the cabling. If this line reads direct current only, or lists a power adapter, then a powered port will not run it and the device needs an outlet</td></tr>
+        <tr><th scope="row">Supported voltage range</th><td>44 to 57 V direct current (DC)</td><td>The band the device expects at its input. A port supplies 44 to 57 V, and a compliant device runs down to about 37 V, because the cable loses some of the voltage on the way. A band well away from what a standards-compliant port supplies points to a proprietary product</td></tr>
+        <tr><th scope="row">Maximum power consumption</th><td>9 W</td><td>The figure to compare against what the port can deliver to a device, and the figure whose bracket gives you the class. 9 W sits above 6.49 W and below 12.95 W, so it falls in the class 3 bracket</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Those three lines give you what the device draws and the class bracket that draw falls in. What the port sets aside follows from the class.</p>
+
+  <h3>Four things a specification sheet does not always make easy</h3>
+  <ul>
+    <li><strong>The class is often not printed.</strong> Many specification sheets give a wattage and no class. Read the wattage against the class brackets and take the class from that.</li>
+    <li><strong>&ldquo;PoE&rdquo; on its own is not a specification.</strong> A sheet that says PoE and gives no wattage and no class has not answered the question. Ask the manufacturer for the figure rather than assume the lowest class.</li>
+    <li><strong>&ldquo;PoE+&rdquo; means class 4 may be needed.</strong> Treat it as a warning that an 802.3af port may not run the device, and confirm the wattage before the device is ordered.</li>
+    <li><strong>Maximum is not typical.</strong> The stated maximum is what the device may pull with everything on it working hard. Plan on the maximum; a device that only occasionally reaches it will still bring the switch down when several devices reach it together.</li>
+  </ul>
+  <div class="warn note"><div class="nt">Two ceilings, and the device has to clear both</div>
+    <p><b>The port ceiling</b> is the most one port will supply: 15.4 W on an 802.3af port, 30.0 W on an 802.3at port. No setting raises it. Not all of that reaches the device &mdash; up to 100 meters of cable loses some of it on the way &mdash; so the standard allows a device to consume at most <b>12.95 W</b> on an 802.3af port and <b>25.5 W</b> on an 802.3at port. <b>That is the figure to compare a device&rsquo;s stated draw against.</b> A device whose maximum draw sits above it may not start, may start and restart, or may run with some functions off &mdash; it varies by model.</p>
+    <p><b>The pool</b> is shared across all ports and runs out independently of the port ceiling, so a device can clear the ceiling and still stay dark.</p></div>
+  <div class="note note"><div class="nt">Where the ceiling and the pool are written down</div>
+    <p>The switch states its own per-port ceiling in the <code>Max</code> column of <code>show power inline</code>, and its pool on the header line of the same output. Read both from the switch in front of you &mdash; a rack holds switches of different ages that supply different amounts.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Maximum power consumption is the only line carrying a wattage, and a wattage is what a ceiling is compared against. Power method has already been read &mdash; it is what tells you the device is PoE powered at all &mdash; and it carries no figure. The supported voltage range describes the band the device expects at its input rather than an amount of power, and the throughput rate describes how much data the device moves, which has no bearing on what the port has to supply.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A specification sheet lists a device as PoE powered. Which line tells you whether its draw fits under what an 802.3af port can deliver to a device?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Power method</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Maximum power consumption</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Supported voltage range</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Throughput rate</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="1" data-group-title="Sizing the Device to the Port" data-num="529.4.3" data-title="Sizing the switch against a work order">
+  <p class="crumb">Lesson 529.4 &middot; Section 1 Sizing the Device to the Port</p>
+  <h2><span class="tnum">529.4.3</span> Sizing the switch against a work order</h2>
+  <p class="lead-in">A work order names devices. The switch has a pool. Getting from one to the other is addition, and the common mistake is adding the wrong column.</p>
+  <p>A work order lists twelve powered devices for one telecommunications room. You can settle whether they fit before anybody climbs a ladder, and settling it late is expensive: the last devices installed are the ones that stay dark.</p>
+  <p>Start by asking the switch what it has left.</p>
+  <div class="cli">
+    <div class="cli-ttl">show power inline &mdash; the header line</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show power inline</span>
+
+<span class="out">Available:370.0(w)  Used:19.4(w)  Remaining:350.6(w)</span></pre></div>
+    <div class="cli-foot"><p><b>Available</b> is the whole pool, <b>Used</b> is what is already held for ports with powered devices on them, and <b>Remaining</b> is what is left to allocate. For a new work order, read <b>Remaining</b> rather than <b>Available</b> &mdash; the ports already in service are not going to give their allocation back. Run the command without naming a port and it prints this header line first, then one output row for each port.</p></div>
+  </div>
+  <p>Then read the specification sheets and add the reservations.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Twelve devices from one work order, sized against 350.6 W remaining.</caption>
+      <thead><tr>
+        <th scope="col">Device</th><th scope="col">Qty</th><th scope="col">Stated maximum draw</th><th scope="col">Class the draw falls in</th><th scope="col">Set aside, each</th><th scope="col">Set aside, total</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Indoor access point</th><td>6</td><td>9.0 W</td><td>3</td><td>15.4 W</td><td>92.4 W</td></tr>
+        <tr><th scope="row">Desk phone</th><td>4</td><td>5.2 W</td><td>2</td><td>7.0 W</td><td>28.0 W</td></tr>
+        <tr><th scope="row">Outdoor camera</th><td>2</td><td>21.5 W</td><td>4</td><td>30.0 W</td><td>60.0 W</td></tr>
+        <tr><th scope="row">Total held from the pool</th><td>12</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td><b>180.4 W</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>180.4 W against 350.6 W remaining leaves 170.2 W, so the work order fits and there is room for the next one. The switch also needs 802.3at for the two class 4 cameras, and twelve free ports.</p>
+  <div class="warn note"><div class="nt">Adding the draws gives you a different answer, and it is the wrong one</div>
+    <p>The same twelve devices draw 54.0 W, 20.8 W and 43.0 W, for 117.8 W. Adding those gives 232.8 W left rather than 170.2 W &mdash; an overstatement of 62.6 W, which is enough reservation for four more class 3 access points.</p>
+    <p>The switch holds the reservation, not the draw. Add the column the switch is working from.</p></div>
+  <div class="note note"><div class="nt">Leave the pool some room</div>
+    <p>A switch at its limit does not fail politely. Ports lose power in an order nobody chose, and a device that has run for months can go dark when an unrelated one is added at the other end of the rack.</p>
+    <p>Sizing to the last watt also leaves nothing for a change of use. Leave a quarter of the pool unallocated, unless the site has its own design standard.</p></div>
+
+  <p>Match each stated maximum draw to the class whose bracket it falls in.</p>
+  <div class="match gate" data-left="Stated maximum draw" data-right="Class"><div class="pair" data-left="3.1 W" data-right="Class 1"></div><div class="pair" data-left="5.2 W" data-right="Class 2"></div><div class="pair" data-left="9.0 W" data-right="Class 3"></div><div class="pair" data-left="21.5 W" data-right="Class 4"></div></div>
+
+  <div class="cyu gate" data-answer="0" data-fb="The port ceiling is the constraint. A stated maximum draw of 21.5 W is above the 12.95 W an 802.3af port can deliver to a device, so the port cannot give either camera what it needs. The pool is a separate limit and it has 300 W free, so it is not what is stopping them; a switch does not divide the pool between two ports to meet one device’s requirement; and the VLAN assignment has no bearing on how much power a port supplies.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A second telecommunications room holds an older switch. It supports 802.3af, so its ports supply up to 15.4 W, and it reports 300 W remaining. Two outdoor cameras with a stated maximum draw of 21.5 W each are to be patched to it. Which limit stops them?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The port ceiling &mdash; 21.5 W is above what one 802.3af port can deliver to a device</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The pool &mdash; 300 W will not cover two cameras</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Neither &mdash; the switch divides the pool between the two ports</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The Virtual Local Area Network (VLAN) assignment on the two ports</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="2" data-group-title="Connecting and Proving It" data-num="529.4.4" data-title="Patching the device through the link">
+  <p class="crumb">Lesson 529.4 &middot; Section 2 Connecting and Proving It</p>
+  <h2><span class="tnum">529.4.4</span> Patching the device through the link</h2>
+  <p class="lead-in">Two patch cords complete the path. They are the two elements a person handles, and the only two that can change after the run is qualified &mdash; tested and recorded as meeting the standard it was installed to.</p>
+  <p>The horizontal cable, the outlet and the panel termination are fixed work. The two patch cords are different: anybody can move them, and they are short enough to be handled casually. Give a cord the same care as a termination.</p>
+
+  <h3>Before you handle a cord</h3>
+  <p>Three facts, all off the work order and the port map, before you touch anything.</p>
+  <ul>
+    <li><strong>Which panel position the drop terminates at.</strong> Fixed by the installation, and printed on the panel.</li>
+    <li><strong>Which switch port the drop is to be patched to.</strong> This is the port that has been configured: the Virtual Local Area Network (VLAN) assignment and the power setting were made on one specific port. The port beside it carries only defaults.</li>
+    <li><strong>Which outlet the device sits at.</strong> Fixed by the installation, and printed on the faceplate.</li>
+  </ul>
+  <p>Patching one port off is a common mistake here, and a quiet one. A default port still supplies power, so the device comes up and looks installed while sitting in the wrong VLAN. To the user that looks like a network problem, not a patching error.</p>
+
+  <h3>The cord itself</h3>
+  <p>Check four things on the cord first.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What to check on a patch cord before it goes in.</caption>
+      <thead><tr>
+        <th scope="col">Check</th><th scope="col">What good looks like</th><th scope="col">What it costs to get wrong</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Category</th><td>The cord matches the run&rsquo;s category or beats it. A link is only as good as its weakest element</td><td>A lower-category cord holds the whole link down to its own limit, and the run gets blamed</td></tr>
+        <tr><th scope="row">Condition</th><td>Latch intact, boot intact, jacket unbroken, no kinks and no sharp bends</td><td>A broken latch works today and works loose later &mdash; the fault that comes and goes</td></tr>
+        <tr><th scope="row">Length</th><td>Long enough to reach without tension, short enough not to coil. The whole path from switch port to device has a 100-meter limit, and both cords count toward it</td><td>A cord under tension pulls out of the latch over time; a long coiled cord wastes the length budget the horizontal run needs</td></tr>
+        <tr><th scope="row">Seating</th><td>A click at both ends, then a light pull that does not move it</td><td>A half-seated cord passes a wire map, links intermittently, and is the fault most often mistaken for a bad termination</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn note"><div class="nt">The console port is not a network port</div>
+    <p>The console socket is the same RJ45 shape as every network port, and the printed word above it is the only difference. A cord in it carries serial data to the switch&rsquo;s command line &mdash; that is what the socket is for &mdash; but no Ethernet traffic and no power, so your configured port reports nothing connected.</p>
+    <p>Read the label above the socket before the cord goes in.</p></div>
+  <div class="note note"><div class="nt">Working in a live rack</div>
+    <p>Every cord already in the panel is carrying somebody&rsquo;s service. Move one to make room and that service stops, without warning and without anybody connecting it to what you were doing.</p>
+    <p>To free a position, find out what is on it and get the change agreed. Put a cord you remove back in the same position; one port along is a fault somebody else finds days later.</p></div>
+
+  <p>Open each card below. These are the checks that come after the cord is in. Some are at the rack and some at the device, and you cannot be at both.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">The port indicator on the switch</span><span class="rcard-sub">Amber first, then green</span><span class="rcard-detail" hidden><p>A link forming lights the indicator for that port. On a switch running Spanning Tree Protocol it lights <b>amber</b> first and turns green about 30 seconds later, while the switch checks that forwarding on that port will not create a loop. Amber during that wait is not a fault. Where a port is set to skip the wait, it goes green at once.</p><p><b>No light at all</b> means no link &mdash; and a port shut down in the configuration shows the same way. It tells you that before you have walked anywhere. An indicator that lights and goes out repeatedly says something is coming up and failing.</p><p>An indicator still amber well past 30 seconds is worth reporting. The port is not forwarding: blocked by Spanning Tree Protocol because another path already carries that traffic, or disabled by the switch after an error. A speed or duplex mismatch is not one of the causes: both ends come up green, and it is read from the Duplex column rather than from a light.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">The device indicator</span><span class="rcard-sub">A startup sequence, then steady</span><span class="rcard-detail" hidden><p>A device that is receiving power shows it, usually with an indicator that changes through a startup sequence and then settles. What the sequence looks like is in the device documentation; read it once for the device you install most often.</p><p>A device that never lights is not drawing power. A device that lights, goes dark, and lights again is drawing power the link cannot sustain.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">The cord is not carrying weight</span><span class="rcard-sub">Before you leave the position</span><span class="rcard-detail" hidden><p>A ceiling-mounted device is often hung with its cord taking part of the load. The connector was not designed for that, and the latch gives up months later.</p><p>Support the device on its mount, and leave a service loop so the cord enters the connector without tension in any direction.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">The panel position matches the record</span><span class="rcard-sub">At each end, before you leave it</span><span class="rcard-detail" hidden><p>The panel and the switch are in the telecommunications room. The outlet and the device are wherever the drop serves &mdash; another floor, a ceiling, the far end of the building. You cannot see both ends at once.</p><p>So check each end while you are at it. At the rack, read the panel label and the switch port number back against the work order. At the outlet, read the faceplate label. Correcting a patching error takes a minute while you are still in the room, and half a day once you have left.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Nothing else moved</span><span class="rcard-sub">Before you leave the rack</span><span class="rcard-detail" hidden><p>Look along the cords on either side of the one you fitted. A neighboring cord nudged out of its latch while you were working is a fault you caused and nobody will connect to your visit.</p><p>It costs five seconds, and it prevents a second fault report against work you have just finished.</p></span></button>
+  </div></div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="2" data-group-title="Connecting and Proving It" data-num="529.4.5" data-title="Power, read at both ends">
+  <p class="crumb">Lesson 529.4 &middot; Section 2 Connecting and Proving It</p>
+  <h2><span class="tnum">529.4.5</span> Power, read at both ends</h2>
+  <p class="lead-in">The switch says what it is supplying. The device shows what it is receiving. Taken together they separate a supply problem from a device problem, which neither does alone.</p>
+  <p>The switch end gives you numbers. The device end gives you behavior.</p>
+
+  <h3>At the switch</h3>
+  <p>Ask about the one port you patched, not all of them.</p>
+  <div class="cli">
+    <div class="cli-ttl">show power inline, for one port</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show power inline gigabitethernet 1/0/12</span>
+
+<span class="out">Interface Admin  Oper       Power   Device              Class Max
+                            (Watts)
+--------- ------ ---------- ------- ------------------- ----- ----
+Gi1/0/12  auto   on         15.4    Ieee PD             3     30.0</span></pre></div>
+    <div class="cli-foot"><p>Name the port in the form the switch uses, which may be <code>fastethernet</code> rather than <code>gigabitethernet</code>. The output row then reads: <b>Admin auto</b> &mdash; power is permitted. <b>Oper on</b> &mdash; power is flowing. <b>15.4 W</b> &mdash; the power the switch has set aside for this device. Not a measurement of what it is pulling. <b>Ieee PD</b> &mdash; a standards-compliant powered device, not something unrecognized. <b>Class 3</b> &mdash; what the device asked for, which is where the 15.4 W comes from. <b>Max 30.0</b> &mdash; the ceiling of the port, not of the device. It reads the same whatever is plugged in.</p></div>
+  </div>
+  <p>That one output row answers the power half of the job on its own, and it is the switch reporting on its own port.</p>
+  <div class="note note"><div class="nt">The committed figure and the drawn figure answer different questions</div>
+    <p>The Power column is what the switch has set aside, not what it is measuring. Where the device says nothing about its needs, the switch sets aside the class figure &mdash; 15.4 W for class 3. Where the device negotiates over <span class="keyterm">Cisco Discovery Protocol (CDP)</span> or <span class="keyterm">Link Layer Discovery Protocol (LLDP)</span> &mdash; two ways a device and a switch tell each other what they are &mdash; the switch sets aside the smaller figure the device asked for.</p>
+    <p>Either way the reading confirms the switch granted power and the device accepted it. To see what the device is actually pulling, <code>show power inline police</code> reports the measured figure for the port alongside the committed one.</p></div>
+
+  <h3>At the device</h3>
+  <p>What the device tells you depends on the device. Many have a web page or a management system of their own, though reaching one needs its Internet Protocol (IP) address, credentials and permission you may not have. What you can always read is its behavior.</p>
+  <p>Five combinations of switch reading and device behavior cover almost everything you will meet.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What the switch reports, what the device does, what the pair means, and where to look next.</caption>
+      <thead><tr>
+        <th scope="col">Switch reports</th><th scope="col">Device does</th><th scope="col">What the pair means</th><th scope="col">Where to look next</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>Oper on</code>, a figure in the Power column</th><td>Starts up and settles</td><td>Power is delivered and accepted</td><td>Nowhere. This half of the job is done &mdash; move to speed, duplex and reachability</td></tr>
+        <tr><th scope="row"><code>Admin never</code>, <code>Oper off</code></th><td>Dark</td><td>The port is configured not to supply power</td><td>The port configuration. This is a setting, not a fault in the path</td></tr>
+        <tr><th scope="row"><code>Admin auto</code>, <code>Oper off</code></th><td>Dark</td><td>Power is permitted and nothing was detected, or the pool has nothing left to allocate</td><td>Run <code>show power inline</code> with no port named. Power remaining on the header line means nothing was detected &mdash; look at the path and the device. No power remaining means the pool is spent</td></tr>
+        <tr><th scope="row"><code>Oper on</code>, then off, then on</th><td>Starts and restarts</td><td>Power is being supplied and withdrawn. The device is asking for more than the port will give, or the path cannot carry the current steadily</td><td>The class against the port ceiling first, then the path</td></tr>
+        <tr><th scope="row"><code>Oper on</code>, a figure in the Power column</th><td>Dark</td><td>Current is flowing and the device is not starting</td><td>The device itself. The port and the path have both done their part</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note tip"><div class="nt">A dark device is not one fault</div>
+    <p>Three of the table rows above arrive as the same report from the person using the device: it does not work. They lead to three different places, and the reading at the switch is what separates them.</p></div>
+
+  <div class="cyu gate" data-answer="3" data-fb="Power has been committed and it is flowing, so the port is supplying and the path is carrying current. What is left is the device. Re-terminating the run is work on a path that is demonstrably carrying current; the port configuration is already permitting power, which is what Admin auto and Oper on together mean; and the pool cannot be the constraint when this port has already been granted its allocation.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A newly patched access point is dark. At the switch, the port reads <code>Admin auto</code>, <code>Oper on</code>, and 15.4 W in the Power column. Where do you look next?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The horizontal run, which needs re-terminating</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The port configuration, which is not permitting power</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The switch pool, which has run out</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The device, which is receiving current and not starting</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="2" data-group-title="Connecting and Proving It" data-num="529.4.6" data-title="Confirming speed and duplex">
+  <p class="crumb">Lesson 529.4 &middot; Section 2 Connecting and Proving It</p>
+  <h2><span class="tnum">529.4.6</span> Confirming speed and duplex</h2>
+  <p class="lead-in">A link that is up is not a link that is right. Speed and duplex are where a run that passed its wire map admits that it did not pass everything.</p>
+  <p>In <span class="keyterm">autonegotiation</span>, two ports tell each other which speeds they support and whether they can send and receive at once, then settle on the best pair both support. It runs on its own unless somebody sets a fixed value instead.</p>
+  <p>Two words describe the result.</p>
+  <ul>
+    <li><strong>Speed</strong> is how fast the link runs: 10, 100 or 1000 megabits per second (Mbps) on the copper ports you will meet.</li>
+    <li><strong>Duplex</strong> is whether the two ends can transmit at the same time. <strong>Full</strong> duplex means they can. <strong>Half</strong> duplex means they take turns, so the two directions share the capacity instead of each having it. Collisions under load are normal on a half-duplex link, not a fault. What points at a mismatch is <em>late</em> collisions, counted on the port.</li>
+  </ul>
+
+  <div class="cli">
+    <div class="cli-ttl">show interfaces status</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show interfaces status</span>
+
+<span class="out">Port      Name          Status       Vlan    Duplex  Speed Type
+Gi1/0/12                connected    20        a-full a-1000 10/100/1000BaseTX
+Gi1/0/14                connected    20        a-full  a-100 10/100/1000BaseTX
+Gi1/0/16                connected    20        a-half  a-100 10/100/1000BaseTX
+Gi1/0/18                connected    20          full   1000 10/100/1000BaseTX</span></pre></div>
+    <div class="cli-foot"><p>The <code>a-</code> in front of a value means this port is set to negotiate rather than to a fixed setting. <code>Gi1/0/12</code> negotiated full duplex at 1000 Mbps, which is what a gigabit-capable device on a sound gigabit run should reach. <code>Gi1/0/14</code> negotiated full duplex at 100 Mbps. <code>Gi1/0/16</code> is set to negotiate and has ended at <b>half</b> duplex. <code>Gi1/0/18</code> shows <code>full</code> and <code>1000</code> with no <code>a-</code> at all, so this port was set to fixed values and is not negotiating. <b>Name</b> is a label somebody can write on a port and is empty on all four here. <b>Type</b> is what the port itself is built for &mdash; <code>10/100/1000BaseTX</code> means it can run at any of the three speeds over copper, which is why the Speed column is worth reading rather than assumed.</p></div>
+  </div>
+
+  <h3>What each reading means</h3>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Reading the Duplex and Speed columns.</caption>
+      <thead><tr>
+        <th scope="col">Reading</th><th scope="col">What happened</th><th scope="col">What to do about it</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>a-full</code> and <code>a-1000</code></th><td>Both ends negotiated and settled on the highest they both support</td><td>Record it. Nothing further is needed on this reading</td></tr>
+        <tr><th scope="row"><code>a-full</code> and <code>a-100</code> where 1000 Mbps was expected</th><td>The two ends agreed on 100 Mbps. Either the device is a 100 Mbps device, or the path could not sustain 1000 Mbps</td><td>Check what the device supports on its specification sheet. If it is gigabit-capable, the path is the next place to look</td></tr>
+        <tr><th scope="row"><code>a-half</code> where full duplex was expected</th><td>This port negotiated and ended at half duplex. Either the far end is genuinely a half-duplex device, or it has been forced to a setting and does not negotiate at all, leaving this port to fall back to half</td><td>Record the reading and report it, and check the device&rsquo;s specification sheet first &mdash; a half-duplex device is working as built, while a forced far end has to be changed together with this end</td></tr>
+        <tr><th scope="row">Any value with no <code>a-</code> prefix</th><td>This switch port was set to a fixed value and is not negotiating</td><td>Record the reading and report it. A fixed setting on one end produces a mismatch where the other end is negotiating; two ends fixed to the same values agree</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn note"><div class="nt">What reports a duplex mismatch, and what does not</div>
+    <p>A mismatched link comes up, passes traffic, and lights both indicators. It runs slowly and loses frames under load, which the people using it report as a slow network rather than a fault.</p>
+    <p><b>The switch says so when it can.</b> Where CDP or LLDP runs on both ends, the switch logs the port and the mismatch. The message comes from CDP or LLDP, not from the negotiation, and neither protocol fixes what it reports.</p>
+    <p><b>Where neither is running, nothing is logged.</b> The two ends have no way to compare settings, so nothing announces it. What is left is the Duplex column, and the error counters climbing behind it: late collisions and frame-check errors on the half-duplex end, undersized frames on the full-duplex end. <b>A late collision</b> is one detected after the frame should already have been clear of the wire, and it is the counter that means a mismatch rather than ordinary traffic. <code>show interfaces &lt;port&gt;</code> prints the counters for one port. Reading the Duplex column when you install the device catches it either way, and it takes one command.</p></div>
+
+  <h3>Why a fault can hide until the speed goes up</h3>
+  <p>All four pairs are terminated at both ends. How many the link uses depends on the speed.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:880px" viewBox="0 0 880 410" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram comparing which of the four cable pairs carry data at 100 megabits per second and at 1000 megabits per second, showing that the 4/5 and 7/8 pairs carry no data at the lower speed, so a fault on either has no effect until the speed goes up. A full text description follows.">
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">WHICH PAIRS CARRY THE DATA</text>
+
+    <text x="24" y="62" font-size="15" font-weight="700" fill="#09507C">100 Mbps &mdash; two pairs carry data</text>
+    <g font-size="14" fill="#1b2a3a">
+      <text x="24" y="94">Pins 1, 2</text><text x="24" y="122">Pins 3, 6</text>
+      <text x="24" y="150">Pins 4, 5</text><text x="24" y="178">Pins 7, 8</text>
+    </g>
+    <g stroke-width="6" stroke-linecap="round">
+      <line x1="108" y1="89" x2="330" y2="89" stroke="#0079C0"/>
+      <line x1="108" y1="117" x2="330" y2="117" stroke="#0079C0"/>
+      <line x1="108" y1="145" x2="330" y2="145" stroke="#d9e3ec"/>
+      <line x1="108" y1="173" x2="330" y2="173" stroke="#d9e3ec"/>
+    </g>
+    <g font-size="14" fill="#09507C">
+      <text x="344" y="94">carries data</text><text x="344" y="122">carries data</text>
+    </g>
+    <g font-size="14" fill="#5a6772">
+      <text x="344" y="150">not used for data</text><text x="344" y="178">not used for data</text>
+    </g>
+
+    <line x1="470" y1="46" x2="470" y2="196" stroke="#d9e3ec" stroke-width="2" stroke-dasharray="6 5"/>
+
+    <text x="500" y="62" font-size="15" font-weight="700" fill="#09507C">1000 Mbps &mdash; all four pairs carry data</text>
+    <g font-size="14" fill="#1b2a3a">
+      <text x="500" y="94">Pins 1, 2</text><text x="500" y="122">Pins 3, 6</text>
+      <text x="500" y="150">Pins 4, 5</text><text x="500" y="178">Pins 7, 8</text>
+    </g>
+    <g stroke-width="6" stroke-linecap="round">
+      <line x1="584" y1="89" x2="756" y2="89" stroke="#0079C0"/>
+      <line x1="584" y1="117" x2="756" y2="117" stroke="#0079C0"/>
+      <line x1="584" y1="145" x2="756" y2="145" stroke="#0079C0"/>
+      <line x1="584" y1="173" x2="756" y2="173" stroke="#0079C0"/>
+    </g>
+    <g font-size="14" fill="#09507C">
+      <text x="770" y="94">carries data</text><text x="770" y="122">carries data</text>
+      <text x="770" y="150">carries data</text><text x="770" y="178">carries data</text>
+    </g>
+
+    <rect x="24" y="212" width="832" height="86" rx="7" fill="#f7f1e4" stroke="#B45309" stroke-width="1.6"/>
+    <text x="44" y="238" font-size="15" font-weight="700" fill="#8a4a06">A fault on the 4/5 or the 7/8 pair</text>
+    <text x="44" y="262" font-size="14" fill="#1b2a3a">No data crosses those two pairs at 100 Mbps, so the link comes up and works.</text>
+    <text x="44" y="284" font-size="14" fill="#1b2a3a">At 1000 Mbps the same fault stops the link reaching that speed.</text>
+
+    <rect x="24" y="314" width="832" height="86" rx="7" fill="#fff" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="44" y="340" font-size="15" font-weight="700" fill="#09507C">What this means for a reading</text>
+    <text x="44" y="364" font-size="14" fill="#1b2a3a">A gigabit-capable device negotiating 100 Mbps is reporting a path problem</text>
+    <text x="44" y="386" font-size="14" fill="#1b2a3a">on a run that passes a wire map.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram is headed Which pairs carry the data, and compares two speeds side by side, separated by a vertical dashed line.</p>
+    <p><b>On the left, headed 100 Mbps, two pairs carry data.</b> The four pairs are listed by the pins they land on: pins 1 and 2, pins 3 and 6, pins 4 and 5, and pins 7 and 8. Each is drawn as a horizontal bar. The bars for pins 1 and 2 and for pins 3 and 6 are solid blue and labeled carries data. The bars for pins 4 and 5 and for pins 7 and 8 are pale gray and labeled not used for data.</p>
+    <p><b>On the right, headed 1000 Mbps, all four pairs carry data.</b> The same four pairs are listed by the same pins, and all four bars are solid blue and labeled carries data.</p>
+    <p>A panel beneath is headed A fault on the 4/5 or the 7/8 pair, and reads: no data crosses those two pairs at 100 Mbps, so the link comes up and works; at 1000 Mbps the same fault stops the link reaching that speed.</p>
+    <p>A second panel is headed What this means for a reading, and states that a gigabit-capable device negotiating 100 Mbps is reporting a path problem on a run that passes a wire map.</p>
+  </details>
+
+  <p>All four pairs have to be correct to qualify, so a wire map taken at hand-over would have found a fault on 4/5 or 7/8. Two things get past it. The fault arrived after the test &mdash; a re-termination, a crushed cord, somebody working in the ceiling. Or the pair is wired correctly and performs badly: crosstalk, return loss and delay skew pass a wire map and fail a certification. A verifier reports how the cabling is built; only a certifier measures how it performs. Either way the run carries 100 Mbps, fails at 1000, and nobody finds out until a gigabit device is installed.</p>
+  <div class="note tip"><div class="nt">Those pairs are not idle on a powered link</div>
+    <p>A port puts its current either on the 1/2 and 3/6 pairs or on the 4/5 and 7/8 pairs. The switch chooses and the device accepts either. At 10 and 100 Mbps only 1/2 and 3/6 carry data, so the other two are free; at 1000 Mbps all four carry data and the power rides along with it.</p>
+    <p>So a fault on 4/5 or 7/8 can be invisible at 100 Mbps and still stop power. Take both readings.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="A device that supports 1000 Mbps, on a port that supports 1000 Mbps, settling at 100 Mbps means the two ends could not agree on the higher speed. The most common reason is a fault on one of the two pairs that only the higher speed carries data on. Both values carry the a- prefix, so this port is set to negotiate rather than to a fixed speed. Power has no bearing on the speed a link negotiates, and a VLAN assignment does not cap it.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A device whose specification sheet lists a gigabit network interface is on a gigabit-capable switch port. <code>show interfaces status</code> reports <code>a-full</code> and <code>a-100</code>. What is the most likely cause?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The switch port has been set to a fixed speed of 100 Mbps</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>A fault on one of the pairs that only 1000 Mbps uses</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The device is drawing too little power to run at full speed</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The port is in a VLAN that caps the speed at 100 Mbps</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="2" data-group-title="Connecting and Proving It" data-num="529.4.7" data-title="Reaching the network, and where your part ends">
+  <p class="crumb">Lesson 529.4 &middot; Section 2 Connecting and Proving It</p>
+  <h2><span class="tnum">529.4.7</span> Reaching the network, and where your part ends</h2>
+  <p class="lead-in">Powered and linked is not the same as reachable. The last check is whether something else on the same network can get a reply out of the device &mdash; and that reply also settles whose problem it is.</p>
+  <p>Reachable is a separate fact and it needs a separate check. At this level, two facts settle it.</p>
+  <ol>
+    <li><strong>The switch has heard from the device.</strong> A Media Access Control (MAC) address learned on your port is proof that the device sent a frame and that the frame reached the switch across the cabling. It does not prove the cabling is sound at every speed &mdash; a fault on one pair still carries frames at 100 Mbps, which is why you read the Speed column beside it. <code>show mac address-table interface</code> for that port is what returns it.</li>
+    <li><strong>A laptop in the same VLAN gets a reply from the device.</strong> This is the check you run, and a reply also tells you the device holds a working IP address in that range &mdash; you do not check that separately.</li>
+  </ol>
+
+  <div class="cli">
+    <div class="cli-ttl">show mac address-table interface</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show mac address-table interface gigabitethernet 1/0/12</span>
+<span class="out">          Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+  20    7483.c21a.9f04    DYNAMIC     Gi1/0/12</span></pre></div>
+    <div class="cli-foot"><p>One line, four columns. The device&rsquo;s <b>MAC address</b> is written by the manufacturer and printed here in the three-block form the switch uses. <b>Vlan</b> is the group the switch put the port in &mdash; read it against the work order. <b>Type</b> reads <code>DYNAMIC</code> because the switch learned it from a frame rather than being told it. <b>Ports</b> is the port the frame arrived on. An empty result means the switch has heard nothing on that port recently &mdash; entries are dropped after a few minutes of silence, so re-read it rather than treating one empty result as proof.</p></div>
+  </div>
+
+  <h3>The check</h3>
+  <p>A <code>ping</code> checks whether a machine at a given IP address is reachable <em>from where you run it</em>. Where you run it from is a choice, and on a drop you have just brought up the choice is a laptop in the same VLAN as the device.</p>
+  <p>That way the <code>ping</code> never leaves the switch, and what it tests is the cabling, the port and the device, and nothing else. A <code>ping</code> to a device in another VLAN passes through a router on the way, which adds a cause you do not own. Across a router a <code>ping</code> is strong evidence when it succeeds and weak evidence when it fails.</p>
+  <p>Two things have to be in place before you can run it. The device&rsquo;s IP address comes from the work order; where the work order does not carry it, ask for it rather than guess. A laptop in the device&rsquo;s VLAN is arranged with the network team before the visit, because you cannot put yourself in a VLAN from the desk.</p>
+  <p>Where you have neither, say so and stop there. The MAC address learned on the port is the last reading you own, and it is enough to hand over on: it shows the device is connected, powered and heard by the switch, and it leaves the addressing to whoever owns it.</p>
+  <div class="cli">
+    <div class="cli-ttl">ping, with a reply</div>
+    <div class="cli-body"><pre><span class="pr">C:\&gt;</span> <span class="cmd">ping 10.20.0.41</span>
+
+<span class="out">Pinging 10.20.0.41 with 32 bytes of data:
+Reply from 10.20.0.41: bytes=32 time=2ms TTL=64
+Reply from 10.20.0.41: bytes=32 time=1ms TTL=64
+Reply from 10.20.0.41: bytes=32 time=1ms TTL=64
+Reply from 10.20.0.41: bytes=32 time=1ms TTL=64
+
+Ping statistics for 10.20.0.41:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 1ms, Maximum = 2ms, Average = 1ms</span></pre></div>
+    <div class="cli-foot"><p>Four sent and four received. The device at that IP address received the message and answered it, so the path, the power, the VLAN assignment and the device are all working together. <b>Lost = 0</b> is the figure to record. On each reply line, <code>bytes=32</code> is the size of the message sent, <code>time</code> is how long the round trip took, and <code>TTL</code> is a countdown a router lowers at every hop &mdash; unchanged here because the reply crossed no router.</p></div>
+  </div>
+  <div class="cli">
+    <div class="cli-ttl">ping, with no reply</div>
+    <div class="cli-body"><pre><span class="pr">C:\&gt;</span> <span class="cmd">ping 10.20.0.41</span>
+
+<span class="out">Pinging 10.20.0.41 with 32 bytes of data:
+Request timed out.
+Request timed out.
+Request timed out.
+Request timed out.
+
+Ping statistics for 10.20.0.41:
+    Packets: Sent = 4, Received = 0, Lost = 4 (100% loss),</span></pre></div>
+    <div class="cli-foot"><p>No answer came back &mdash; a reading with several possible causes. Record it and read it beside the power and MAC address table readings before deciding anything.</p></div>
+  </div>
+  <div class="note note"><div class="nt">What a timeout does not prove</div>
+    <p>Some devices never answer a <code>ping</code>, and a timeout from one of those is correct behavior. Cameras and building controllers often ship that way.</p>
+    <p>That is why you take the MAC address table reading as well. A MAC address with no <code>ping</code> reply means the device is on the network and declining to answer, not that it is dead.</p></div>
+
+  <h3>Where your part of the path ends</h3>
+  <p>Where a device is powered, linked and heard from and still cannot reach what it needs, the fault is past the part of the path you own.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:900px" viewBox="0 0 900 352" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram of the path from a powered device out to the wider network, with a dividing line marking where a low voltage technician reads and fixes and where a low voltage technician reads and reports. A full text description follows.">
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">WHERE YOUR PART OF THE PATH ENDS</text>
+
+    <rect x="24" y="56" width="596" height="92" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <g fill="#fff" stroke="#0079C0" stroke-width="1.4">
+      <rect x="40" y="76" width="96" height="34" rx="5"/>
+      <rect x="146" y="76" width="72" height="34" rx="5"/>
+      <rect x="228" y="76" width="72" height="34" rx="5"/>
+      <rect x="310" y="76" width="88" height="34" rx="5"/>
+      <rect x="408" y="76" width="72" height="34" rx="5"/>
+      <rect x="490" y="76" width="114" height="34" rx="5"/>
+    </g>
+    <g font-size="13" fill="#1b2a3a" text-anchor="middle">
+      <text x="88" y="98">Device</text><text x="182" y="98">Cord</text><text x="264" y="98">Outlet</text>
+      <text x="354" y="98">Horizontal</text><text x="444" y="98">Panel</text><text x="547" y="98">Cord, port</text>
+    </g>
+    <text x="40" y="136" font-size="14" font-weight="700" fill="#09507C">You read it and fix it</text>
+
+    <line x1="636" y1="46" x2="636" y2="234" stroke="#B45309" stroke-width="2.4" stroke-dasharray="7 5"/>
+
+    <rect x="652" y="56" width="224" height="92" rx="7" fill="#fff" stroke="#B45309" stroke-width="1.6"/>
+    <g fill="#f7f1e4" stroke="#B45309" stroke-width="1.4">
+      <rect x="668" y="76" width="88" height="34" rx="5"/>
+      <rect x="764" y="76" width="96" height="34" rx="5"/>
+    </g>
+    <g font-size="13" fill="#1b2a3a" text-anchor="middle">
+      <text x="712" y="98">Router</text><text x="812" y="98">Beyond</text>
+    </g>
+    <text x="668" y="136" font-size="14" font-weight="700" fill="#8a4a06">You read it and report it</text>
+
+    <rect x="24" y="166" width="596" height="66" rx="7" fill="#fff" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="40" y="192" font-size="14" fill="#1b2a3a">Power, link, speed, duplex, VLAN assignment,</text>
+    <text x="40" y="214" font-size="14" fill="#1b2a3a">the cords, the run, and the terminations.</text>
+
+    <rect x="652" y="166" width="224" height="66" rx="7" fill="#fff" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="668" y="192" font-size="14" fill="#1b2a3a">Routing, addressing,</text>
+    <text x="668" y="214" font-size="14" fill="#1b2a3a">anything past the router.</text>
+
+    <rect x="24" y="250" width="852" height="88" rx="7" fill="#f7f1e4" stroke="#B45309" stroke-width="1.6"/>
+    <text x="44" y="276" font-size="15" font-weight="700" fill="#8a4a06">The line, in one sentence</text>
+    <text x="44" y="302" font-size="14" fill="#1b2a3a">One VLAN carries one IP address range. Same VLAN and same range, they talk.</text>
+    <text x="44" y="324" font-size="14" fill="#1b2a3a">A different VLAN needs a router, and a router is somebody else&rsquo;s to configure.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram is headed Where your part of the path ends. A dashed vertical line divides it into two sides.</p>
+    <p><b>To the left of the line</b> is a panel holding six boxes in a row: Device, Cord, Outlet, Horizontal, Panel, and a sixth box labeled Cord and port. The panel is labeled You read it and fix it. A box beneath lists what that covers: power, link, speed, duplex, VLAN assignment, the cords, the run, and the terminations.</p>
+    <p><b>To the right of the line</b> is a smaller panel holding two boxes: Router and Beyond. That panel is labeled You read it and report it. A box beneath lists what that covers: routing, addressing, and anything past the router.</p>
+    <p>A panel across the bottom is headed The line, in one sentence, and reads: one VLAN normally carries one IP address range; same VLAN and same range, they talk; a different VLAN needs a router, and a router is somebody else&rsquo;s to configure.</p>
+  </details>
+
+  <p>That boundary turns an unanswered <code>ping</code> into a decision rather than a dead end. A powered, linked, correctly assigned device the switch has heard from has passed every check the cabling and the port can be asked for. The rest is somebody else&rsquo;s, and your readings are what they need.</p>
+
+  <div class="cyu gate" data-answer="4" data-fb="A ping from VLAN 20 to a device in VLAN 30 passes through a router on the way, so a failure there is weak evidence &mdash; it may be the router, a rule on it, or the camera. Take the reading again from inside the camera's own VLAN first. If it replies, the drop is proven and the fault sits between the two VLANs; if it does not, you have a reading worth reporting. Recording and reporting is right once that reading is taken, not before. Replacing the cord or re-terminating is work on a path already carrying frames, and moving the port would break the VLAN the work order specifies.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A camera is powered, negotiated at full duplex and 1000 Mbps, and its MAC address is learned on the correct port in VLAN 30, which is the VLAN the work order specifies. A laptop in VLAN 20 pings it and gets no reply. The network team has a laptop in VLAN 30 available to you. What is the appropriate next step?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Replace the patch cord at the camera and test again</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Move the camera port into VLAN 20 so the laptop can reach it</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Record the readings and report it</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Re-terminate the horizontal run serving the camera</button>
+    <button class="opt"><span class="mk" aria-hidden="true">E</span>Re-run the ping from a laptop in VLAN 30 &mdash; a failed ping across a router proves little</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="3" data-group-title="Closing the Ticket" data-num="529.4.8" data-title="Recording the connection">
+  <p class="crumb">Lesson 529.4 &middot; Section 3 Closing the Ticket</p>
+  <h2><span class="tnum">529.4.8</span> Recording the connection</h2>
+  <p class="lead-in">The device will outlast the ticket, the ticket will outlast your memory of it, and the record is what remains. A record made of readings can be checked; a record made of opinions cannot.</p>
+  <p>A port map row describes one drop with three identifiers: the outlet on the faceplate, the position on the patch panel, and the switch port it is currently patched to. The first two were fixed when the building was cabled. The third is the one that changes, and recording it is why the port map exists.</p>
+  <p>A powered device adds the VLAN, what the drop serves, and the readings.</p>
+
+  <div class="portmap-panel">
+  <div class="tbl-scroll">
+    <table class="tbl portmap">
+      <caption>The port map row, completed for a powered device.</caption>
+      <thead><tr>
+        <th scope="col">Outlet</th><th scope="col">Panel / port</th><th scope="col">Switch port</th><th scope="col">VLAN</th><th scope="col">Serves</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">2A-14</th><td>B / 14</td><td>Gi1/0/12</td><td>20</td><td>Ceiling access point, room 2A</td></tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+
+  <h3>The readings that go with it</h3>
+  <p>Four readings describe a verified powered connection. Each is read off the equipment, not formed as a judgment.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The verification record for one powered drop.</caption>
+      <thead><tr>
+        <th scope="col">Reading</th><th scope="col">Where it came from</th><th scope="col">Recorded as</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Power</th><td>The Admin, Oper, Power and Class columns for that port</td><td>Class 3, 15.4 W committed, Oper on</td></tr>
+        <tr><th scope="row">Link</th><td>The Status, Duplex and Speed columns for that port</td><td>Connected, a-full, a-1000</td></tr>
+        <tr><th scope="row">Presence on the port</th><td>The MAC address <code>show mac address-table interface</code> returns for that port</td><td>MAC address learned in VLAN 20</td></tr>
+        <tr><th scope="row">Reachability</th><td>A <code>ping</code> from a device in the same VLAN</td><td>4 sent, 4 received, 0 lost</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Together those give one line somebody else can act on: <em>outlet 2A-14, panel B/14, switch port Gi1/0/12, VLAN 20, ceiling access point, class 3 with 15.4 W committed, connected at full duplex and 1000 Mbps, MAC address learned on the port, 4 of 4 replies.</em> Every clause is checkable.</p>
+  <div class="note note"><div class="nt">What a record needs besides the readings</div>
+    <p><b>A date and a name.</b> A reading without a date cannot be compared with a later one, and a record nobody signed cannot be asked about.</p>
+    <p><b>Anything you left different from what the work order said.</b> A drop patched to a different port from the one specified, a cord replaced, a position found already occupied &mdash; all of that goes in the record. A substitution that is written down is a decision; the same substitution unrecorded is a fault waiting to be found.</p></div>
+  <div class="note tip"><div class="nt">Where you may write, and where you may not</div>
+    <p>On many sites a technician can read the port map but changes go through whoever owns it. Settle that before you start: where the record is, whether you may write to it, and who updates it if you may not.</p>
+    <p>Where you may not write to it, hand the readings over anyway. The port, the VLAN, the four readings, the date and your name is what the record owner needs, and producing it is part of the job.</p></div>
+
+  <div class="cyu gate" data-answer="3" data-fb="Only the last entry carries figures &mdash; port, VLAN, class, committed power, speed, duplex, ping result &mdash; that the next technician can compare against what the port reports today. The other three entries all describe an opinion held on one day by one person, and none of them can be compared against anything later.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Four entries are made against the same drop by four technicians. Which one lets the next person see what has changed without repeating the work?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>AP installed and tested OK</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Working &mdash; checked on site</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Powered up fine, no issues found</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Gi1/0/12, VLAN 20, class 3 with 15.4 W committed, a-full a-1000, 4 of 4 replies</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="3" data-group-title="Closing the Ticket" data-num="529.4.9" data-title="Reading the four checks together">
+  <p class="crumb">Lesson 529.4 &middot; Section 3 Closing the Ticket</p>
+  <h2><span class="tnum">529.4.9</span> Reading the four checks together</h2>
+  <p class="lead-in">Each check answers one question. Read together, they eliminate causes until one is left.</p>
+  <p>Every good reading moves the search further from the cabling and closer to the device or the network.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The four checks, and what each one rules out when it comes back good.</caption>
+      <thead><tr>
+        <th scope="col">Check</th><th scope="col">Command or observation</th><th scope="col">What a good result establishes</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Power</th><td><code>show power inline</code> for the port</td><td>The port configuration, the pool, and a path so broken it cannot carry current</td></tr>
+        <tr><th scope="row">Link</th><td><code>show interfaces status</code></td><td>An open or a dead run, and a port that has been shut down</td></tr>
+        <tr><th scope="row">Presence on the port</th><td><code>show mac address-table interface</code> for the port</td><td>That frames cross the cabling, and the VLAN the switch put the device in &mdash; read alongside the Speed column</td></tr>
+        <tr><th scope="row">Reachability</th><td><code>ping</code> from the same VLAN</td><td>The device&rsquo;s network settings, as far as the VLAN boundary</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>These four describe the connection as it stands. Whether the port carries the settings the work order specified is a separate question, answered by reading the configuration back.</p>
+  <div class="note note"><div class="nt">Take all four before you change anything</div>
+    <p>The readings describe the state you found. Swap a cord or replace a device and that state is gone, along with the evidence for whatever you conclude afterward.</p></div>
+  <div class="warn note"><div class="nt">A good reading is not always good news</div>
+    <p>A fault on a pair that 100 Mbps does not use still lets the link come up, the MAC address appear, and the <code>ping</code> answer. Three checks pass and the link is still not what the work order asked for.</p>
+    <p>The Speed column is what catches it: the link settled at 100 Mbps because the pair the higher speed needs is faulty. That is why speed and duplex are read rather than assumed from the link being up.</p></div>
+
+  <div class="cyu gate" data-answer="0" data-fb="Admin auto means the port is permitted to supply power, and a pool with room left means power is available. That leaves the far end and the path: nothing presented a signature the switch could detect. Freeing pool capacity that is already free changes nothing, the port is not set to never, and a port supplying nothing cannot be overdrawn.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A port reads <code>Admin auto</code> and <code>Oper off</code>. The header line of <code>show power inline</code> reports 240 W remaining. What have those two readings ruled out, and where do you look next?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The port configuration and the pool &mdash; look at the path and the far end</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Nothing yet &mdash; move other devices off the switch to free power</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The path &mdash; the port is set to never and needs changing to auto</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The configuration &mdash; the device is drawing more than the port will supply</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.4" data-lesson-title="PoE Device Connection and Verification" data-group-num="4" data-group-title="Wrapping Up" data-num="529.4.10" data-title="What you covered">
+  <p class="crumb">Lesson 529.4 &middot; Section 4 Wrapping Up</p>
+  <h2><span class="tnum">529.4.10</span> What you covered</h2>
+  <p class="lead-in">Size the device to the port, patch it, take four readings, and write down what they said.</p>
+  <p>Two figures describe power on one link, and the reservation is normally the larger. <strong>What the device draws</strong> is on its specification sheet. <strong>What the port sets aside</strong> is fixed by the class the device reports, and that is what comes out of the shared pool. A device drawing 9.0 W and reporting class 3 costs the pool 15.4 W. Size a job by adding the reservations; adding the draws gives a larger remainder than the switch has.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Power classes, read from both ends of the link.</caption>
+      <thead><tr>
+        <th scope="col">Class</th><th scope="col">What the device may draw</th><th scope="col">What the port sets aside</th><th scope="col">Port must support</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">0</th><td>Any draw from 0.44 to 12.95 W</td><td>15.4 W</td><td>802.3af</td></tr>
+        <tr><th scope="row">1</th><td>0.44 to 3.84 W</td><td>4.0 W</td><td>802.3af</td></tr>
+        <tr><th scope="row">2</th><td>above 3.84 to 6.49 W</td><td>7.0 W</td><td>802.3af</td></tr>
+        <tr><th scope="row">3</th><td>above 6.49 to 12.95 W</td><td>15.4 W</td><td>802.3af</td></tr>
+        <tr><th scope="row">4</th><td>above 12.95 to 25.5 W</td><td>30.0 W</td><td><b>802.3at</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>A device has to clear two ceilings. <strong>The port ceiling</strong> is 15.4 W on an 802.3af port and 30.0 W on an 802.3at port, and no setting raises it. <strong>The pool</strong> is shared across all ports and runs out on its own. Read both from the switch in front of you: the pool on the header line of <code>show power inline</code>, the ceiling in the <code>Max</code> column. Size against <strong>Remaining</strong>, not <strong>Available</strong>, and leave a quarter unallocated unless the site standard says otherwise.</p>
+  <p>Three lines on a specification sheet cover power. <strong>Power method</strong> says whether the device takes power from the cabling. <strong>Supported voltage range</strong> gives the band it expects. <strong>Maximum power consumption</strong> is what you compare against what the port can deliver to a device, and its bracket gives the class. A sheet that says only PoE and no wattage has not told you enough.</p>
+  <p>Two patch cords complete the path, and they are the only two elements a person handles. Settle the panel position, the switch port and the outlet from the record before touching a cord. The port beside the configured one carries only defaults, and a default port still supplies power &mdash; so the device may come up in the wrong VLAN rather than not at all. Check category, condition, length and seating, and read the label above the socket &mdash; the console port is the same shape and a cord in it does nothing.</p>
+
+  <div class="cli">
+    <div class="cli-ttl">Verify &mdash; four readings, taken before anything is changed</div>
+    <div class="cli-body"><pre><span class="cmd">show power inline &lt;port&gt;</span>                 <span class="cmt">! permitted, flowing, how much, what class, port ceiling</span>
+<span class="cmd">show interfaces status</span>                   <span class="cmt">! connected, in the VLAN, at what speed and duplex</span>
+<span class="cmd">show mac address-table interface &lt;port&gt;</span>  <span class="cmt">! has a device been heard on this port</span>
+<span class="cmd">ping &lt;device IP address&gt;</span>                 <span class="cmt">! from a laptop in the device&rsquo;s VLAN</span></pre></div>
+    <div class="cli-foot"><p>Take all four before changing anything. A cord swapped first removes the evidence for whatever you conclude afterward. You type only the part in bold: the text after each <code>!</code> is a note for you, and a word in angle brackets is where your own value goes.</p></div>
+  </div>
+
+  <p>On the power reading, <strong>Admin</strong> is what the port may do and <strong>Oper</strong> is what it is doing. <code>Admin never</code> with <code>Oper off</code> is a setting. <code>Admin auto</code> with <code>Oper off</code> means one of two things: nothing was detected on the far end, or the pool is spent. The header line tells you which, by whether any power remains. <code>Oper on</code> with a dark device puts the fault in the device. The Power column is what the switch has set aside, not what it is measuring.</p>
+  <p>On the link reading, an <code>a-</code> prefix means the port negotiates; no prefix means it is fixed. <code>a-full a-1000</code> is what a gigabit device on a sound run gives. <code>a-half</code> where full was expected means either a genuinely half-duplex far end or one forced to a setting and not negotiating. Record and report whichever you find rather than undoing somebody&rsquo;s setting. Where CDP or LLDP runs on both ends the switch logs the mismatch; where neither runs, the Duplex column is what you read instead. A gigabit device at <code>a-100</code> points to the path: 100 Mbps uses only the 1/2 and 3/6 pairs, so a fault on 4/5 or 7/8 hides until the speed goes up &mdash; and the power may be riding on those same pairs.</p>
+  <p>Two facts settle reachability: the switch has learned the device&rsquo;s MAC address on your port, and a laptop in the same VLAN gets a reply from the device. That reply also shows the device holds a working IP address in that range. A timeout is a reading, not a diagnosis &mdash; some devices are configured never to answer a <code>ping</code>, which is why you read the MAC address table beside it.</p>
+  <div class="note note"><div class="nt">Where this stops</div>
+    <p>One VLAN carries one IP address range. Same VLAN and same range, they talk. A different VLAN is reached through a router, and routing and addressing sit with whoever configures the router.</p>
+    <p>A device that is powered, negotiated, in the right VLAN and heard from by the switch has cleared everything the cabling and the port can be asked for. The rest is theirs, and your four readings are what they need.</p></div>
+  <p>The port map outlasts the visit. Three identifiers describe the drop &mdash; outlet, panel position, switch port &mdash; and the switch port is the one that changes. The four readings, a date and a name make that row something the next technician can compare against what the port reports on the day. &ldquo;Working&rdquo; is an opinion. &ldquo;Class 3 with 15.4 W committed, connected at full duplex and 1000 Mbps, 4 of 4 replies&rdquo; is a state.</p>
+
+  <button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button>
+</section>
+</div>
+
+    <nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">&lsaquo; Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next &rsaquo;</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true"
+     aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>

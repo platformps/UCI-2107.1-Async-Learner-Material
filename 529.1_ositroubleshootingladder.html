@@ -1,0 +1,1983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 529 (M07) - Network Fundamentals for Low Voltage Technicians
+  Lesson 529.1 - OSI as a Troubleshooting Ladder (Async Reading)
+  VERSION: v0.2.0  (2026-08-26)  DRAFT - for review
+
+  CHANGES IN v0.2.0 (all three readings, applied 2026-08-26)
+  - Acronyms expanded on first use in each entry point (overview panel and topic
+    stream are reached independently).
+  - Every noun 'address' qualified as IP address or MAC address.
+  - Value-ranking remarks removed ("worth knowing", "worth carrying away").
+  - Engine fix: the last topic no longer reports the lesson complete on its own;
+    it now tests every topic. Was reachable by jumping to the final topic in the
+    sidebar and clicking the acknowledgement.
+
+  TOPIC OUTLINE as built, with the JTA 7.1 subtask each topic delivers.
+  SECTIONS CONSOLIDATED 2026-08-26: was eight sections, three of them holding a
+  single topic. Now four, matching the shape of 529.2 and 529.3 - three content
+  sections plus a Wrapping Up section holding the summary.
+    Section 1  The Model, and Why You Need One
+      529.1.1   "It does not work" is not a diagnosis             (f)
+      529.1.2   OSI Model - the seven layers                      (a)
+      529.1.3   Wrapping and unwrapping: data in transit          (d)
+      529.1.4   The layers that are yours                         (a,b,c)
+      529.1.5   Three ways to work through the layers             (f)
+    Section 2  The Layers You Own
+      529.1.6   Layer 1: what you install, and what it promises   (b)
+      529.1.7   Copper, fiber and radio on the model              (b)
+      529.1.8   Layer 2: what the switch decides                  (c)
+      529.1.9   MAC addressing: how a switch knows what is where  (c)
+      529.1.10  Power over Ethernet sits at Layer 1, and the switch decides it               (c)
+    Section 3  Finding the Fault
+      529.1.11  Tracing data from a desk device to a switch port  (d)
+      529.1.12  Where a cabling fault appears in the model        (e)
+      529.1.13  Why one physical fault becomes a complaint
+                about a program                                   (e)
+      529.1.14  The four questions, in order                      (f)
+      529.1.15  Whose problem is it, and where your scope ends    (f)
+    Section 4  Wrapping Up
+      529.1.16  What you covered                                  (summary)
+
+  16 topics, 19 activity gates, 4 diagrams, 11 tables.
+
+  The overview panel is written learner-facing. Build and review notes live here
+  in this comment, never in page content.
+
+  Built to WCAG 2.1 Level AA. Aligned to D08 JTA objective 7.1 and assessed by
+  Quiz 529.1.1, with layer attribution assessed in SBA 529-C.
+
+  Learner-facing objectives execute the six JTA 7.1 subtasks verbatim.
+  One Bloom verb per objective, original (1956) taxonomy. Objective 7.1 is
+  tagged Understand in the D08, so all six sit at Knowledge / Comprehension.
+
+    a  Identify  the seven OSI layers and their functions          [Knowledge]
+    b  Map       cable, connectors and patch panels to Layer 1     [Comprehension]
+    c  Map       switches, MAC addressing and PoE to Layers 1 and 2  [Comprehension]
+       ^ DIVERGENCE, 2026-09-02. The D08 subtask reads "... to Layer 2". That is wrong:
+         PoE is a physical-layer function - power on the conductors, detection by
+         electrical signature, no frame handling - and this lesson places the switch
+         port at Layer 1 throughout. The objective here is corrected; D08 is NOT edited
+         and still carries the wrong layer. Eldad 2026-09-02: correct the lesson, leave
+         the JTA. The JTA subtask needs the same correction before the crosswalk is
+         signed off.
+    d  Trace     data flow from end device to switch               [Comprehension]
+    e  Explain   where a cabling fault appears in the model        [Comprehension]
+    f  Relate    troubleshooting order to the layer stack          [Comprehension]
+  Standards now cited in content: ANSI/TIA-568 and IEEE 802.3 (529.1.6, 529.1.10).
+  Ownership was split out of 529.1.2 into 529.1.4 so that what the model IS
+  is taught before what it is FOR. Dependency: layer names -> encapsulation -> ownership.
+  JTA numbering is deliberately absent from learner-facing text; learners and
+  instructors know the module and lesson number only.
+
+  NOTE: "decide whether to repair or escalate" was removed from this lesson's
+  objectives. It belongs to JTA 7.5, not 7.1.
+
+  Original Per Scholas material written against IEEE 802.3, IEEE 802.1Q and
+  ANSI/TIA-568. Diagrams and text are original Per Scholas work.
+
+  Engine, layout and styling reused verbatim from the Module 528 self-study
+  build, which follows the Lesson 601.1 / 528.6 pattern. No engine changes.
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 529.1 &mdash; OSI as a Troubleshooting Ladder &middot; Async Reading &middot; UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false"
+          aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div class="head-title"><b>Module 529</b> &middot; Lesson 529.1 &mdash; OSI as a Troubleshooting Ladder</div>
+  </div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.2.0</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel"
+              aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList"
+              aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel"
+             aria-labeledby="tab-overview" hidden>
+      <p class="crumb"><b>UCI 2107.1 &middot; Low Voltage Fiber Technician</b>
+         &middot; Module 529 &mdash; Network Fundamentals</p>
+      <h2 id="ovh" tabindex="-1">Lesson 529.1 &mdash; OSI as a Troubleshooting Ladder</h2>
+      <p class="lead-in">The written half of this lesson.</p>
+
+      <p>When something on a network stops working, you have to decide where to look first.
+         This lesson gives you a method for that, using a model you will hear referred to
+         on site: the seven layers of the Open Systems Interconnection (OSI) model.</p>
+
+            <h3>What you will be able to do</h3>
+      <ul>
+        <li><b>Identify</b> the seven layers and their functions.</li>
+        <li><b>Map</b> cable, connectors and patch panels to Layer 1.</li>
+        <li><b>Map</b> switches, Media Access Control (MAC) addressing and Power over Ethernet (PoE) to Layers 1 and 2.</li>
+        <li><b>Trace</b> data flow from an end device to the switch.</li>
+        <li><b>Explain</b> where a cabling fault appears in the model.</li>
+        <li><b>Relate</b> troubleshooting order to the layer stack.</li>
+      </ul>
+
+      <div class="ov-grid">
+        <div class="ov-stat"><b>4</b><span>Sections</span></div>
+        <div class="ov-stat"><b>16</b><span>Topics</span></div>
+        <div class="ov-stat"><b>19</b><span>Activities</span></div>
+        <div class="ov-stat"><b>1</b><span>Quiz after</span></div>
+      </div>
+
+      <h3>How this page works</h3>
+      <p>Work through the topics in order using the <strong>Next</strong> button, or jump
+         about using the <strong>Curriculum</strong> tab in the sidebar. Some topics contain
+         an activity you need to complete before <strong>Next</strong> unlocks &mdash; a
+         knowledge check, a set of cards to open, or a matching exercise. Getting a
+         knowledge check wrong never blocks you: the answer is shown and you can try again.
+         Your progress through the lesson is saved in the header and the contents list.</p>
+
+      <h3>Working without a mouse, or with a screen reader</h3>
+      <p>Everything here is operable from the keyboard. <kbd>Tab</kbd> moves between
+         controls and <kbd>Enter</kbd> or <kbd>Space</kbd> activates them; the arrow keys
+         move between the sidebar tabs. In the matching activity every item is a button,
+         and your selections are announced as you make them. Right and wrong answers are
+         always labeled in words as well as color. The diagram carries a full text
+         description, and tables have headings and captions that read correctly aloud.</p>
+
+      <button class="btn" id="ovBegin" type="button">Begin Lesson 529.1</button>
+    </section>
+
+    <div id="topicWrap">
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="1" data-group-title="The Model, and Why You Need One" data-num="529.1.1" data-title="&quot;It does not work&quot; is not a diagnosis">
+  <p class="crumb">Lesson 529.1 &middot; Section 1 The Model, and Why You Need One</p>
+  <h2><span class="tnum">529.1.1</span> &ldquo;It does not work&rdquo; is not a diagnosis</h2>
+  <div class="les-banner">
+    <span class="lb-k">Lesson 529.1</span>
+    <h3>OSI as a Troubleshooting Ladder</h3>
+    <p>The Open Systems Interconnection (OSI) model is usually taught as seven names to memorize. Used as a list of names it does nothing for you. Used as an order of work it tells you what to check first, what to leave for now, and where your responsibility ends.</p>
+    <p class="lb-meta"><b>4</b> sections &nbsp;&middot;&nbsp;
+       <b>16</b> topics &nbsp;&middot;&nbsp;
+       <b>19</b> activities</p>
+  </div>
+<div class="note note"><div class="nt">By the end of Lesson 529.1 you will be able to</div>
+    <ul>
+      <li><b>Identify</b> the seven layers and their functions.</li>
+      <li><b>Map</b> cable, connectors and patch panels to Layer 1.</li>
+      <li><b>Map</b> switches, Media Access Control (MAC) addressing and Power over Ethernet (PoE) to Layers 1 and 2.</li>
+      <li><b>Trace</b> data flow from an end device to the switch.</li>
+      <li><b>Explain</b> where a cabling fault appears in the model.</li>
+      <li><b>Relate</b> troubleshooting order to the layer stack.</li>
+    </ul></div>
+  <p class="lead-in">The most common sentence a technician hears is also the least useful one.</p>
+  <p>Someone tells you the network is down. Consider what that sentence actually contains. It does not tell you whether a cable is damaged, whether a switch port is disabled, whether a laptop has the wrong Internet Protocol (IP) address, whether a server two states away has failed, or whether somebody mistyped a password. It reports a symptom, and the symptom is identical for all of those causes.</p>
+  <p>Without a method, what fills the gap is guessing. Guessing is not free. It has four costs that show up on real job sites:</p>
+  <ul>
+    <li>You replace a cable that was working, and the fault is still there.</li>
+    <li>You reboot a switch that twenty other people were using.</li>
+    <li>You escalate something that was yours to fix, and lose credibility.</li>
+    <li>You spend an hour on something that was never yours to begin with.</li>
+  </ul>
+  <p>The OSI model gives you something better than a guess. It describes moving data as seven numbered <span class="keyterm">layers</span>, each one a group of functions that the layers above it rely on. Nothing in a network is literally divided this way &mdash; the model is a shared way of describing the job, not a diagram of the equipment.</p>
+  <p>The model is several things at once, and it is worth being clear about all of them:</p>
+  <ul>
+    <li>A <strong>way of managing complexity.</strong> Delivering data across a network is a large job. The model splits it into smaller, separate functions, so each one can be designed, built and repaired without having to understand the whole.</li>
+    <li>A <strong>framework that standards are written against.</strong> This is why a Cisco switch, a Ubiquiti access point and somebody&rsquo;s laptop interoperate without ever having been designed together.</li>
+    <li>A <strong>common language.</strong> &ldquo;This is a Layer 1 problem&rdquo; means the same thing to you, to the network team, and to a manufacturer&rsquo;s support line.</li>
+    <li>A <strong>troubleshooting tool</strong>, which is the use you will get most from and the one the rest of this lesson develops.</li>
+  </ul>
+  <div class="note warn"><div class="nt">Everything can check out correct and the service can still fail</div>
+    <p>What fails is not &ldquo;a layer&rdquo;. What fails is the service &mdash; data not reaching its destination &mdash; and that can originate at any layer, or at more than one at once.</p>
+    <p>Here is the part that catches people. Suppose a device is patched into a switch port that has been switched off. Check the program: running normally. Check the firewall: the right ports are open. Check the IP address: correct. <strong>Those checks all return a clean result, and the service still does not work.</strong> Nothing above the fault looks wrong &mdash; that is exactly the difficulty. You can spend an afternoon confirming that things are fine and learn nothing, because you were never looking where the disruption originated.</p>
+    <p>This is one of the things the model is good for. Used this way it does not hand you the answer &mdash; it tells you where you have looked and where you have not.</p></div>
+  <p>Here is what that looks like on the job. A desk phone shows no link light. There is no signal reaching it. You could now spend twenty minutes checking its IP address, its subnet mask, and its gateway &mdash; the router it sends traffic through to reach anything outside its own network &mdash; and all of them could be correct. None can help, because no signal is arriving at the port for those settings to act on. The IP address is not wrong. It is irrelevant while nothing is reaching the device.</p>
+  <p>The model matters to you in a particular way, because <strong>you own the bottom of the stack.</strong> The cable, the jack, the patch panel, the port, the power delivered over that cable &mdash; that is your work, and it is where most outages actually begin.</p>
+  <div class="cyu gate" data-answer="2" data-fb="Clean results are still results. Each check that comes back correct removes one place from the search, and that is what the model is for &mdash; it tells you where you have looked and where you have not. What a clean result never means is that there is no fault: the service is still failing, so the disruption originates somewhere you have not yet examined.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A device cannot reach the network. You check the program, the firewall and the IP address, and all three are correct. What have you learned?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The fault must be in the program after all</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Nothing is wrong and the user is mistaken</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The cause lies somewhere unchecked</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The checks were run in the wrong order</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="1" data-group-title="The Model, and Why You Need One" data-num="529.1.2" data-title="OSI Model &mdash; the seven layers">
+  <p class="crumb">Lesson 529.1 &middot; Section 1 The Model, and Why You Need One</p>
+  <h2><span class="tnum">529.1.2</span> OSI Model &mdash; the seven layers</h2>
+  <p class="lead-in">Seven layers, numbered one to seven, counting up from the physical medium.</p>
+  <p>Layer 7 is the program a person is using. Layer 1 is the physical medium &mdash; copper, fiber or radio. When a device sends something the data travels <strong>down</strong> from Layer 7 to Layer 1, where it leaves as a signal. When a device receives something it travels <strong>up</strong> from Layer 1 to Layer 7. Layer 1 carries the number 1 because it is where data enters and leaves the physical world.</p>
+  <p>The cards below run from Layer 7 at the top to Layer 1 at the bottom, the same way the layers are drawn. Open each one.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 7 &mdash; Application</span><span class="rcard-sub">Where the person meets the network</span><span class="rcard-detail" hidden><p><b>What it does.</b> Presents data to the person and accepts what they enter.</p><p><b>What lives here.</b> The program itself &mdash; a browser, an email client, a phone app.</p><p><b>What it looks like when it fails.</b> One program will not work while everything else on the same device does.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 6 &mdash; Presentation</span><span class="rcard-sub">Putting data in a readable form</span><span class="rcard-detail" hidden><p><b>What it does.</b> Converts data into a form the receiving program can read.</p><p><b>What lives here.</b> Formatting, character encoding, encryption.</p><p><b>Your involvement.</b> Not something a low-voltage technician configures.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 5 &mdash; Session</span><span class="rcard-sub">Managing the conversation</span><span class="rcard-detail" hidden><p><b>What it does.</b> Opens, maintains and closes a conversation between two programs.</p><p><b>What lives here.</b> Logins that drop, connections that time out.</p><p><b>Your involvement.</b> Not something a low-voltage technician configures.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 4 &mdash; Transport</span><span class="rcard-sub">Getting all of it there, in order</span><span class="rcard-detail" hidden><p><b>What it does.</b> Splits data into pieces and delivers them to the right program. Some traffic here is checked and put back in order; the rest, including most camera and voice traffic, is sent without either, because a late picture is worse than a missing one.</p><p><b>What lives here.</b> <span class="keyterm">Port numbers</span> &mdash; a number saying which program on the device the data is meant for.</p><p><b>Worth separating.</b> A port number is addressing. A <strong>switch port</strong> is a socket you plug a cable into, at Layer 1. Same word, unrelated things.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 3 &mdash; Network</span><span class="rcard-sub">Getting data between networks</span><span class="rcard-detail" hidden><p><b>What it does.</b> Moves data from one network to another, choosing a route.</p><p><b>What lives here.</b> <span class="keyterm">IP addresses</span>, subnets, routers, and the <span class="keyterm">ping</span> test. IPv4 looks like 192.168.10.25; the newer IPv6 looks like 2001:0db8::7334. Both do the same job.</p><p><b>Why it matters to you.</b> An IP address is <em>assigned</em>, by a person or automatically, so it can be set wrongly. You read and report it; changing it is usually somebody else&rsquo;s call.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 2 &mdash; Data Link</span><span class="rcard-sub">Moving data across the local network</span><span class="rcard-detail" hidden><p><b>What it does.</b> Moves data between devices on the same local network and decides which port it leaves by.</p><p><b>What lives here.</b> Switches. <span class="keyterm">MAC addresses</span> &mdash; built into a network interface at manufacture, so unlike an IP address nobody assigns them. <span class="keyterm">VLANs</span> &mdash; a switch setting that divides its ports into separate groups. <span class="keyterm">Power over Ethernet</span> &mdash; supplying power to a device along the same cable that carries its data.</p><p><b>Why it matters to you.</b> This layer is yours as much as Layer 1 is.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Layer 1 &mdash; Physical</span><span class="rcard-sub">The medium, and the signal on it</span><span class="rcard-detail" hidden><p><b>What it does.</b> Turns data into a signal and puts it onto the medium &mdash; voltage on copper, light on fiber, radio over the air.</p><p><b>What lives here.</b> The cable or fiber itself, connectors, jacks, patch panels, and the ports at each end.</p><p><b>Why it matters to you.</b> This is what you install and test, and it is where a large share of outages begin.</p></span></button>
+  </div></div>
+  <div class="note note"><div class="nt">Why the numbers get used more than the names</div>
+    <p>You will hear the names; you will use the numbers. Saying &ldquo;this is a Layer 1 problem&rdquo; is quicker and less ambiguous than describing a symptom, and it is the language the network team uses as well.</p></div>
+  <p>Place each of these at the layer it belongs to.</p>
+  <div class="match gate" data-left="Item" data-right="Layer"><div class="pair" data-left="Patch panel" data-right="Layer 1 Physical"></div><div class="pair" data-left="MAC address" data-right="Layer 2 Data Link"></div><div class="pair" data-left="IP address" data-right="Layer 3 Network"></div><div class="pair" data-left="Port number" data-right="Layer 4 Transport"></div><div class="pair" data-left="The program on the screen" data-right="Layer 7 Application"></div></div>
+  <div class="cyu gate" data-answer="1" data-fb="Connecting the camera to switch port 12 is physical work at Layer 1, and it is yours. &ldquo;Port 8080&rdquo; is a port number &mdash; addressing at Layer 4 &mdash; and it is changed in software by the network team. The two share a word and nothing else. Tickets mix them, so reading which one is meant is part of the job.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A work order says: connect the new camera to <em>port 12</em> on the switch, and make sure <em>port 8080</em> is open. Which part is yours?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Both, since both of them name a port</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Connecting the camera to port 12</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Making sure that port 8080 is open</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Neither, they both belong to the network team</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="1" data-group-title="The Model, and Why You Need One" data-num="529.1.3" data-title="Wrapping and unwrapping: data in transit">
+  <p class="crumb">Lesson 529.1 &middot; Section 1 The Model, and Why You Need One</p>
+  <h2><span class="tnum">529.1.3</span> Wrapping and unwrapping: data in transit</h2>
+  <p class="lead-in">The layers are not filing cabinets. They describe something that physically happens to data on its way out of a computer.</p>
+  <p>So far the model has been a way of sorting responsibilities. That is useful, but it is not what the model is. The seven layers describe a process: as data leaves a device it travels <em>down</em> the stack, and the lower layers each add something to it. When it arrives somewhere it travels <em>up</em> the stack, and each of those additions is removed in turn. Adding the wrappings on the way down is called <span class="keyterm">encapsulation</span>. Removing them again on the way up is <span class="keyterm">de-encapsulation</span>.</p>
+  <p>Think of posting a document. You write the page, put it in an envelope, address the envelope, then hand it to a courier who puts it in a sack with hundreds of others. Two separate wrappings, each with its own addressing, each needed by a different handler. Nobody along the route reads your document &mdash; they read the wrapping that concerns them and pass the rest along. <strong>That is encapsulation:</strong> your content is unchanged, but each handler that needs its own addressing adds a wrapping around it.</p>
+  <p>Now follow it to the other end. The sack arrives and is opened, and your envelope is taken out. The envelope is opened, and your page is taken out. Each handler removes only the wrapping that was added for them, in the reverse order it was added, until the page reaches the person it was addressed to &mdash; who reads it, and never sees the sack at all. <strong>That is de-encapsulation.</strong></p>
+  <p>Every device on a network does both, constantly: encapsulating what it sends, de-encapsulating what it receives.</p>
+  <p>Data does the same. On the way down, Layer 4, then Layer 3, then Layer 2 each add a small block of information at the front &mdash; a <span class="keyterm">header</span> &mdash; carrying the addressing that layer needs, then hands the whole bundle down to the layer below. Layer 2 adds a block at the end as well, a check value the receiving switch uses to test whether the frame arrived intact.</p>
+
+  <svg viewBox="0 0 880 400" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram: data gains a header at each layer on the way down, becoming a segment, then a packet, then a frame, then bits on the medium. A full text description follows.">
+    <defs>
+      <marker id="ar" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5a6772"/>
+      </marker>
+    </defs>
+    <rect x="262" y="34" width="380" height="42" rx="4" fill="#eef4f9" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="452" y="61" font-size="17" text-anchor="middle" fill="#1b2a3a">Data</text>
+    <text x="664" y="61" font-size="17" fill="#09507C">Your message</text>
+
+    <rect x="202" y="94" width="58" height="42" rx="4" fill="#CFEBFC" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="231" y="121" font-size="17" text-anchor="middle" fill="#09507C">L4</text>
+    <rect x="262" y="94" width="380" height="42" rx="4" fill="#eef4f9" stroke="#7f8b95"/>
+    <text x="452" y="121" font-size="17" text-anchor="middle" fill="#5a6772">Data</text>
+    <text x="664" y="121" font-size="17" font-weight="700" fill="#09507C">Segment</text>
+
+    <rect x="142" y="154" width="58" height="42" rx="4" fill="#CFEBFC" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="171" y="181" font-size="17" text-anchor="middle" fill="#09507C">L3</text>
+    <rect x="202" y="154" width="58" height="42" rx="4" fill="#eef4f9" stroke="#7f8b95"/>
+    <text x="231" y="181" font-size="17" text-anchor="middle" fill="#5a6772">L4</text>
+    <rect x="262" y="154" width="380" height="42" rx="4" fill="#eef4f9" stroke="#7f8b95"/>
+    <text x="452" y="181" font-size="17" text-anchor="middle" fill="#5a6772">Data</text>
+    <text x="664" y="181" font-size="17" font-weight="700" fill="#09507C">Packet</text>
+
+    <rect x="82" y="214" width="58" height="42" rx="4" fill="#FEC14F" stroke="#8A6100" stroke-width="1.5"/>
+    <text x="111" y="241" font-size="17" text-anchor="middle" fill="#1b2a3a">L2</text>
+    <rect x="142" y="214" width="58" height="42" rx="4" fill="#eef4f9" stroke="#7f8b95"/>
+    <text x="171" y="241" font-size="17" text-anchor="middle" fill="#5a6772">L3</text>
+    <rect x="202" y="214" width="58" height="42" rx="4" fill="#eef4f9" stroke="#7f8b95"/>
+    <text x="231" y="241" font-size="17" text-anchor="middle" fill="#5a6772">L4</text>
+    <rect x="262" y="214" width="380" height="42" rx="4" fill="#eef4f9" stroke="#7f8b95"/>
+    <text x="452" y="241" font-size="17" text-anchor="middle" fill="#5a6772">Data</text>
+    <text x="664" y="241" font-size="17" font-weight="700" fill="#8A6100">Frame</text>
+
+    <path d="M82 316 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0 q15 -24 30 0 q15 24 30 0"
+          fill="none" stroke="#0079C0" stroke-width="2.6"/>
+    <text x="664" y="322" font-size="17" font-weight="700" fill="#09507C">Bits</text>
+    <text x="82" y="368" font-size="17" fill="#5a6772">Layer 1 sends it as a signal: voltage, light or radio.</text>
+
+    <line x1="54" y1="40" x2="54" y2="312" stroke="#5a6772" stroke-width="1.6" marker-end="url(#ar)"/>
+    <text x="40" y="176" font-size="16" fill="#5a6772" text-anchor="middle" transform="rotate(-90 40 176)">Sending</text>
+    <line x1="840" y1="312" x2="840" y2="40" stroke="#5a6772" stroke-width="1.6" marker-end="url(#ar)"/>
+    <text x="856" y="176" font-size="16" fill="#5a6772" text-anchor="middle" transform="rotate(-90 856 176)">Receiving</text>
+  </svg>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram has five rows, read downward, showing what happens to data as it is sent.</p>
+    <ol>
+      <li><b>Row 1.</b> A single wide block labeled Data. This is your message, as it exists at Layers 7 to 5.</li>
+      <li><b>Row 2.</b> A Layer 4 header block is added to the left of the Data block. The bundle is now called a segment, and the added header carries port numbers.</li>
+      <li><b>Row 3.</b> A Layer 3 header is added to the left of that. The bundle is now called a packet, and the added header carries IP addresses.</li>
+      <li><b>Row 4.</b> A Layer 2 header is added to the left of that. The bundle is now called a frame, and the added header carries MAC addresses.</li>
+      <li><b>Row 5.</b> No blocks at all, only a wave. Layer 1 has converted the frame into a signal on the physical medium &mdash; voltage on copper, light on fiber, or radio over the air.</li>
+    </ol>
+    <p>An arrow down the left is labeled Sending, for encapsulation. An arrow up the right is labeled Receiving, for de-encapsulation, where each header is removed in the reverse order it was added.</p>
+  </details>
+
+  <p>Two things in that diagram matter more than the vocabulary. The first is that <strong>your data is never opened along the way.</strong> A switch reads the Layer 2 header, decides which port to send the frame out of, and does not look inside. It has no idea whether it is carrying an email or a phone call. That is exactly why one switch can carry every kind of traffic without being told what any of it is.</p>
+  <p>The second is what this means for the cable you install. <strong>What crosses your cable is not a message. It is a signal &mdash; voltage on copper, pulses of light on fiber, radio between an access point and a laptop.</strong> Layer 1 makes one promise only: that the bits which went in come out the other end unchanged. It promises nothing about MAC or IP addresses, nothing about switch settings, and nothing about whether the application works.</p>
+  <div class="note note"><div class="nt">Why a passing cable test proves less than people think</div>
+    <p>A wire map test confirms that the pairs are in the right order and that signal survives the run. That is Layer 1, and only Layer 1. It is necessary and it is not sufficient &mdash; a perfect cable still reaches nothing if the port is switched off or the IP address is wrong. Knowing exactly what your test proved, and what it did not, is what stops you saying &ldquo;the cable is fine&rdquo; when you mean &ldquo;the cable is not the problem, but something else is.&rdquo;</p></div>
+  <p>The same chain runs the other way. Damage the cable and the frame arrives corrupted. A corrupted frame is discarded, so the packet inside it never arrives, so the application never responds &mdash; and the user reports that the internet is broken. One physical fault, reported as a Layer 7 symptom. That is the pattern you will spend the rest of this lesson learning to unwind &mdash; starting with which of those layers is actually yours.</p>
+  <div class="cyu gate" data-answer="1" data-fb="A wire map test lives entirely at Layer 1. It confirms that the pairs are in the right order and a signal arrives. That is necessary but not sufficient: the port may be switched off, the addressing may be wrong, or the fault may be somewhere you do not own. Reporting precisely what a test proved is a large part of being trusted.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A cable run passes a wire map test. What has that proved?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>That the program the user needs will now run</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>That bits can cross the cable, and no more</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>That the switch port has been set up correctly</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>That the device at the far end has an IP address</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="1" data-group-title="The Model, and Why You Need One" data-num="529.1.4" data-title="The layers that are yours">
+  <p class="crumb">Lesson 529.1 &middot; Section 1 The Model, and Why You Need One</p>
+  <h2><span class="tnum">529.1.4</span> The layers that are yours</h2>
+  <p class="lead-in">Seven layers exist. Two are yours, and one you read.</p>
+  <p>With the layers named and the movement of data understood, the model can do another job: showing which problems belong to a low-voltage technician.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Where a low-voltage technician&rsquo;s responsibility sits against the seven layers.</caption>
+      <thead><tr>
+        <th scope="col">Layers</th><th scope="col">Your responsibility</th><th scope="col">What that means in practice</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">1 and 2</th><td><strong>Yours</strong></td><td>You install it, test it, configure the port, and fix it</td></tr>
+        <tr><th scope="row">3</th><td><strong>Yours to observe</strong></td><td>You read the addressing and report it accurately; changing it is usually somebody else&rsquo;s call</td></tr>
+        <tr><th scope="row">4 to 7</th><td>Network team</td><td>You escalate, with evidence of what you already checked</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Layer 1 is the cable or fiber you pulled, the jack you punched down, the panel it lands on, the port it plugs into, and the power that port supplies. Layer 2 is the switch: which port a device is on, and whether that port is passing traffic. Those two layers are your trade.</p>
+  <p>Layer 3 sits on the boundary. You will read IP addresses constantly and you need to report them precisely, but deciding what they should be is generally not your call.</p>
+  <div class="note note"><div class="nt">Low layer does not mean low importance</div>
+    <p>It is easy to read a stack diagram as a ranking, with the interesting work at the top. Resist that. Layer 1 problems &mdash; a damaged cable, a loose jack, a port with no power &mdash; are among the most common causes of real outages, and they are almost always the fastest to fix once found. The layer you own is the layer that fails most.</p></div>
+  <p>One sentence to carry out of this topic: <strong>knowing which layer a fault sits in tells you whether to pick up a tool or pick up the phone.</strong> The next topic sets out the three ways of working through the layers, and later in the lesson that becomes four questions you can ask in order.</p>
+  <div class="cyu gate" data-answer="3" data-fb="A crushed cable and a loose jack are Layer 1. A switch port that has been turned off is Layer 2. All three are yours. A rejected password sits above both, where logins and programs live, and no amount of testing cable will move it. The correct action there is to escalate it with evidence &mdash; which is a skill, not an admission of defeat.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Four faults are reported to you. Which one is <strong>not</strong> yours to fix?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>A cable crushed under the leg of a desk</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>A jack with a loose conductor behind it</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>A switch port somebody has turned off</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>A password the program will not accept</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="1" data-group-title="The Model, and Why You Need One" data-num="529.1.5" data-title="Three ways to work through the layers">
+  <p class="crumb">Lesson 529.1 &middot; Section 1 The Model, and Why You Need One</p>
+  <h2><span class="tnum">529.1.5</span> Three ways to work through the layers</h2>
+  <p class="lead-in">Bottom to top is not the only route. There are three, and each suits a different situation.</p>
+  <p>Now that the layers have names and numbers, the model can be used as a search method. Which direction you travel depends on what you already know when the problem reaches you.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Three approaches to troubleshooting with the OSI model.</caption>
+      <thead><tr><th scope="col">Approach</th><th scope="col">How it runs</th><th scope="col">When to reach for it</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Bottom&ndash;up</th><td>Start at Layer 1 and work upward</td><td>When physical work has just been done, or a physical fault is likely. The technician&rsquo;s usual default</td></tr>
+        <tr><th scope="row">Top&ndash;down</th><td>Start at Layer 7 and work downward</td><td>When the complaint is about one program and everything else on the same device works</td></tr>
+        <tr><th scope="row">Divide and conquer</th><td>Start in the middle, usually Layer 3 with a <span class="keyterm">ping</span>. If it fails, work down. If it succeeds, work up</td><td>When there is no strong clue where to begin. One test halves the possibilities</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Divide and conquer is often the quickest, because a single ping reports on the lower half of the stack in one step. If the ping succeeds, Layers 1 through 3 are delivering data and the search moves upward.</p>
+  <p>Bottom&ndash;up is the low-voltage technician&rsquo;s usual starting point, for a practical reason rather than a theoretical one: the layers you own are at the bottom, and a fault there is both common and quick to confirm.</p>
+  <div class="note note"><div class="nt">The approach is a starting point, not a rule</div>
+    <p>None of the three is more correct than the others. They are ways of ordering a search, and a technician who already has good evidence may reasonably begin anywhere. Whichever you use, it has to leave you able to say which layers you have eliminated and by what reading.</p></div>
+  <div class="cyu gate" data-answer="2" data-fb="A ping is a Layer 3 test, which puts it in the middle of the stack. If it succeeds, the layers below it are delivering data and the search moves upward; if it fails, the search moves down. One test, half the possibilities removed.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A fault is reported. The first thing the technician does is run a ping test. Which approach is that?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Bottom&ndash;up, since a ping begins at the cable</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Top&ndash;down, since a ping begins at the program</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Divide and conquer, starting in the middle</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>None of these, since a ping proves nothing</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="2" data-group-title="The Layers You Own" data-num="529.1.6" data-title="Layer 1: what you install, and what it promises">
+  <p class="crumb">Lesson 529.1 &middot; Section 2 The Layers You Own</p>
+  <h2><span class="tnum">529.1.6</span> Layer 1: what you install, and what it promises</h2>
+  <p class="lead-in">Layer 1 makes one promise: the bits that went in come out the other end unchanged. Everything else is somebody else&rsquo;s layer.</p>
+  <p>Layer 1 has no idea what it is carrying. It holds no MAC or IP addresses, keeps no record of what it sent, and cannot tell a video call from a print job. It converts bits into a signal, moves that signal along a medium, and converts it back. That is the whole job.</p>
+  <p>The parts you install are all Layer 1: the cable or fiber, the connectors on each end, the keystone jack, the patch panel, the patch cords, and the port each end plugs into. The electronics that turns bits into a signal is Layer 1 too &mdash; the network interface in a laptop, and the matching circuitry on a switch port.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What Layer 1 does and does not take responsibility for.</caption>
+      <thead><tr><th scope="col">Layer 1 is responsible for</th><th scope="col">Layer 1 is not responsible for</th></tr></thead>
+      <tbody>
+        <tr><td>Turning bits into a signal and back</td><td>Knowing which device the data is for</td></tr>
+        <tr><td>Carrying that signal the required distance</td><td>Deciding which port to send it out of</td></tr>
+        <tr><td>Delivering the bit pattern unchanged</td><td>Noticing or repairing a corrupted bit pattern</td></tr>
+        <tr><td>Supplying a link at an agreed speed</td><td>Anything about MAC or IP addresses, programs or users</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Two consequences follow, and both show up in real fault finding.</p>
+  <p><b>Distance is a Layer 1 constraint.</b> A signal weakens as it travels. The structured cabling standard is <span class="keyterm">ANSI/TIA-568</span>, from the American National Standards Institute (ANSI) and the Telecommunications Industry Association (TIA). It sets the maximum length of a horizontal copper channel at 100 meters &mdash; 90 meters of permanent run, and the rest patch cords. Exceed it and the link may still appear to work while quietly losing bits.</p>
+  <p><b>&ldquo;Working&rdquo; describes more than one state.</b> A link can be perfect, dead, or marginal. A marginal link passes most bits and corrupts some &mdash; often when the cable warms up, or when a nearby motor starts. The symptom is a connection that drops for a second and returns, which is far harder to find than a link that does not come up. <span class="keyterm">IEEE 802.3</span>, the Ethernet standard from the Institute of Electrical and Electronics Engineers (IEEE), says what the equipment at each end must cope with. How much signal loss and interference the cabling itself may carry is set by ANSI/TIA-568, and that is what a certification tester measures a run against.</p>
+  <div class="note note"><div class="nt">Why intermittent faults are worth naming early</div>
+    <p>A link that fails outright announces itself. A marginal one does not, and the complaint that reaches you will describe the program, not the cable. If you have already met the idea that Layer 1 can be partly working, an intermittent report becomes a clue rather than a mystery.</p></div>
+  <div class="cyu gate" data-answer="3" data-fb="Passing a wiring test shows the pairs are correct and a signal arrives. It does not prove that every bit survives under every condition. A link can be marginal &mdash; good enough to come up, not good enough to stay reliable &mdash; and that is a Layer 1 fault even though a test called it good.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A link passed its wiring test, but a device on it loses connection for a second at a time. What does that suggest?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Layer 1 is proven good, so look higher up</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Layer 1 faults are never intermittent</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>There must be no signal on the link at all</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The link may be marginal, not just good</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="2" data-group-title="The Layers You Own" data-num="529.1.7" data-title="Copper, fiber and radio on the model">
+  <p class="crumb">Lesson 529.1 &middot; Section 2 The Layers You Own</p>
+  <h2><span class="tnum">529.1.7</span> Copper, fiber and radio on the model</h2>
+  <p class="lead-in">Three media, one layer, one promise &mdash; and three different sets of things that go wrong.</p>
+  <p>All three media sit at Layer 1 and all three make the same promise. What differs is the physics, and the physics decides how each one fails. Knowing the failure modes of the medium in front of you is most of what makes a Layer 1 diagnosis quick.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The three physical media, and how each tends to fail.</caption>
+      <thead><tr>
+        <th scope="col">Medium</th><th scope="col">Carries</th>
+        <th scope="col">Typical failure</th><th scope="col">What it is sensitive to</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Copper</th><td>Voltage on twisted pairs</td><td>Broken conductor, wrong pair order, corrosion</td><td>Electrical interference, distance, tight bends, untwisting the pairs</td></tr>
+        <tr><th scope="row">Fiber</th><td>Pulses of light</td><td>Dirty or damaged end face, a break in the glass</td><td>Contamination, bend radius, physical shock</td></tr>
+        <tr><th scope="row">Radio</th><td>Radio waves through the air</td><td>Weak signal, congestion, interference</td><td>Distance, walls, other radio sources, number of devices sharing it</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>One difference is worth drawing out. Copper carries an electrical signal, so an electrical field nearby can induce noise into it &mdash; a motor, a fluorescent ballast, or a power cable run alongside it. Fiber carries light and no electrical current, so none of that reaches it. When a copper run has to pass near heavy electrical equipment, that is a reason to consider fiber rather than a preference.</p>
+  <p>Radio differs in another way: it is <strong>shared</strong>. A copper run belongs to one link, but every device within range of an access point uses the same air. A radio link can therefore degrade because more people arrived, with nothing physically wrong at all.</p>
+  <div class="note note"><div class="nt">The same layer, a different first question</div>
+    <p>On copper, the first question is usually about the terminations and what runs alongside the cable. On fiber, it is almost always about cleanliness at the end faces. On radio, it is about distance, obstructions and how many devices are competing. Same layer, same promise, three different opening moves.</p></div>
+  <div class="cyu gate" data-answer="0" data-fb="Fiber carries light rather than an electrical signal, so a nearby electrical field cannot induce noise into it. Copper is the medium that suffers from electrical interference, which is why running it alongside heavy electrical equipment is a design problem rather than a detail.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A run has to pass close to a large electric motor. Which medium is least affected by that?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Fiber, since it carries light not electricity</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Copper, since twisted pairs cancel interference</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Radio, since it does not use a cable at all</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>All three are affected to the same degree</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="2" data-group-title="The Layers You Own" data-num="529.1.8" data-title="Layer 2: what the switch decides">
+  <p class="crumb">Lesson 529.1 &middot; Section 2 The Layers You Own</p>
+  <h2><span class="tnum">529.1.8</span> Layer 2: what the switch decides</h2>
+  <p class="lead-in">Layer 1 moves the signal. Layer 2 decides where it goes next.</p>
+  <p>A switch has one central job. A frame arrives on one port, and the switch decides which port or ports it should leave by. To make that decision it reads the frame&rsquo;s Layer 2 header, which carries the <span class="keyterm">MAC address</span> of the device the frame is for. A MAC address is the Layer 2 address, built into every network interface, and the next topic covers where it comes from. The switch does not open the packet inside, and it does not read the IP address &mdash; that is a Layer 3 address and it belongs to a router.</p>
+  <p>There are three possible decisions, and each produces a different symptom.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Forward to one port</span><span class="rcard-sub">The normal case</span><span class="rcard-detail" hidden><p>The switch has seen that destination MAC address before and knows which port it is on. The frame goes out of that one port and nowhere else.</p><p>This is what makes a switch efficient: traffic between two devices does not disturb any of the others.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Send to every port</span><span class="rcard-sub">When the destination is unknown, or meant for everyone</span><span class="rcard-detail" hidden><p>Two situations produce this. The switch may not yet have learned which port that destination MAC address is on, so it sends the frame out of every other port in the group and lets the right device answer &mdash; never back out of the port it arrived on. Or the frame is a <span class="keyterm">broadcast</span>, deliberately addressed to every device at once, which is how devices announce themselves and find each other.</p><p>The set of ports that receive a broadcast is called a <span class="keyterm">broadcast domain</span>. A Virtual Local Area Network (VLAN) is how you decide where that domain stops.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Discard it</span><span class="rcard-sub">When the frame is damaged or not allowed</span><span class="rcard-detail" hidden><p>Every frame carries a check value that lets the switch test whether it arrived intact. A frame that fails that test is silently dropped, because a damaged frame is worse than no frame.</p><p>This is the point at which a Layer 1 problem becomes visible at Layer 2: a marginal cable produces corrupted frames, the switch discards them, and the device appears to have a connection that does not work.</p></span></button>
+  </div></div>
+  <p>A <span class="keyterm">VLAN</span> constrains all of this. Assigning ports to different VLANs tells the switch that those groups of ports may not exchange frames, and that a broadcast from one group must not reach the other. One physical switch then behaves as though it were several separate switches.</p>
+  <div class="note note"><div class="nt">Why the discard case matters to you</div>
+    <p>Of the three decisions, the third is the one that will bring you a ticket. Corrupted frames are discarded without any message to the user, so the report you receive describes a program that will not load. The cause is at Layer 1, the evidence is at Layer 2, and the complaint arrives from Layer 7.</p></div>
+  <div class="cyu gate" data-answer="1" data-fb="The switch reads the Layer 2 header, which carries the destination MAC address, and sends the frame out of the port that address is on. It does not open the packet inside, so it never reads the IP address &mdash; that is a Layer 3 address and a router&rsquo;s job.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A frame arrives at a switch. What does the switch read to decide where to send it?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The IP address inside the packet</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The MAC address in the Layer 2 header</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The program that the data is meant for</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The whole frame, from start to finish</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="2" data-group-title="The Layers You Own" data-num="529.1.9" data-title="MAC addressing: how a switch knows what is where">
+  <p class="crumb">Lesson 529.1 &middot; Section 2 The Layers You Own</p>
+  <h2><span class="tnum">529.1.9</span> MAC addressing: how a switch knows what is where</h2>
+  <p class="lead-in">Nobody tells a switch which device is on which port. It works it out by watching.</p>
+  <p>Every network interface is manufactured with a <span class="keyterm">MAC address</span>: six pairs of characters, such as 00:1A:2B:3C:4D:5E. The first half identifies the manufacturer, the second half is unique to that individual interface. Nobody on site assigns it, and it does not normally change &mdash; which is the opposite of an IP address, and the reason the two are diagnosed differently.</p>
+  <p>A switch builds its own record of where devices are, called the <span class="keyterm">MAC address table</span>. It fills that table by observation: every time a frame arrives, the switch notes the sender&rsquo;s address and the port it arrived on. Nothing is configured. The switch remembers who it has heard from, and where.</p>
+
+  <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram: a switch learns which port each device is on by noting the sender address of every arriving frame. A full text description follows.">
+    <defs>
+      <marker id="ar2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5a6772"/>
+      </marker>
+    </defs>
+    <rect x="40" y="40" width="300" height="60" rx="6" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="190" y="66" font-size="17" text-anchor="middle" fill="#1b2a3a">Frame arrives on port 12</text>
+    <text x="190" y="88" font-size="16" text-anchor="middle" fill="#5a6772">sender 00:1A:2B:3C:4D:5E</text>
+
+    <line x1="345" y1="70" x2="425" y2="70" stroke="#5a6772" stroke-width="2" marker-end="url(#ar2)"/>
+    <text x="385" y="58" font-size="16" text-anchor="middle" fill="#5a6772">note it</text>
+
+    <rect x="430" y="30" width="390" height="150" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="450" y="56" font-size="17" font-weight="700" fill="#09507C">MAC address table</text>
+    <line x1="430" y1="66" x2="820" y2="66" stroke="#7f8b95"/>
+    <text x="450" y="92" font-size="16" fill="#5a6772">Address</text>
+    <text x="700" y="92" font-size="16" fill="#5a6772">Port</text>
+    <line x1="430" y1="102" x2="820" y2="102" stroke="#7f8b95"/>
+    <text x="450" y="128" font-size="16" fill="#1b2a3a">00:1A:2B:3C:4D:5E</text>
+    <text x="700" y="128" font-size="16" fill="#1b2a3a">12</text>
+    <text x="450" y="158" font-size="16" fill="#1b2a3a">00:4F:6E:1C:8A:22</text>
+    <text x="700" y="158" font-size="16" fill="#1b2a3a">7</text>
+
+    <text x="40" y="225" font-size="17" fill="#1b2a3a">Next time a frame is addressed to 00:1A:2B:3C:4D:5E,</text>
+    <text x="40" y="252" font-size="17" fill="#1b2a3a">the switch sends it out of port 12 only.</text>
+    <text x="40" y="285" font-size="16" fill="#5a6772">An address the table has never seen is sent to every port in the VLAN instead.</text>
+  </svg>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>On the left, a box shows a frame arriving on port 12, with a sender MAC address of 00:1A:2B:3C:4D:5E. An arrow labeled &ldquo;note it&rdquo; points right to a second box titled MAC address table.</p>
+    <p>The table has two columns, Address and Port, and two rows. The first row pairs 00:1A:2B:3C:4D:5E with port 12. The second row pairs 00:4F:6E:1C:8A:22 with port 7.</p>
+    <p>Text beneath states that the next time a frame is addressed to 00:1A:2B:3C:4D:5E, the switch sends it out of port 12 only, and that a MAC address the table has never seen is sent to every port in the VLAN instead.</p>
+  </details>
+
+  <p>This is the mechanism behind the two switch decisions from the previous topic. A destination in the table gets forwarded to one port. A destination that is not in the table gets sent everywhere, because the switch has no better option than to ask.</p>
+  <p>Entries do not last forever. If a switch hears nothing from a MAC address for a period, it removes the entry, so that a device which has been moved to a different port is not sent traffic at the old one.</p>
+  <div class="note note"><div class="nt">What the MAC address table answers</div>
+    <p>Asking a switch to show its MAC address table for a port answers a specific question: <strong>has this switch heard anything at all from the device on that port?</strong> An entry proves the device is powered, connected, and sending frames that arrive intact. An empty result sends you back to the cable, the connector, the device, or the port&rsquo;s own power setting &mdash; a device the switch has not powered has nothing to send.</p></div>
+  <div class="cyu gate" data-answer="2" data-fb="The table is filled by observation, so an entry appears only once the switch has received a frame from that device. No entry means nothing usable has arrived, which points at the cable, the connections, the device, or a port not supplying the power the device runs on &mdash; not at the addressing above them.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A switch shows no MAC address table entry for the port your device is on. What does that indicate?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The device has been given the wrong IP address</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The VLAN on that port must be wrong</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The switch has not received a frame from it</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>A program on the device has stopped running</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="2" data-group-title="The Layers You Own" data-num="529.1.10" data-title="Power over Ethernet sits at Layer 1, and the switch decides it">
+  <p class="crumb">Lesson 529.1 &middot; Section 2 The Layers You Own</p>
+  <h2><span class="tnum">529.1.10</span> Power over Ethernet sits at Layer 1, and the switch decides it</h2>
+  <p class="lead-in">One cable, two jobs. The data was always the point; the power came later, and it is the switch that decides whether to supply it.</p>
+  <p><span class="keyterm">Power over Ethernet</span> delivers electrical power to a device along the same cable that carries its data. It is what allows a camera, an access point or a desk phone to be installed with one cable and no power outlet nearby, which is why so much low-voltage work now depends on it.</p>
+  <p>The power itself is Layer 1 &mdash; electricity on the same conductors, alongside the signal. What makes it different from the rest of Layer 1 is that it is switched on and off by a setting. Power is not sitting on the cable waiting: the switch tests the device first, works out how much power it is asking for, and then supplies it. Each port is decided separately, and a port can be told not to supply power at all.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The sequence a switch follows before supplying power to a port.</caption>
+      <thead><tr><th scope="col">Step</th><th scope="col">What happens</th><th scope="col">If it does not happen</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1. Detection</th><td>The switch applies a small voltage to check whether a device designed for PoE is present</td><td>No power is supplied, which protects equipment that is not built for it</td></tr>
+        <tr><th scope="row">2. Classification</th><td>The device declares a power class, telling the switch roughly how much it needs</td><td>The switch may allocate a default amount, or refuse</td></tr>
+        <tr><th scope="row">3. Supply</th><td>The switch delivers power, provided its remaining budget allows</td><td>The port stays unpowered even though the device is present and correct</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Two standards govern this, both part of <span class="keyterm">IEEE 802.3</span>. The earlier one, 802.3af, supplies up to about 15 watts per port. The later 802.3at, often called PoE+, supplies up to about 30 watts. A switch built to the earlier standard cannot power a device that requires the later one, no matter how the port is configured.</p>
+  <p>There is also a limit on the switch as a whole. Every switch has a total power budget shared across all its ports, so a switch can be perfectly capable of powering a device and still refuse, because earlier ports have already claimed the available power.</p>
+  <div class="note note"><div class="nt">Three separate reasons a PoE device stays dark</div>
+    <p>The port is configured not to supply power. The device needs more power than this switch can provide per port. Or the switch has run out of overall budget. All three look identical from the desk &mdash; a device that does nothing &mdash; and none of the three is a cabling fault. The cable can be perfect in every case, which is why the reading is taken at the switch rather than with a tester.</p></div>
+  <div class="cyu gate" data-answer="0" data-fb="A camera that draws all its power from the port cannot bring a link up until it has power, so no link is what you would expect and it tells you nothing on its own. The run has passed a wire map, which makes a wiring fault less likely without ruling the cabling out. Power is a separate decision the switch makes per port, so whether PoE is enabled on that port &mdash; and whether budget remains &mdash; is the useful question.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A camera that takes all its power from the port is connected and does not power on. The switch shows no link, and the run to it has tested good on a wire map. What is worth checking?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Whether PoE is enabled on that port</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Whether the camera has been given an IP address</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Whether the run is long enough to have lost the signal</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Whether a program can reach the camera yet</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="3" data-group-title="Finding the Fault" data-num="529.1.11" data-title="Tracing data from a desk device to a switch port">
+  <p class="crumb">Lesson 529.1 &middot; Section 3 Finding the Fault</p>
+  <h2><span class="tnum">529.1.11</span> Tracing data from a desk device to a switch port</h2>
+  <p class="lead-in">Between a laptop on a desk and a port on a switch there are seven physical elements. Any one of them can be the fault.</p>
+  <p>Every element from the device to the switch port is Layer 1, the port included. Layer 2 is not a different piece of hardware: it is what the switch does with the frames that arrive at that port, and it is the first point on the path where anything decides where traffic goes. Knowing the elements in order matters, because a fault report never tells you which one is at issue.</p>
+
+  <svg viewBox="0 0 860 250" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram: the seven physical elements between a desk device and a switch port, all at Layer 1 until the switch port. A full text description follows.">
+    <defs>
+      <marker id="ar3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#5a6772"/>
+      </marker>
+    </defs>
+    <rect x="20" y="60" width="120" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="80" y="84" font-size="16" text-anchor="middle" fill="#1b2a3a">Device</text>
+    <text x="80" y="104" font-size="16" text-anchor="middle" fill="#5a6772">interface</text>
+    <line x1="142" y1="88" x2="176" y2="88" stroke="#5a6772" stroke-width="2" marker-end="url(#ar3)"/>
+    <rect x="178" y="60" width="112" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="234" y="84" font-size="16" text-anchor="middle" fill="#1b2a3a">Patch</text>
+    <text x="234" y="104" font-size="16" text-anchor="middle" fill="#5a6772">cord</text>
+    <line x1="292" y1="88" x2="326" y2="88" stroke="#5a6772" stroke-width="2" marker-end="url(#ar3)"/>
+    <rect x="328" y="60" width="112" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="384" y="84" font-size="16" text-anchor="middle" fill="#1b2a3a">Wall</text>
+    <text x="384" y="104" font-size="16" text-anchor="middle" fill="#5a6772">jack</text>
+    <line x1="442" y1="88" x2="476" y2="88" stroke="#5a6772" stroke-width="2" marker-end="url(#ar3)"/>
+    <rect x="478" y="60" width="130" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="543" y="84" font-size="16" text-anchor="middle" fill="#1b2a3a">Horizontal</text>
+    <text x="543" y="104" font-size="16" text-anchor="middle" fill="#5a6772">run</text>
+    <line x1="610" y1="88" x2="644" y2="88" stroke="#5a6772" stroke-width="2" marker-end="url(#ar3)"/>
+    <rect x="646" y="60" width="112" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="702" y="84" font-size="16" text-anchor="middle" fill="#1b2a3a">Patch</text>
+    <text x="702" y="104" font-size="16" text-anchor="middle" fill="#5a6772">panel</text>
+    <line x1="702" y1="118" x2="702" y2="150" stroke="#5a6772" stroke-width="2" marker-end="url(#ar3)"/>
+    <rect x="590" y="152" width="112" height="52" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="646" y="184" font-size="16" text-anchor="middle" fill="#1b2a3a">Patch cord</text>
+    <line x1="588" y1="178" x2="554" y2="178" stroke="#5a6772" stroke-width="2" marker-end="url(#ar3)"/>
+    <rect x="418" y="152" width="134" height="52" rx="5" fill="#FEC14F" stroke="#8A6100" stroke-width="1.6"/>
+    <text x="485" y="184" font-size="16" text-anchor="middle" fill="#1b2a3a">Switch port</text>
+    <text x="20" y="30" font-size="17" font-weight="700" fill="#09507C">Layer 1 all the way, port included &mdash; Layer 2 is what the switch does next</text>
+    <text x="20" y="190" font-size="16" fill="#5a6772">Twelve ends</text>
+    <text x="20" y="212" font-size="16" fill="#5a6772">in total</text>
+  </svg>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram follows a single path, left to right along the top and then back right to left along the bottom.</p>
+    <ol>
+      <li>Device interface</li>
+      <li>Patch cord</li>
+      <li>Wall jack</li>
+      <li>Horizontal run</li>
+      <li>Patch panel</li>
+      <li>Patch cord, on the lower row</li>
+      <li>Switch port, highlighted, the last Layer 1 element and where the switch starts deciding</li>
+    </ol>
+    <p>A heading states that the path is Layer 1 all the way until the switch port. A note records that there are twelve ends in total: the five middle elements have two ends each, while the device interface and the switch port have one each.</p>
+  </details>
+
+  <p>Count the ends rather than the elements. The five in the middle each have two &mdash; the two patch cords, the jack, the run and the panel &mdash; while the device interface and the switch port have one each. That is <strong>twelve ends</strong>, and any one of them can be loose, dirty, miswired or broken. When somebody says &ldquo;it must be the cable,&rdquo; they are usually describing one of those twelve rather than the cable itself.</p>
+  <p>The horizontal run is the most difficult element to inspect, since most of it is inside a wall or a pathway. That is also the one you are least likely to have caused, because it was terminated once and then left alone. The patch cords at each end are handled constantly and get moved, pinched and swapped, which is why they are worth suspecting early.</p>
+  <p>Put the path in order, from the device to the switch.</p>
+  <div class="order gate"><div class="step" data-pos="1">The network interface in the device itself.</div><div class="step" data-pos="2">The patch cord from the device to the wall jack.</div><div class="step" data-pos="3">The keystone jack in the faceplate at the desk.</div><div class="step" data-pos="4">The horizontal run through the wall or pathway.</div><div class="step" data-pos="5">The punch-down termination at the patch panel.</div><div class="step" data-pos="6">The patch cord from the patch panel to the switch.</div><div class="step" data-pos="7">The switch port, the last Layer 1 element.</div></div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="3" data-group-title="Finding the Fault" data-num="529.1.12" data-title="Where a cabling fault appears in the model">
+  <p class="crumb">Lesson 529.1 &middot; Section 3 Finding the Fault</p>
+  <h2><span class="tnum">529.1.12</span> Where a cabling fault appears in the model</h2>
+  <p class="lead-in">A cabling fault originates at Layer 1, but it produces a different observable symptom at every layer above it.</p>
+  <p>This is the point where the model earns its keep. A single physical fault does not produce one symptom &mdash; it produces a different symptom at every layer above it. If you know what a Layer 1 fault looks like from Layer 2, or from Layer 3, you can recognize it without having to go and inspect the cable first.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>One broken conductor, seen from four different layers.</caption>
+      <thead><tr><th scope="col">Looking at</th><th scope="col">What you observe</th><th scope="col">What it tempts you to conclude</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Layer 1</th><td>No link light at either end</td><td>Correct as far as it goes &mdash; though a port shut down, or set never to supply power, looks the same from the desk</td></tr>
+        <tr><th scope="row">Layer 2</th><td>No MAC address table entry for the port</td><td>Wrongly, that the switch is misconfigured</td></tr>
+        <tr><th scope="row">Layer 3</th><td>Ping fails, no address obtained</td><td>Wrongly, that addressing is the problem</td></tr>
+        <tr><th scope="row">Layer 7</th><td>The program will not open or times out</td><td>Wrongly, that the program or server is at fault</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Now consider a different fault: a <span class="keyterm">split pair</span>, where two conductors are terminated into the wrong pairs. Continuity is intact, so a test that only checks continuity reports the run as good, and the link often comes up. What fails is reliability at higher speeds. The observations change:</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>A split pair, seen from the same four layers.</caption>
+      <thead><tr><th scope="col">Looking at</th><th scope="col">What you observe</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Layer 1</th><td>Link light present. Continuity is intact end to end, so a continuity check passes it. A wire map tester finds it by checking the pairing itself</td></tr>
+        <tr><th scope="row">Layer 2</th><td>A MAC entry appears, then frames are discarded as damaged</td></tr>
+        <tr><th scope="row">Layer 3</th><td>Ping works sometimes and fails sometimes</td></tr>
+        <tr><th scope="row">Layer 7</th><td>The program is slow, or drops out and recovers</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note note"><div class="nt">The pattern behind the symptoms</div>
+    <p>A fault that stops everything is usually a broken connection. A fault that makes things unreliable rather than dead is usually a marginal or miswired one. Both originate at Layer 1, and neither can be identified from a Layer 7 complaint.</p></div>
+  <div class="cyu gate" data-answer="0" data-fb="An intermittent symptom points to a link that is working partly rather than not at all &mdash; a marginal or miswired run. A completely broken conductor produces no link at all and a consistently dead connection, not one that comes and goes.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A device connects, then drops out, then reconnects. Which is the more likely cause?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>A marginal or miswired run, working partly</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>A conductor broken cleanly through</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>A switch port that has been turned off</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>A program that was never installed properly</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="3" data-group-title="Finding the Fault" data-num="529.1.13" data-title="Why one physical fault becomes a complaint about a program">
+  <p class="crumb">Lesson 529.1 &middot; Section 3 Finding the Fault</p>
+  <h2><span class="tnum">529.1.13</span> Why one physical fault becomes a complaint about a program</h2>
+  <p class="lead-in">The person reporting a fault can only see Layer 7. That is the only layer they have.</p>
+  <p>Follow a single damaged conductor upward through the stack and watch what happens to the symptom at each step.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>How one physical fault travels up the layers to become a user complaint.</caption>
+      <thead><tr><th scope="col">Layer</th><th scope="col">What is actually happening</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1</th><td>A conductor is damaged, so the signal arriving is distorted</td></tr>
+        <tr><th scope="row">2</th><td>Frames arrive corrupted and fail their check, so the switch discards them</td></tr>
+        <tr><th scope="row">3</th><td>The packets inside those frames never arrive, so nothing is reachable</td></tr>
+        <tr><th scope="row">4</th><td>Delivery is never confirmed, so the sender keeps retrying and then gives up</td></tr>
+        <tr><th scope="row">7</th><td>The program waits, shows an error, and the person says the system is down</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Nobody in that chain is wrong. The program did fail. Delivery was never confirmed. Packets did not arrive. Frames were discarded. Every layer reported accurately on what it could see, and the only person who spoke was the one at the top.</p>
+  <p>Two things follow from this, and they are the practical value of this whole lesson.</p>
+  <p><strong>A fault report tells you the symptom, not the location.</strong> &ldquo;The system is down&rdquo; is compatible with a damaged cable, a disabled port, a wrong IP address, a failed server, and an expired password. Treating the report as a description of the cause is what leads to replacing working equipment.</p>
+  <p><strong>Translating the report is part of your job.</strong> The person is describing Layer 7 because that is what they can see. Your task is to convert that into a question you can answer with a tool &mdash; and the layers you own are at the bottom, which is where the next topic starts.</p>
+  <div class="note note"><div class="nt">Take the report seriously, and take it literally</div>
+    <p>A report that sounds vague is not a careless one. &ldquo;It was fine yesterday&rdquo; and &ldquo;only when I move my laptop&rdquo; are Layer 1 clues stated in the only vocabulary available to the person giving them. Ask what changed and when, rather than dismissing the description.</p></div>
+  <div class="cyu gate" data-answer="3" data-fb="The complaint accurately describes what the person can see, which is the program. It is compatible with a damaged cable, a disabled port, a wrong IP address, a failed server or an expired password &mdash; so it locates nothing. Treating it as a statement of cause is what leads to replacing equipment that was working.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A user reports that the system is down. What does that report establish?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>That the fault is in the program itself</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>That the cable is the most likely cause</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>That the report is too vague to act on</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The symptom only, and not its location</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="3" data-group-title="Finding the Fault" data-num="529.1.14" data-title="The four questions, in order">
+  <p class="crumb">Lesson 529.1 &middot; Section 3 Finding the Fault</p>
+  <h2><span class="tnum">529.1.14</span> The four questions, in order</h2>
+  <p class="lead-in">Seven layers, reduced to four questions you can ask standing at a desk.</p>
+  <p>Working bottom&ndash;up, the model collapses into a short sequence. Each question has a tool that answers it and a piece of evidence you can record. Ask them in order and stop at the first one that answers no, because that is where the search ends and the work begins.</p>
+
+  <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram: a four-rung ladder of troubleshooting questions, from is it connected at the bottom to anything above that at the top. A full text description follows.">
+    <rect x="30" y="216" width="600" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="50" y="250" font-size="17" fill="#1b2a3a">1. Is it connected, and is the medium good?</text>
+    <text x="646" y="250" font-size="16" fill="#09507C">Yours</text>
+    <rect x="30" y="150" width="600" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="50" y="184" font-size="17" fill="#1b2a3a">2. Is the port up, in the right VLAN, powered?</text>
+    <text x="646" y="184" font-size="16" fill="#09507C">Yours</text>
+    <rect x="30" y="84" width="600" height="56" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="50" y="118" font-size="17" fill="#1b2a3a">3. Does it have an IP address, and can it reach?</text>
+    <text x="646" y="118" font-size="16" fill="#09507C">Observe</text>
+    <rect x="30" y="18" width="600" height="56" rx="5" fill="#FEC14F" stroke="#8A6100" stroke-width="1.6"/>
+    <text x="50" y="52" font-size="17" fill="#1b2a3a">4. Anything above that</text>
+    <text x="646" y="52" font-size="16" fill="#8A6100">Escalate</text>
+    <text x="756" y="150" font-size="16" fill="#5a6772" text-anchor="middle" transform="rotate(-90 756 150)">Ask in this order</text>
+  </svg>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>Four stacked bars, read from the bottom upward, each labeled with a question and who owns it.</p>
+    <ol>
+      <li>Bottom bar: is it connected, and is the medium good? Marked Yours.</li>
+      <li>Second bar: is the port up, in the right VLAN, and powered? Marked Yours.</li>
+      <li>Third bar: does it have an IP address, and can it reach? Marked Observe.</li>
+      <li>Top bar, highlighted: anything above that. Marked Escalate.</li>
+    </ol>
+    <p>A label down the right side reads &ldquo;ask in this order&rdquo;.</p>
+  </details>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The four questions, with the tool that answers each and the evidence to record.</caption>
+      <thead><tr><th scope="col">Step</th><th scope="col">Question</th><th scope="col">How you answer it</th><th scope="col">Evidence to record</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">1</th><td>Is it connected, and is the medium good?</td><td>Look at the link indicators. Test the run</td><td>Link state, and the test result</td></tr>
+        <tr><th scope="row">2</th><td>Is the port up, in the right VLAN, and supplying power?</td><td>Ask the switch for port status, VLAN and power</td><td>Port state, VLAN, power drawn</td></tr>
+        <tr><th scope="row">3</th><td>Does it have an IP address, and can it reach anything?</td><td>Check the IP address on the device. Ping</td><td>The IP address, and the ping result</td></tr>
+        <tr><th scope="row">4</th><td>Anything above that</td><td>Not yours to answer</td><td>What you checked, and what you found</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The order is not arbitrary. Each question depends on the ones below it having been answered yes, so answering them upward means you never spend time on a setting that could not have worked anyway.</p>
+  <div class="note note"><div class="nt">Stop at the first no</div>
+    <p>A no at step 1 is what you work on next, not something to climb past. The VLAN and the addressing above it cannot be read while nothing is arriving, and asking anyway produces readings that look like evidence and are not.</p>
+    <p>Power is the one part of step 2 that belongs to resolving step 1. A device that takes all its power from the port cannot bring a link up until the port supplies it, so on a powered device, reading whether the port is supplying power is part of answering step 1 rather than a step beyond it.</p></div>
+  <div class="cyu gate" data-answer="1" data-fb="Step 1 has answered no, so the VLAN and the addressing above it cannot be read yet &mdash; the port will report no device however it is configured. Resolve what step 1 found first. Where the device takes its power from the port, resolving it includes reading whether the port is supplying power, because an unpowered device cannot bring a link up at all.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Step 1 shows no link at either end. What should you do next?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Move on to step 2 and check the switch port</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Resolve what step 1 found before going on</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Move to step 3 and check the IP address</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Escalate it, since step 1 has failed</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="3" data-group-title="Finding the Fault" data-num="529.1.15" data-title="Whose problem is it, and where your scope ends">
+  <p class="crumb">Lesson 529.1 &middot; Section 3 Finding the Fault</p>
+  <h2><span class="tnum">529.1.15</span> Whose problem is it, and where your scope ends</h2>
+  <p class="lead-in">Knowing where your scope ends is part of the trade, and saying so clearly is a skill.</p>
+  <p>Steps 1 and 2 of the ladder are yours to resolve. Step 3 you read and report. Step 4 belongs to somebody else. Reaching step 4 is not a failure to solve the problem &mdash; it is the correct outcome, provided you hand it over in a usable state.</p>
+  <p>What makes a hand-over usable is evidence. Compare these two:</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Two versions of the same escalation.</caption>
+      <thead><tr><th scope="col">Thin</th><th scope="col">Usable</th></tr></thead>
+      <tbody>
+        <tr><td>&ldquo;Cable is fine, must be a network problem.&rdquo;</td><td>&ldquo;Run tested good on a wire map. Port 12 is up at 1&nbsp;Gbps, in VLAN 20, drawing 6&nbsp;W. Device has an IP address and pings its gateway. It cannot reach anything beyond that. Handing over at Layer 3 and above.&rdquo;</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The second version does three things the first does not. It says what was tested and how. It gives the values, so nobody has to repeat the work. And it names where the boundary was drawn, so the next person knows exactly what remains unexamined.</p>
+  <p>It also protects you. A hand-over that records what you verified is the difference between a fault that moves forward and a fault that comes back with your name on it.</p>
+  <div class="note note"><div class="nt">Three things a usable hand-over contains</div>
+    <ul>
+      <li><b>What you verified</b> &mdash; the steps you completed and the tool you used.</li>
+      <li><b>What you found</b> &mdash; the actual values, not a judgement about them.</li>
+      <li><b>Where you stopped</b> &mdash; the layer you are handing over at, and why.</li>
+    </ul></div>
+  <p>Notice that none of this requires knowing what is wrong at the layer above yours.</p>
+  <div class="cyu gate" data-answer="2" data-fb="An escalation is judged on whether the next person can act without repeating your work. Recording the steps completed, the values found, and the layer you stopped at achieves that. Whether you identified the underlying cause is not the test &mdash; the cause sits at a layer that is not yours.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">What makes an escalation a good one?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>That it correctly names the fault&rsquo;s real cause</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>That it is passed on as quickly as possible</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>That the next person can act without redoing it</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>That it avoids blaming any particular team</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.1" data-lesson-title="OSI as a Troubleshooting Ladder" data-group-num="4" data-group-title="Wrapping Up" data-num="529.1.16" data-title="What you covered">
+  <p class="crumb">Lesson 529.1 &middot; Section 4 Wrapping Up</p>
+  <h2><span class="tnum">529.1.16</span> What you covered</h2>
+  <p class="lead-in">One model, four questions, and a clear line around what is yours.</p>
+  <p>The OSI model describes moving data as seven layers of function. It is a way of managing a large job by splitting it up, a framework that standards are written against, a shared language for describing problems, and a method for searching when something does not work.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Summary of the layers, and where a low-voltage technician&rsquo;s work sits.</caption>
+      <thead><tr><th scope="col">Layers</th><th scope="col">What happens there</th><th scope="col">Yours?</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">4 to 7</th><td>Delivery confirmation, sessions, formatting, and the program itself</td><td>No &mdash; escalate</td></tr>
+        <tr><th scope="row">3</th><td>IP addressing, subnets, routing between networks</td><td>Read and report</td></tr>
+        <tr><th scope="row">2</th><td>Switches, MAC addressing, VLANs</td><td>Yes</td></tr>
+        <tr><th scope="row">1</th><td>Copper, fiber and radio, connectors, jacks, panels, ports, Power over Ethernet</td><td>Yes</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Data is wrapped on the way down &mdash; encapsulation &mdash; and unwrapped on the way up, as de-encapsulation. Each device reads only the wrapping meant for it, which is why a switch forwards traffic without knowing what it carries.</p>
+  <p>There are three ways to search: bottom&ndash;up, top&ndash;down, and divide and conquer starting with a ping. Bottom&ndash;up is the usual starting point for a low-voltage technician, because the layers you own are at the bottom.</p>
+  <div class="note note"><div class="nt">The four questions, once more</div>
+    <ol>
+      <li>Is it connected, and is the medium good?</li>
+      <li>Is the port up, in the right VLAN, and supplying power?</li>
+      <li>Does it have an IP address, and can it reach anything?</li>
+      <li>Anything above that &mdash; escalate, with evidence.</li>
+    </ol>
+    <p>Ask them in order. Stop at the first no.</p></div>
+  <p>The last idea is the one that carries furthest. A fault report describes a symptom, not a location, because the person reporting it can only see the top of the stack. Turning that report into a question you can answer with a tool is the work &mdash; and recording what you checked is what makes the answer worth anything to whoever comes next.</p>
+
+  <button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button>
+</section>
+</div>
+
+    <nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">&lsaquo; Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next &rsaquo;</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true"
+     aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>

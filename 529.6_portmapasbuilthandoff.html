@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 529 (M07) - Network Fundamentals for Low Voltage Technicians
+  Lesson 529.6 - Port Map, As-Built, and Hand-Off (Async Reading)
+  VERSION: v0.2.0  (2026-09-04)  DRAFT - for review
+
+  CHANGES IN v0.2.0
+  Version bump only, 2026-09-04. No content changed at the bump. The number was
+  raised because the file had already absorbed the cold-read corrections while
+  still reading v0.1.0, so the version no longer described the content.
+
+  Corrections applied 2026-09-02, recorded in
+  _FINDINGS_re-read-529.1-529.4-529.6_2026-09-02.md. Ten findings, nine applied;
+  both auditors and the extractor report clean. The heaviest items:
+  - ANSI/TIA-606-C claim corrected. It prescribes identifier formats and
+    required content by class; it leaves the values, not the structure.
+  - Permanent link and channel now explained, and horizontal cable with them -
+    a knowledge-check option turns on the distinction.
+  - a-full, a-1000 and 10/100/1000BaseTX glossed rather than printed unexplained.
+  - 529.6.3 feedback no longer explains two options that were never offered, and
+    529.6.6 feedback no longer overstates why a second table fails.
+  - The closing check no longer described as made once the walking is done, when
+    six of its seven bullets require being in the room.
+
+  Deliberately not applied, Eldad 2026-09-02: finding 10, the field-note dates.
+  The port map legitimately predates the notes.
+
+  STILL OPEN: Gi versus Fa. This topic and the overview say a port called
+  Gi1/0/12 "may be Fa1/0/12 on yours; the columns read the same." It is not a
+  spelling difference - FastEthernet cannot produce the a-1000 and
+  10/100/1000BaseTX the same page prints. Equipment finding 2 in
+  _PROJECT-STATUS.md, open since 2026-08-27, blocked on M07-22.
+
+  Also 2026-09-04: the WCAG conformance sentence removed from the overview.
+
+  Engine (CSS, JS, header, sidebar, navigation, lightbox) reused verbatim from
+  the Lesson 529.1 async reading page. Two component stylesheets are appended
+  after the engine stylesheet - the console transcript block from build_529_3.py
+  and the port map panel from build_529_2.py; the engine itself is untouched.
+
+  OBJECTIVES, one verb each, taken from the D08 7.6 subtask wording verbatim.
+  All six subtasks are single-verb as written, so nothing is split and nothing
+  is added beyond the subtask list.
+
+    Record      port-to-device assignments                       7.6 subtask 1
+    Map         device locations onto the as-built                7.6 subtask 2
+    Cross-check cable labels against port records                7.6 subtask 3
+    Record      verification and test results                    7.6 subtask 4
+    Generate    an AI-assisted port map and as-built             7.6 subtask 5
+    Verify      the documentation against the physical install    7.6 subtask 6
+
+  NO WORD CHANGED. All six read on the page as they read in the subtask list.
+  The only edit of any kind is the standing acronym rule applied to subtask 5:
+  on the page it reads "Generate an Artificial Intelligence (AI)-assisted port
+  map and as-built", because this is the first use of AI in the topic stream.
+  Confirmed with Eldad 2026-08-31. The same treatment was applied to the 7.4
+  objectives on the 529.4 page and to 7.5 subtask 2 on the 529.5 page.
+
+  Two subtasks share the verb Record, on different objects. That is the subtask
+  wording and it is left alone; splitting or renaming either would break the
+  crosswalk to gain nothing.
+
+  TOPIC OUTLINE, with the subtask each topic delivers.
+    Section 1  The Records You Leave Behind
+      529.6.1   What the next technician inherits                    entry point
+      529.6.2   A port map for a room, not for one drop             subtask 1
+      529.6.3   Writing a device location somebody can walk to      subtask 2
+      529.6.4   The test record, and what it is allowed to claim    subtask 4
+    Section 2  Proving the Records and Handing Them Over
+      529.6.5   Checking every label against every row                subtask 3
+      529.6.6   Building the records with an AI assistant           subtask 5
+      529.6.7   Reading the records back against the install        subtask 6
+      529.6.8   The hand-off                                       integrative
+    Section 3  Wrapping Up
+      529.6.9   What you covered                                    summary
+
+  THREE sections, not four. The section count is free; what is fixed is that the
+  summary sits alone in a final Wrapping Up section and that no content section
+  holds a single topic. Four topics each in the two content sections.
+
+  529.6.1 delivers no subtask of its own. It is the entry point: the three
+  records are named nowhere in the subtask list, and every subtask writes to one
+  of them. It carries no objective on the page.
+
+  529.6.8 delivers no subtask either. The hand-off is in the lesson title and in
+  the module's own assessment language, and none of the six subtasks says what
+  happens to the set once it is written. Marked here, not on the page.
+
+  ACTIVITY GATES: 12 - eight knowledge checks, TWO reveal-card sets, one matching,
+  one acknowledgement. Topics 529.6.1, 529.6.6 and 529.6.8 carry two each, because
+  a card set and a matching only require completion rather than a judgement. The
+  acknowledgement counts as an activity, as it does in the other readings.
+  Raised from 11 on 2026-09-01, when 529.6.6 gained the hallucination and
+  information-leak cards; the banner and the overview tile were moved with it.
+
+  NO ordering activity. Nothing in this lesson has an enforced order. The two
+  sweep directions can be run either way round - the page says to start from the
+  record because it is a finite list, which is a reason and not a rule - and the
+  six items of the closing check can be taken in any order. An ordering exercise
+  on either would have more than one correct answer.
+
+  ONE matching only, in 529.6.8: a question to the one part of the hand-off
+  package that answers it. Both left-hand and right-hand values are unique, and
+  all five are answerable from 529.6.1, 529.6.5 and 529.6.8.
+
+  DIAGRAMS: 2 original SVG, each with a full text description. No tspan.
+    529.6.3  one device, four parts to its location - a room plan beside the
+             four fields of the entry with their values
+    529.6.5  one port map row, the five places it can be checked, and the two
+             directions a sweep can run with the defects each one finds
+
+  ONE console transcript, in 529.6.7: show interfaces status read against the
+  rows for one panel, which is the closing check done from a chair. The .cli
+  component is also used once in 529.6.6 to hold a block of raw field notes;
+  that block is monospace input rather than device output, and its .cli-ttl
+  names the notes rather than a command. Deviation from the template's "titled
+  with the command itself", recorded here.
+
+  OVERLAP PROBE against 529.1 to 529.5, run before authoring on Eldad's
+  instruction 2026-08-31 and reported to him before any content was written.
+  This is the most pre-taught objective in the module, so what is NOT here
+  matters as much as what is.
+
+  NOT RE-TAUGHT. Referenced in a clause where needed and explained nowhere:
+  - The three identifiers of a drop and which two are fixed (529.2.4). This page
+    says "a row carries the identifiers for one position" and moves on.
+  - ANSI/TIA-606 identifier and labeling requirements (529.2.4). Cited here once,
+    from the different angle this objective needs: records, labels and drawings
+    as one administration set, and the scaling of it by site size.
+  - Where the port map lives, and read-versus-write authority (529.2.4 AND
+    529.4.8, which both teach it). This page says only "find out where all three
+    live and which you may change". It is not taught a third time.
+  - Design drawing versus as-built (529.2.7). One clause on a reveal card.
+  - The three kinds of discrepancy and what you do about each (529.2.7). This
+    page gives one two-sentence note - correct a label, stop short of a cord -
+    and points the rest back at a decision.
+  - The four verification readings for one powered drop (529.4.8). Listed once in
+    529.6.4 as a set of column names with the command that produces each, because
+    Eldad's instruction for this build is that every column and reading names its
+    command at first mention. The readings themselves are not re-explained.
+  - The five-field fault record (529.5.9). Absent. A fault record and a test
+    record are different documents and this page does not touch the first.
+  - The three or four parts of a usable hand-over (529.1.15, 529.5.8). Absent.
+    Those are fault hand-overs. This is an installation hand-off, and its five
+    items are a different list.
+  - What a cable tester answers (529.5.4). Referenced by name in 529.6.4 only to
+    say which readings a verifier's record may quote.
+
+  DOCUMENTATION OWNERSHIP, the forward collision flagged in the 529.5 build and
+  settled with Eldad before this build:
+    529.2.4  owns the port map row and the TIA-606 identifiers.
+    529.4.8  owns the four readings for one powered drop.
+    529.5.9  owns the five-field fault record.
+    529.6    owns the SET - many rows, the as-built, the label sweep, the closing
+             check and the hand-off package. Its unit of work is a completed
+             install; the earlier three each own a single drop.
+
+  WHAT IS NEW, by subtask, from the probe:
+    1  Room-level rules: a row for every position including spares, the status /
+       date-last-changed / test-reference columns, no two rows on one port, a
+       retired row is kept, an overwritten value is recorded first.
+    2  How a location is written so somebody can walk to it - space, position
+       within the space, mount, facing - and putting it on a dated revision of
+       the drawing with its identifier beside the symbol.
+    3  The sweep as a procedure: one row against four labels plus the switch, the
+       two directions and the different defects each finds, the four-part
+       exception line, and that a sweep compares two records rather than the
+       building.
+    4  The test record as a document: the six fields of a line, why the tool is
+       named, and VERIFIED IS NOT CERTIFIED.
+    5  All of it.
+    6  The direction of the check - record out to install, predict then look -
+       the six items it covers, honest sampling, and writing down a check that
+       found nothing.
+
+  DELIBERATELY SHORT. Eldad 2026-08-27: "it is ok if this (and any) lesson are
+  short. we will have plenty of hands-on to accompany these subtasks" - and that
+  reasoning is not on the page. Two content sections rather than three, and the
+  material that four earlier readings already carry is referenced rather than
+  restated.
+
+  AI-ASSISTED WORKFLOW. Eldad 2026-08-31: the workflow itself becomes a lab
+  later; the reading presents it so learners know what it means before they do
+  it, and asks them to practise with an AI chat tool they already have. So this
+  reading DOES carry AI content, unlike 529.5, where the 45 AI minutes were
+  in-class and the page said nothing about them.
+  - 529.6.6 is the topic. It names no product. It is written as a conversion
+    task - field notes into the site's columns - which is what the subtask asks
+    for and what the tool is good at.
+  - The four capabilities and four limits are stated as a pair, so the limits
+    are not a footnote. The governing rule is on the page as its own note:
+    every figure in the finished record traces back to a reading you took or a
+    label you read.
+  - The practice instruction gives six real column names and a six-line block of
+    deliberately incomplete field notes, and asks the learner to list what the
+    tool supplied that the notes do not contain. The notes have four answerable
+    gaps, named in the read-back strip: no length for B/27, no reading and no
+    outlet identifier for B/28, and two lines for B/14 that may be one row or
+    two. It is not a gate - a gate has to be answerable and markable on the
+    page, and this is work done off it.
+  - The data-handling warning is on the page: port maps, floor plans, device
+    identifiers and IP addressing are restricted on many sites, so ask the record
+    owner before pasting, and get the answer before the job.
+
+  BUILD NOTES - what is asserted, and what is not
+  - VERIFIER VERSUS CERTIFIER follows the equipment finding already recorded for
+    529.5: the tester on the resource register reports a wire map and a length
+    and does not measure insertion loss or crosstalk, so its record cannot claim
+    a performance category. This page teaches that as a rule about records rather
+    than as a fact about one model, and names no model.
+  - THE POWER COLUMN follows the corrected reading: what the port has SET ASIDE,
+    not a measurement of draw. Stated once, in 529.6.4.
+  - INTERFACE TYPE IS NOT HARD-CODED. The read-back strip under the transcript
+    says a switch naming its ports Fa1/0/12 reads the same columns, as it does on
+    the 529.4 and 529.5 pages.
+  - ANSI/TIA-606-C. Cited by number, as the module cites its other standards. The
+    page states three things about it: that it covers identifiers, labels, records
+    and drawings together; that it requires a site to have a written scheme rather
+    than dictating one; and that the amount of administration is scaled to the
+    size of the installation. The class boundaries are NOT enumerated, because
+    the standard is not to hand and getting a boundary wrong would be a citation
+    error of the kind this project has already had once.
+  - THE SAMPLE PORT MAP uses the same room, panel and outlet identifiers as the
+    529.2, 529.4 and 529.5 pages, so a learner reading across the module sees one
+    building rather than four.
+    FINDING RAISED BY THIS BUILD, AND SINCE FIXED. 529.2.4 used to disagree with
+    this building: it patched outlet 2A-14 to Gi1/0/14 and outlet 2B-03 to
+    Gi1/0/12, while 529.4.8 and 529.5 put 2A-14 on Gi1/0/12. Both pages had been
+    reviewed and closed with the conflict in them. Corrected 2026-09-01 in
+    529.2.2 and 529.2.4: outlet 2A-14 now reads Gi1/0/12 in the path diagram, the
+    single-row table and the room extract, and 2B-03 moved to Gi1/0/19. The
+    529.2.4 knowledge check still turns on the number collision - Gi1/0/12 against
+    outlet 2A-12 and panel port B/12 - and its answer moved from 2B-03 to 2A-14.
+    The Gi1/0/14 ports still in the 529.4 and 529.5 transcripts are unrelated
+    example ports demonstrating faults, not outlet 2A-14.
+    Row 2B-04 keeps the state 529.2.4 gives it, spare. The retired example is a
+    new position, 2B-05 on B/29, so no established row changes meaning.
+  - THE PORT MAP COLUMN IS "State", NOT "Status". Deliberate: the switch output
+    read in 529.6.7 has a Status column of its own, and two Status columns on one
+    page holding different things is a collision a learner cannot be expected to
+    hold apart.
+  - THE BLIND-CHECK CLAIM in 529.6.7 - read the record and predict, then look -
+    is hedged as a tendency, not asserted as a law.
+
+  OPEN, AND NOT RESOLVED HERE
+  - Which switch models the MIR holds is still unconfirmed, so whether sample
+    output should read Fa or Gi is still open. This page follows 529.3, 529.4 and
+    529.5 and shows Gi, with the interface-form note in the read-back strip.
+  - Which AI chat tool learners will have is not named and not assumed. The
+    practice instruction says "any AI chat tool you have", so the topic stands
+    whatever is or is not provisioned.
+  - Whether the site templates for the port map and the as-built exist as course
+    artifacts is not settled, and the page names none. It teaches the columns and
+    the fields, which is what survives a template being renumbered or cut.
+  - Async minute rebalance (D-005) still applies module-wide. This page carries
+    no minute figure, as the others do not.
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 529.6 &mdash; Port Map, As-Built, and Hand-Off &middot; Async Reading &middot; UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+<style>
+  /* Console transcript block. Light card, navy title bar, monospace body that
+     scrolls sideways on a narrow screen rather than wrapping a command line.
+     Appended after the engine stylesheet so the engine stays untouched. */
+  .cli{background:#fbfcfd;border:1.6px solid #c8d4de;border-radius:8px;
+    margin:18px 0;box-shadow:var(--shadow);overflow:hidden}
+  .cli .cli-ttl{background:#09507C;color:#fff;font-weight:700;font-size:.95rem;
+    padding:9px 14px;letter-spacing:.01em}
+  .cli .cli-body{overflow-x:auto;padding:12px 14px}
+  .cli pre{margin:0;min-width:520px;color:#1b2a3a;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.94rem;line-height:1.8}
+  .cli .pr{color:#5a6772}
+  .cli .cmd{color:#09507C;font-weight:700}
+  .cli .cmt{color:#5a6772;font-style:italic}
+  .cli .out{color:#3c4956}
+  .cli .cli-foot{border-top:1px solid #dbe4ec;padding:10px 14px;
+    color:#3c4956;font-size:.95rem;background:#f4f7fa}
+  .cli .cli-foot p{margin:0}
+  /* Read-back strips that list one line per port rather than running as prose. */
+  .cli .cli-foot ul{margin:0 0 9px;padding-left:20px}
+  .cli .cli-foot li{margin:4px 0}
+  /* Inline command names in running prose and in table cells. */
+  .topic code, .overview code, .longdesc code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.92em;color:#09507C;background:#eef4f9;border:1px solid #dbe4ec;
+    border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .tbl th code, .tbl td code{background:#f4f7fa}
+  kbd{font-family:inherit;font-size:.9em;color:#1b2a3a;background:#f4f7fa;
+    border:1px solid #c8d4de;border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+  /* A .cli sitting inside a note keeps the note's margins from doubling. */
+  .note .cli{margin:14px 0 4px}
+</style>
+<style>
+  /* Port map panel - white card, blue rule, navy title, plain gray column labels. */
+  .portmap-panel{background:#fff;border:1.6px solid var(--green);border-radius:8px;
+    padding:14px 16px 6px;margin:18px 0;box-shadow:var(--shadow)}
+  .portmap-panel .tbl-scroll{overflow-x:auto}
+  .portmap-panel table.tbl{border:none;border-radius:0;margin:0;background:transparent}
+  .portmap-panel table.tbl caption{color:var(--green-d);font-weight:700;font-size:1.05rem;
+    text-align:left;padding:0 0 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="col"]{background:transparent;color:var(--muted);font-weight:400;
+    padding:10px 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="row"]{background:transparent;color:var(--ink);font-weight:400;
+    padding:10px 10px;border-top:none}
+  .portmap-panel .tbl td{padding:10px 10px;border-top:none;color:var(--ink)}
+  .portmap-panel .tbl tr:nth-child(even) td{background:transparent}
+  .portmap-panel .tbl tbody tr + tr th,
+  .portmap-panel .tbl tbody tr + tr td{border-top:1px solid var(--line)}
+</style>
+
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false"
+          aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div class="head-title"><b>Module 529</b> &middot; Lesson 529.6 &mdash; Port Map, As-Built, and Hand-Off</div>
+  </div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.2.0</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel"
+              aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList"
+              aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel"
+             aria-labelledby="tab-overview" hidden>
+      <p class="crumb"><b>UCI 2107.1 &middot; Low Voltage Fiber Technician</b>
+         &middot; Module 529 &mdash; Network Fundamentals</p>
+      <h2 id="ovh" tabindex="-1">Lesson 529.6 &mdash; Port Map, As-Built, and Hand-Off</h2>
+      <p class="lead-in">What a finished job leaves behind, and how you check it before you leave.</p>
+
+      <p>Six months from now, another technician walks into room 2A with a work order that names
+         the desk in the corner and the access point in the ceiling above it. They have never been
+         in this building. Which switch port serves that desk? Which ceiling tile is the access
+         point fixed to? Was the cable to either one ever tested, and by whom? What they can answer in the
+         next five minutes is whatever the paperwork says.</p>
+
+      <p>Three questions, three documents. The <strong>port map</strong> says which switch
+         port serves each position. The <strong>as-built</strong> says which room each device is
+         in, where in that room, and how it is fixed in place. The <strong>test record</strong>
+         says what each drop measured, on what day, with which tool, and who was holding the
+         tester.</p>
+
+      <p>A record can be right on paper and wrong about the room. So all three get checked
+         against the room before they leave your hands, and then go to a named person on a named
+         day rather than into a folder somewhere.</p>
+
+      <p>One topic covers doing the writing with an Artificial Intelligence (AI) chat tool: what
+         it does well, what it invents, and what a site will and will not let you paste into
+         it.</p>
+
+      <h3>How the lesson is organized</h3>
+      <ul>
+        <li><b>The Records You Leave Behind.</b> The three documents, one at a time &mdash; what
+            goes in each, and what a test record is not allowed to claim.</li>
+        <li><b>Proving the Records and Handing Them Over.</b> Checking the labels in both
+            directions, the AI chat tool, reading the switch, and what goes in the set you hand
+            over.</li>
+        <li><b>Wrapping Up.</b> The whole lesson in one place.</li>
+      </ul>
+
+      <div class="ov-grid">
+        <div class="ov-stat"><b>3</b><span>Sections</span></div>
+        <div class="ov-stat"><b>9</b><span>Topics</span></div>
+        <div class="ov-stat"><b>12</b><span>Activities</span></div>
+        <div class="ov-stat"><b>2</b><span>Diagrams</span></div>
+      </div>
+
+      <h3>A note on the standards and the equipment</h3>
+      <p><strong>ANSI/TIA-606-C</strong> is the standard behind this, from the American National
+         Standards Institute (ANSI) and the Telecommunications Industry Association (TIA). It
+         sets out how an identifier is built and what a record has to carry, and leaves the site
+         to choose the values. It requires the site to have a written scheme and to keep the
+         labels and the records in step. Find that scheme before you read
+         any of its labels.</p>
+      <p>Equipment differs. Port names vary between switches, so a port called Gi1/0/12 here may
+         be Fa1/0/12 on yours; the columns the switch prints are the same. And a cable tester
+         that reports a wire map and a length is not measuring performance &mdash; the Power over
+         Ethernet (PoE) class, with the watts a port has set aside, comes from the switch.</p>
+
+      <h3>How this page works</h3>
+      <p>Work through the topics in order using the <strong>Next</strong> button, or jump
+         about using the <strong>Curriculum</strong> tab in the sidebar. Some topics contain
+         an activity you need to complete before <strong>Next</strong> unlocks &mdash; a
+         knowledge check, a set of cards to open, or a matching exercise. Getting a knowledge
+         check wrong never blocks you: the answer is shown
+         and you can try again. Your progress through the lesson is shown in the header and
+         in the contents list.</p>
+
+      <h3>Working without a mouse, or with a screen reader</h3>
+      <p>Everything here is operable from the keyboard. <kbd>Tab</kbd> moves between
+         controls and <kbd>Enter</kbd> or <kbd>Space</kbd> activates them; the arrow keys
+         move between the sidebar tabs. In the matching activity every item is
+         a button, and your selections are announced as you make them. Right and wrong answers
+         are always labeled in words as well as by color. Each diagram carries a full text
+         description, console output is plain text rather than an image, and tables have
+         headings and captions that read correctly aloud.</p>
+
+      <button class="btn" id="ovBegin" type="button">Begin Lesson 529.6</button>
+    </section>
+
+    <div id="topicWrap">
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="1" data-group-title="The Records You Leave Behind" data-num="529.6.1" data-title="What the next technician inherits">
+  <p class="crumb">Lesson 529.6 &middot; Section 1 The Records You Leave Behind</p>
+  <h2><span class="tnum">529.6.1</span> What the next technician inherits</h2>
+  <div class="les-banner">
+    <span class="lb-k">Lesson 529.6</span>
+    <h3>Port Map, As-Built, and Hand-Off</h3>
+    <p>The cabling and the ports stay in the building. So does the paperwork, and it is what somebody reads first on the next visit. This lesson covers the three records you write at the end of a job. It then takes you through checking the labels on the hardware against what you wrote, checking what you wrote against what is in the room, and handing it all to a named person.</p>
+    <p class="lb-meta"><b>3</b> sections &nbsp;&middot;&nbsp;
+       <b>9</b> topics &nbsp;&middot;&nbsp;
+       <b>12</b> activities</p>
+  </div>
+  <div class="note note"><div class="nt">By the end of Lesson 529.6 you will be able to</div>
+    <ul>
+      <li><b>Record</b> port-to-device assignments.</li>
+      <li><b>Map</b> device locations onto the as-built.</li>
+      <li><b>Cross-check</b> cable labels against port records.</li>
+      <li><b>Record</b> verification and test results.</li>
+      <li><b>Generate</b> an Artificial Intelligence (AI)-assisted port map and as-built.</li>
+      <li><b>Verify</b> the documentation against the physical install.</li>
+    </ul></div>
+  <p class="lead-in">Three records answer three different questions. Hand over two of them and you have left a question nobody can answer.</p>
+  <p>An install is finished when somebody else can work on it without telephoning you. Three records answer what they would otherwise have to ask.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The three records, and the question each one answers.</caption>
+      <thead><tr>
+        <th scope="col">Record</th><th scope="col">The question it answers</th><th scope="col">Who reads it</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Port map</th><td>Which switch port serves this outlet, and what is on the end of it</td><td>Whoever takes the next fault on the drop, or moves a device to a different port</td></tr>
+        <tr><th scope="row">As-built</th><td>Where the outlets and the devices are in the building</td><td>Whoever has to find an outlet or a device, and whoever plans work in the same space</td></tr>
+        <tr><th scope="row">Test record</th><td>What each drop measured, when, with which tool, and who took the reading</td><td>Whoever is asked whether the work was done, and to what standard</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Open each card.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Port map</span><span class="rcard-sub">the current state of every position</span><span class="rcard-detail" hidden><p>One port map row for each termination position in the room, holding the identifiers for that position and what it currently serves.</p><p><b>A row says where a cord goes now, not where it went last month.</b> Where a site wants that history, it keeps a change log beside the map.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">As-built</span><span class="rcard-sub">the drawing of what went in</span><span class="rcard-detail" hidden><p>The as-built is the drawing of the finished install. It shows where the outlets, the devices, the rooms and the pathways &mdash; the routes the cables run through &mdash; sit in the building.</p><p><b>It is not the design drawing.</b> A design drawing records what was intended before anybody pulled a cable. The as-built records what went in.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Test record</span><span class="rcard-sub">a result with a date on it</span><span class="rcard-detail" hidden><p>What was measured on a drop, the value, the tool, the date and the name of whoever took the reading.</p><p><b>It is a statement about one day.</b> A drop that read good in March can fail in April, and the record does not update itself.</p></span></button>
+  </div></div>
+
+  <p>The three are joined by the identifier. One drop carries the same identifier on its faceplate, in its port map row, beside its symbol on the as-built, and on its line in the test record. Where that identifier differs between two of them, a reader cannot move from one record to the other.</p>
+
+  <p><strong>ANSI/TIA-606-C</strong>, published by the American National Standards Institute (ANSI) and the Telecommunications Industry Association (TIA), covers identifiers, labels, records and drawings as one subject rather than as separate jobs. It sets out how an identifier is built and leaves the values to the site. It requires the site to have a scheme, to write it down, and to keep the labels and the records in step with each other. How much administration a site needs is scaled to its size, from a single telecommunications room up to several buildings. What that means on the day: before you read a label or write one, find the scheme it was written to.</p>
+
+  <div class="warn note"><div class="nt">A record nobody can find is not a record</div>
+    <p>Each of the three sits somewhere: a spreadsheet on a shared drive, a drawing in a document system, a printed sheet in a sleeve inside the telecommunications room door, or a record in a cable management system.</p>
+    <p>Find out where all three live before you start writing to any of them, and find out which of them you are allowed to change. A good record written into the wrong file leaves the site with two records that disagree.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="The as-built is the drawing of the building, so it is what puts you under the right ceiling tile. The port map tells you which switch port serves that outlet, which is a different question and the one you would ask next. The test record says what the drop measured and when, and the label on the faceplate names the position once you are already standing at it.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">You are sent to replace the access point served by outlet 2A-14 and you have never been in the building. Which record tells you where in the room to put the ladder?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The port map</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The as-built</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The test record</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The label on the faceplate</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="1" data-group-title="The Records You Leave Behind" data-num="529.6.2" data-title="A port map for a room, not for one drop">
+  <p class="crumb">Lesson 529.6 &middot; Section 1 The Records You Leave Behind</p>
+  <h2><span class="tnum">529.6.2</span> A port map for a room, not for one drop</h2>
+  <p class="lead-in">A port map for a whole room can be wrong in ways one row cannot &mdash; two rows claiming the same switch port, or a position with no row at all.</p>
+  <p>You worked on four positions this week. The port map you hand over covers every position the panel terminates, because it belongs to the telecommunications room and not to your job. That includes the positions with nothing patched to them.</p>
+
+  <div class="note note"><div class="nt">A position with no row looks like a position that does not exist</div>
+    <p>A spare panel port left out of the port map is invisible to whoever is asked next week to bring up a new desk. They will order a new run rather than patch the one already terminated three feet away.</p>
+    <p>Write the spares in, marked as spare. A port map row that says <em>terminated, not patched</em> is a usable answer.</p></div>
+
+  <h3>What a room-level map needs that one row does not</h3>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Three columns that only make sense across a whole room.</caption>
+      <thead><tr>
+        <th scope="col">Column</th><th scope="col">What it holds</th><th scope="col">What it prevents</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">State</th><td>In service; spare; reserved, meaning held for work already planned; or retired</td><td>A blank cell being read as either a spare or an omission, with no way to tell which</td></tr>
+        <tr><th scope="row">Last changed</th><td>The day the row was last written to</td><td>Two people disagreeing about which of two arrangements is the current one</td></tr>
+        <tr><th scope="row">Test reference</th><td>The line or file that holds the readings for that drop</td><td>A reader who can see the drop exists and cannot find out whether it was ever tested</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Three rules for the set</h3>
+  <ul>
+    <li><strong>No two rows may name the same switch port.</strong> A port serves one position at a time. Two rows naming <code>Gi1/0/12</code> means one of them is out of date, and the map cannot say which.</li>
+    <li><strong>A position taken out of service keeps its row.</strong> Change the state to retired and date it. Deleting the row hides a terminated cable sitting behind that panel position.</li>
+    <li><strong>Write down the old value before you type the new one.</strong> A drop repatched from <code>Gi1/0/18</code> to <code>Gi1/0/31</code> leaves no trace of where it was if the cell is retyped and nothing more is written. Where the site keeps a change log, the old value goes there; where it does not, it goes in writing with the job paperwork.</li>
+  </ul>
+
+  <p>Below is part of the port map for one room, written to those rules. Its Virtual Local Area Network (VLAN) column carries the group the switch port sits in.</p>
+
+  <div class="portmap-panel">
+    <div class="tbl-scroll">
+      <table class="tbl">
+        <caption>Port map extract, telecommunications room TR-2, panel B.</caption>
+        <thead><tr>
+          <th scope="col">Outlet</th><th scope="col">Panel / port</th><th scope="col">Switch port</th>
+          <th scope="col">VLAN</th><th scope="col">Serves</th><th scope="col">State</th>
+          <th scope="col">Last changed</th><th scope="col">Test ref</th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row">2A-11</th><td>B / 11</td><td>Gi1/0/11</td><td>20</td><td>Desk, room 2A</td><td>In service</td><td>2026-03-04</td><td>TR2-011</td></tr>
+          <tr><th scope="row">2A-12</th><td>B / 12</td><td>Gi1/0/24</td><td>20</td><td>Ceiling access point, corridor 2</td><td>In service</td><td>2026-06-18</td><td>TR2-012</td></tr>
+          <tr><th scope="row">2A-14</th><td>B / 14</td><td>Gi1/0/12</td><td>20</td><td>Ceiling access point, room 2A</td><td>In service</td><td>2026-06-18</td><td>TR2-014</td></tr>
+          <tr><th scope="row">2B-04</th><td>B / 28</td><td>Not patched</td><td>&mdash;</td><td>&mdash;</td><td>Spare</td><td>2026-03-04</td><td>TR2-028</td></tr>
+          <tr><th scope="row">2B-05</th><td>B / 29</td><td>Not patched</td><td>&mdash;</td><td>&mdash;</td><td>Retired</td><td>2026-05-02</td><td>TR2-029</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p>In that port map extract, row 2B-04 is terminated and tested and waiting for a device, so it serves nothing yet, and both the Serves and State columns say so. Row 2B-05 is terminated and no longer to be used &mdash; its outlet went when a partition wall came out, and the run now dead-ends above the ceiling. The row stays so that nobody patches it expecting a working drop.</p>
+
+  <div class="note tip"><div class="nt">Write it down at the drop, not at the end of the day</div>
+    <p>Change the cord, then write the change down before you move on &mdash; into the port map if you can reach it, into your notes if you cannot. Either is a record made while you are standing there.</p>
+    <p>What does not work is reconstructing the port map row afterwards from memory. Port numbers are the first thing memory blurs.</p></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="A port serves one position at a time, so two rows naming Gi1/0/12 cannot both be true and the map gives no way to tell which one is current. Somebody repatched a drop and wrote a new row without retiring the old one. A retired row with no switch port is correct and deliberate, so is a spare with nothing patched, and two rows sharing a date in the last changed column only means two drops were worked on the same day.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Which of these findings in a port map tells you the map contradicts itself?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>A row in the retired state reading <code>Not patched</code> in the switch port column</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>A row in the spare state reading <code>Not patched</code> in the switch port column</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Two rows naming <code>Gi1/0/12</code> in the switch port column</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Two rows with the same date in the last changed column</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="1" data-group-title="The Records You Leave Behind" data-num="529.6.3" data-title="Writing a device location somebody can walk to">
+  <p class="crumb">Lesson 529.6 &middot; Section 1 The Records You Leave Behind</p>
+  <h2><span class="tnum">529.6.3</span> Writing a device location somebody can walk to</h2>
+  <p class="lead-in">A room number gets somebody into the room. A device on a suspended ceiling can be at any one of dozens of tiles.</p>
+  <p>The port map tells you which port. It does not tell you where to stand. The location goes on the as-built, and it goes there in four parts.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:940px" viewBox="0 0 940 316" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="A plan view of one room showing a suspended ceiling grid, a wall outlet and a ceiling-mounted access point, beside the four parts of the location entry written out with their values. A full text description follows.">
+    <text x="24" y="26" font-size="16" font-weight="700" fill="#09507C">ONE DEVICE, FOUR PARTS TO ITS LOCATION</text>
+
+    <text x="30" y="50" font-size="13" fill="#5a6772">Room 2A &mdash; plan view, ceiling grid shown</text>
+    <rect x="30" y="58" width="380" height="240" rx="4" fill="#ffffff" stroke="#7f8b95" stroke-width="1.6"/>
+    <line x1="125" y1="58" x2="125" y2="298" stroke="#e3e9ee" stroke-width="1"/>
+    <line x1="220" y1="58" x2="220" y2="298" stroke="#e3e9ee" stroke-width="1"/>
+    <line x1="315" y1="58" x2="315" y2="298" stroke="#e3e9ee" stroke-width="1"/>
+    <line x1="30" y1="138" x2="410" y2="138" stroke="#e3e9ee" stroke-width="1"/>
+    <line x1="30" y1="218" x2="410" y2="218" stroke="#e3e9ee" stroke-width="1"/>
+    <text x="40" y="78" font-size="13" fill="#7f8b95">north wall</text>
+    <circle cx="267" cy="178" r="15" fill="#0079C0"/>
+    <text x="267" y="183" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">AP</text>
+    <text x="290" y="183" font-size="13" fill="#09507C">tile C-2</text>
+    <rect x="150" y="286" width="46" height="12" fill="#FF8000"/>
+    <text x="173" y="280" font-size="13" fill="#09507C" text-anchor="middle">2A-14</text>
+    <text x="40" y="290" font-size="13" fill="#7f8b95">outlet</text>
+
+    <text x="440" y="50" font-size="14" font-weight="700" fill="#09507C">THE LOCATION ENTRY</text>
+    <rect x="440" y="58" width="476" height="54" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="454" y="80" font-size="13" fill="#5a6772">Space</text>
+    <text x="454" y="100" font-size="14" font-weight="700" fill="#1b2a3a">Room 2A, second floor</text>
+    <rect x="440" y="120" width="476" height="54" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="454" y="142" font-size="13" fill="#5a6772">Position in the space</text>
+    <text x="454" y="162" font-size="14" font-weight="700" fill="#1b2a3a">Ceiling tile C-2, 3.2 m from the north wall</text>
+    <rect x="440" y="182" width="476" height="54" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="454" y="204" font-size="13" fill="#5a6772">Mount</text>
+    <text x="454" y="224" font-size="14" font-weight="700" fill="#1b2a3a">Clipped to the ceiling grid, reached from below</text>
+    <rect x="440" y="244" width="476" height="54" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="454" y="266" font-size="13" fill="#5a6772">Facing</text>
+    <text x="454" y="286" font-size="14" font-weight="700" fill="#1b2a3a">Not directional &mdash; recorded as not applicable</text>
+  </svg>
+  </div>
+  <details class="longdesc"><summary>Text description of this diagram</summary>
+    <p>The diagram is in two halves.</p>
+    <p>On the left is a plan view of Room 2A, drawn as a rectangle with faint lines across it showing a suspended ceiling grid. The top edge is labeled north wall. A blue circle marked AP sits in a grid square in the middle right of the room, with the label tile C-2 beside it. On the lower wall, an orange rectangle marks an outlet, labeled 2A-14, with the word outlet beside it.</p>
+    <p>On the right, under the heading The Location Entry, four boxes give the four parts of the entry and the value each one holds for this device.</p>
+    <p>Space: Room 2A, second floor.</p>
+    <p>Position in the space: Ceiling tile C-2, 3.2 meters from the north wall.</p>
+    <p>Mount: Clipped to the ceiling grid, reached from below.</p>
+    <p>Facing: Not directional, recorded as not applicable.</p>
+  </details>
+
+  <h3>The four parts</h3>
+  <ul>
+    <li><strong>The space.</strong> The room number or the name on the door, and the floor. Where the building numbers its rooms differently from the way its occupants name them, write the number and put the name beside it.</li>
+    <li><strong>The position within the space.</strong> Measured from something that will still be there next year. A tile reference where the ceiling has a grid, otherwise a distance from a named wall or a corner. <em>Above the third desk</em> is wrong the week the desks move.</li>
+    <li><strong>The mount.</strong> Ceiling tile, wall bracket, pole, fixed to the structural slab above the suspended ceiling, or inside a cabinet. This decides what the next visit has to bring and whether it needs a second person.</li>
+    <li><strong>Which way it faces</strong>, for anything directional. A camera and a directional antenna both point somewhere, and a replacement fitted the other way round is a fault report. Where the device is not directional, write that rather than leaving the field empty.</li>
+  </ul>
+
+  <div class="note note"><div class="nt">Putting it on the drawing</div>
+    <p>A device gets a symbol at its position, with the identifier from its port map row printed beside it. A symbol drawn with no identifier shows that something is there and cannot be tied to any other record.</p>
+    <p>The as-built itself carries a date and a revision mark. A drawing with no date and no revision mark cannot be told apart from the one it replaced, and both will be in the folder.</p></div>
+
+  <div class="warn note"><div class="nt">Two locations, and they are not the same location</div>
+    <p>A device and the outlet it is patched to are at two different places, and on a ceiling device they can be several meters apart.</p>
+    <p>Record both. Somebody sent to move the device needs the first; somebody sent to test the run needs the second.</p></div>
+
+  <div class="cyu gate" data-answer="3" data-fb="Naming the nearest desk ties the record to something that moves: the desk goes, and the entry stops pointing at anything. A ceiling grid reference or a distance from a named wall would survive that, because neither moves with the furniture. The other three entries are all sound as written: the room and floor are the space, the mount tells the next visit what to bring, and recording a device as not directional answers the question rather than leaving it open.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Four lines were written into the location entries for four ceiling devices. Which one will stop being true without anybody touching the cabling?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Room 2A, second floor</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Clipped to the ceiling grid, reached from below</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Not directional &mdash; recorded as not applicable</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>In the ceiling above the third desk from the door</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="1" data-group-title="The Records You Leave Behind" data-num="529.6.4" data-title="The test record, and what it is allowed to claim">
+  <p class="crumb">Lesson 529.6 &middot; Section 1 The Records You Leave Behind</p>
+  <h2><span class="tnum">529.6.4</span> The test record, and what it is allowed to claim</h2>
+  <p class="lead-in">A test record is a reading with a date, a tool and a name attached. Leave out any of the three and the reading can be argued with.</p>
+  <p>Two years from now somebody asks whether the drops in room 2A were ever tested. The answer is a line in a file, with a date on it, or the answer is a shrug. A port map row says a drop exists and where it goes. The test record says what happened when somebody put a tester on it.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What one line of a test record carries.</caption>
+      <thead><tr>
+        <th scope="col">Field</th><th scope="col">What goes in it</th><th scope="col">Why a reader needs it</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Drop</th><td>The outlet identifier, and the panel position it lands on</td><td>Ties the reading to a position rather than to a room</td></tr>
+        <tr><th scope="row">What was measured</th><td>Wire map, length, port speed advertised at the far end, power present &mdash; each named rather than lumped together as a test</td><td>Different tools answer different questions, and the word test alone does not say which was asked</td></tr>
+        <tr><th scope="row">Result</th><td>The value where there is one, and pass or fail where the tool gives a verdict</td><td>A length of 74 m can be compared with a limit. The word good cannot</td></tr>
+        <tr><th scope="row">Tool</th><td>The make and model, and the serial number where the site asks for it</td><td>It decides what the result covers, and it is among the first things questioned if a reading is later disputed</td></tr>
+        <tr><th scope="row">Date and time</th><td>When the reading was taken</td><td>The reading describes the drop on that day and no other</td></tr>
+        <tr><th scope="row">Taken by</th><td>The name or initials of whoever held the tool</td><td>A record nobody signed cannot be asked about</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Verified is not certified</h3>
+  <p>These two words describe different jobs, and using the second where you did the first is a common way a technician overstates a record.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What each kind of tool measures, and what its record may say.</caption>
+      <thead><tr>
+        <th scope="col"></th><th scope="col">A verifier</th><th scope="col">A certifier</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">What it reads</th><td>How the cabling is wired and how long it is: the wire map and the length. It also reports whether power is present and the speed advertised at the far end</td><td>How the cabling performs: insertion loss, crosstalk and the other measurements that define a performance category</td></tr>
+        <tr><th scope="row">What its record may say</th><td>The run is wired correctly, is within length, and its far end advertised 1000 Mbps on the day of the test</td><td>The run meets a named performance category, measured either as the fixed cabling on its own or as the whole path including the cords at each end</td></tr>
+        <tr><th scope="row">What its record may not say</th><td>That the run meets a performance category. The tool never measured one</td><td>&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Where a job requires certification, it is a separate task with a different tool and a report of its own. A wire map fault found by a verifier is a fault. A clean wire map is not proof that the run performs.</p>
+
+  <div class="warn note"><div class="nt">Do not write a verdict the tool did not give</div>
+    <p>Writing <em>Certified to Category 6A</em> from a wire map reading claims performance the tool never measured. Lines like that get quoted back years later.</p>
+    <p>Write what the tool reported, and name it. Where somebody wants a category on the record, that is a request for a certification test.</p></div>
+
+  <h3>The readings that go with a powered drop</h3>
+  <p>Cabling readings come from the cable tester. The four readings below describe the port and the device: three of them you read off the switch, and the fourth is a ping you run from a machine. Each bullet names the command that produced it.</p>
+  <ul>
+    <li><strong>Link.</strong> The Status, Duplex and Speed columns of <code>show interfaces status</code>, and the Vlan column from the same output.</li>
+    <li><strong>Power.</strong> The Admin, Oper, Class and Power columns of <code>show power inline</code> &mdash; where Power is what the port has set aside for the device rather than a measurement of what the device is drawing.</li>
+    <li><strong>Presence on the port.</strong> Whether <code>show mac address-table interface</code> lists a Media Access Control (MAC) address for that port.</li>
+    <li><strong>Reachability.</strong> A <code>ping</code> to the device from a machine in the same VLAN, recorded as sent and received counts.</li>
+  </ul>
+  <p>The tester overlaps with some of this &mdash; it also reports whether power is present and what speed the far end advertised. Where you can reach the switch, the switch answer is the fuller one, because it gives the class and the watts as well.</p>
+
+  <p>Record the column name and the value, rather than a summary. <code>Oper on, class 3, 15.4 W set aside</code> can be compared with a later reading. <em>Power fine</em> cannot.</p>
+
+  <div class="cyu gate" data-answer="0" data-fb="A wire map and a length reading describe how the run is built and how long it is. Neither is a performance measurement, so no reading in that record supports a category. The other three lines all report what the two readings actually said: the length with its value, the wire map with the tool that took it, and the result with its date.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A test record for one drop holds a wire map result and a length reading, both taken with a cable tester that is a verifier. Which line in that record is a claim the readings do not support?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Certified to Category 6A as a permanent link</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Length 74 m on the run from the outlet to the panel</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Wire map clean, taken with the tester named on this record</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>No fault found on either reading, recorded 2026-06-18</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="2" data-group-title="Proving the Records and Handing Them Over" data-num="529.6.5" data-title="Checking every label against every row">
+  <p class="crumb">Lesson 529.6 &middot; Section 2 Proving the Records and Handing Them Over</p>
+  <h2><span class="tnum">529.6.5</span> Checking every label against every row</h2>
+  <p class="lead-in">Checking one port map row means finding four labels in two places, which is why this is a scheduled task rather than a glance at the rack.</p>
+  <p>An identifier appears on the hardware in more than one place: the faceplate at the work area, both ends of the horizontal cable &mdash; the fixed run between the outlet and the panel &mdash; and the panel position. Two of those are behind something &mdash; the cable label at the outlet end sits inside the box behind the faceplate, and the label at the panel end sits in the bundle behind the panel. The switch port carries no label at all and is read from the switch.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:960px" viewBox="0 0 960 366" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram of one port map row above the five places its identifiers can be checked, four of them physical labels and one read from the switch, with the two directions a sweep can run and the defects each direction finds. A full text description follows.">
+    <text x="24" y="26" font-size="16" font-weight="700" fill="#09507C">ONE ROW, FOUR LABELS, AND TWO WAYS TO CHECK</text>
+
+    <rect x="250" y="44" width="460" height="52" rx="6" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="264" y="66" font-size="13" fill="#5a6772">PORT MAP ROW</text>
+    <text x="264" y="88" font-size="14" font-weight="700" fill="#09507C">2A-14 &middot; B / 14 &middot; Gi1/0/12 &middot; Access point, room 2A</text>
+
+    <line x1="480" y1="96" x2="109" y2="180" stroke="#7f8b95" stroke-width="1.2"/>
+    <line x1="480" y1="96" x2="299" y2="180" stroke="#7f8b95" stroke-width="1.2"/>
+    <line x1="480" y1="96" x2="489" y2="180" stroke="#7f8b95" stroke-width="1.2"/>
+    <line x1="480" y1="96" x2="679" y2="180" stroke="#7f8b95" stroke-width="1.2"/>
+    <line x1="480" y1="96" x2="860" y2="180" stroke="#7f8b95" stroke-width="1.2" stroke-dasharray="5 4"/>
+
+    <rect x="24" y="180" width="170" height="70" rx="6" fill="#ffffff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="38" y="200" font-size="13" fill="#5a6772">Faceplate at</text>
+    <text x="38" y="217" font-size="13" fill="#5a6772">the outlet</text>
+    <text x="38" y="238" font-size="14" font-weight="700" fill="#1b2a3a">2A-14</text>
+
+    <rect x="214" y="180" width="170" height="70" rx="6" fill="#ffffff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="228" y="200" font-size="13" fill="#5a6772">Cable label,</text>
+    <text x="228" y="217" font-size="13" fill="#5a6772">outlet end</text>
+    <text x="228" y="238" font-size="14" font-weight="700" fill="#1b2a3a">2A-14</text>
+
+    <rect x="404" y="180" width="170" height="70" rx="6" fill="#ffffff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="418" y="200" font-size="13" fill="#5a6772">Panel position</text>
+    <text x="418" y="217" font-size="13" fill="#5a6772">label</text>
+    <text x="418" y="238" font-size="14" font-weight="700" fill="#1b2a3a">B / 14</text>
+
+    <rect x="594" y="180" width="170" height="70" rx="6" fill="#ffffff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="608" y="200" font-size="13" fill="#5a6772">Cable label,</text>
+    <text x="608" y="217" font-size="13" fill="#5a6772">panel end</text>
+    <text x="608" y="238" font-size="14" font-weight="700" fill="#1b2a3a">2A-14</text>
+
+    <rect x="784" y="180" width="152" height="70" rx="6" fill="#f4f7fa" stroke="#7f8b95" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="798" y="200" font-size="13" fill="#5a6772">Switch port</text>
+    <text x="798" y="217" font-size="13" fill="#5a6772">no label</text>
+    <text x="798" y="238" font-size="13" font-weight="700" fill="#1b2a3a">read at the switch</text>
+
+    <rect x="24" y="274" width="440" height="76" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="38" y="298" font-size="13" font-weight="700" fill="#09507C">RECORD TO HARDWARE</text>
+    <text x="38" y="320" font-size="13" fill="#3c4956">Take each row and find its labels.</text>
+    <text x="38" y="340" font-size="13" fill="#3c4956">Finds hardware missing, unlabeled or wrong.</text>
+
+    <rect x="496" y="274" width="440" height="76" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="510" y="298" font-size="13" font-weight="700" fill="#09507C">HARDWARE TO RECORD</text>
+    <text x="510" y="320" font-size="13" fill="#3c4956">Read every label and find the row it belongs to.</text>
+    <text x="510" y="340" font-size="13" fill="#3c4956">Finds a label with no row.</text>
+  </svg>
+  </div>
+  <details class="longdesc"><summary>Text description of this diagram</summary>
+    <p>At the top of the diagram sits one port map row, holding the outlet identifier 2A-14, the panel position B slash 14, the switch port Gi1/0/12, and the description Access point, room 2A.</p>
+    <p>Five lines fan down from that row to five boxes, each box being a place the row can be checked.</p>
+    <p>Faceplate at the outlet: 2A-14. Cable label, outlet end: 2A-14. Panel position label: B slash 14. Cable label, panel end: 2A-14. The fifth box, drawn with a dashed border and reached by a dashed line, reads: Switch port, no label, read at the switch.</p>
+    <p>Below sit two boxes giving the two directions a sweep can run.</p>
+    <p>Record to hardware: take each row and find its labels. Finds hardware missing, unlabeled or wrong.</p>
+    <p>Hardware to record: read every label and find the row it belongs to. Finds a label with no row.</p>
+  </details>
+
+  <h3>Run it in both directions</h3>
+  <p>The two directions find different defects, and a sweep run one way leaves the other kind of defect standing.</p>
+  <ul>
+    <li><strong>Record to hardware.</strong> Take each row in turn and find the labels it names. This finds a row whose faceplate is blank, whose cable label has fallen off, or whose panel position is labeled as something else.</li>
+    <li><strong>Hardware to record.</strong> Go back through both places, reading every label you can see at the outlets and at the panel, and find the row each one belongs to. This finds hardware nobody wrote into the port map: an outlet installed during a later fit-out, a panel position labeled and never written down, a device somebody added on a Friday.</li>
+  </ul>
+  <p>Start from the port map, because it is a finite list and it tells you where to walk. Then take the second direction on the way back through the room.</p>
+
+  <h3>What you write as you go</h3>
+  <p>All of this goes on one sheet, the <strong>check list</strong>, headed by the check itself: its date, what it covered, and who made it. A row that agrees is ticked off there, and not dated in the port map &mdash; the port map&rsquo;s Last changed column records changes, and a check is not a change. A row that does not agree gets an exception line on the same sheet, and an exception line has four parts.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The four parts of an exception line.</caption>
+      <thead><tr>
+        <th scope="col">Part</th><th scope="col">Example</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">The position</th><td>Outlet 2A-12, panel position B / 12</td></tr>
+        <tr><th scope="row">What the record says</th><td>Faceplate label 2A-12</td></tr>
+        <tr><th scope="row">What was found</th><td>Faceplate blank; handwritten 2A-12 on tape inside the cover</td></tr>
+        <tr><th scope="row">Where and when</th><td>Room 2A, checked 2026-06-18, initials against the entry</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Everything goes on that one sheet rather than into notes in the margin of the as-built. A check list can be counted, worked through and closed out; notes scattered across a drawing cannot be, and some will be missed.</p>
+
+  <p>Start the check list on the first walk and keep adding to it. It grows again at the closing check, the last pass before the records go, and it goes across with the records afterwards, so that every difference you found has either been corrected or been handed to somebody who can decide about it.</p>
+
+  <div class="note note"><div class="nt">Correcting a label, and stopping short of that</div>
+    <p>Where the port map row and the hardware agree and the label is the only thing wrong &mdash; a blank faceplate on a position you have just confirmed, a label that has come unstuck &mdash; bringing the label into line is a label job. Do it, and note that you did.</p>
+    <p>Anything that would move a cord or change a port is not part of a labeling sweep. Record the difference and take it back for a decision before anything is touched.</p></div>
+
+  <div class="warn note"><div class="nt">A sweep compares two records, not the building</div>
+    <p>The labels and the rows can agree with each other and both be wrong, which happens whenever both were copied from the same as-built rather than from the hardware.</p>
+    <p>A sweep cannot settle that. The closing check reaches part of it, because one of its readings comes from the switch rather than from the paperwork, and tracing the run settles the rest.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Working from the record finds rows whose hardware is wrong, and every one of those rows is on your list before you start. A panel position that carries a label and was never written into the map is not on the list, so nothing sends you to look at it &mdash; only walking the room and reading what is there finds it. A blank faceplate, a mislabeled position and a missing cable label are all attached to rows you already hold.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A sweep is run in one direction only, taking each row of the port map and checking the labels it names. Which defect will that sweep not find?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>A faceplate with no label on it</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>A labeled panel position that has no row in the map</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>A panel position labeled with a different identifier from the one the row gives</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>A cable with a label at one end and nothing at the other</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="2" data-group-title="Proving the Records and Handing Them Over" data-num="529.6.6" data-title="Building the records with an AI assistant">
+  <p class="crumb">Lesson 529.6 &middot; Section 2 Proving the Records and Handing Them Over</p>
+  <h2><span class="tnum">529.6.6</span> Building the records with an AI assistant</h2>
+  <p class="lead-in">Field notes come off a job as short lines written standing up. Turning them into the columns a site uses is the part an Artificial Intelligence (AI) chat tool does quickly, and it is also where a wrong value gets in.</p>
+  <p>The work is a conversion. You have notes taken across a day, in your own shorthand, in the order you walked the room. The site wants port map rows in a fixed column order, one row for each position, worded the same way throughout. An AI assistant will do that conversion from the notes and a list of the column names.</p>
+
+  <h3>Why people reach for it</h3>
+  <p>The reasons are good ones.</p>
+  <ul>
+    <li><strong>It is quick.</strong> A day of notes becomes a formatted table in under a minute.</li>
+    <li><strong>It is on the phone in your pocket</strong>, at the end of a job, which is when the paperwork gets written and when you least want to write it.</li>
+    <li><strong>It is consistent.</strong> Forty location entries come back worded the same way, instead of forty different ways.</li>
+    <li><strong>What comes back looks finished.</strong> Even columns, no blanks, everything filled.</li>
+  </ul>
+  <p>That last one is the problem. Left to itself, a tool does not mark the difference between a value it read in your notes and one it made up &mdash; both come back looking the same, and the second is invisible unless you go looking for it.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What an AI assistant does on this task, and what it cannot do.</caption>
+      <thead><tr>
+        <th scope="col">It does this well</th><th scope="col">It cannot do this</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Puts your notes into the column order the site uses, and words every row the same way</td><td>Know anything about the building that you did not put in the notes</td></tr>
+        <tr><td>Tells you which rows have a value missing, when you ask it to</td><td>Read a value off the hardware. Every figure it returns came from your notes or from nowhere</td></tr>
+        <tr><td>Rewrites a location description into the same form for every device</td><td>Tell whether two notes about the same position are one row or two</td></tr>
+        <tr><td>Turns a rough note about a difference into the four parts of an exception line</td><td>Tell whether a reading makes sense for the equipment in that room</td></tr>
+        <tr><td>Puts dates, units and identifiers into one format across every row</td><td>Notice that a whole position is missing from your notes, because it has no way to know what the room holds</td></tr>
+        <tr><td>Drafts the covering note once you tell it what was installed, what is outstanding and who to call</td><td>Take responsibility for any of it. The name on the record is yours</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note note"><div class="nt">The rule for every value</div>
+    <p>Every figure in the finished record traces back to a reading you took or a label you read. If you cannot find a value in your notes, delete it &mdash; and to fill that cell, somebody has to go and read it off the hardware.</p></div>
+
+  <div class="warn note"><div class="nt">Ask before you paste site data anywhere</div>
+    <p>Port maps, floor plans, device identifiers and IP addressing are restricted on many sites, and an AI chat tool sits outside the site.</p>
+    <p>Four things decide whether you may use one at all, and none of them is your judgement on the day.</p>
+    <ul>
+      <li><strong>The record owner.</strong> Whoever owns the port map decides what may leave it. Ask them, not your crew.</li>
+      <li><strong>The contract.</strong> Some sites forbid customer data leaving their systems, and say so in writing before anybody arrives.</li>
+      <li><strong>Your employer&rsquo;s approved tools.</strong> Where a company account exists, that is the one to use. A personal account is not covered by it.</li>
+      <li><strong>Names.</strong> An occupant&rsquo;s name in a Serves column is personal data and carries rules of its own.</li>
+    </ul>
+    <p>Get the answer before the job rather than while you are standing in the telecommunications room. Where the answer is no, the conversion is done by hand, and the notes are what make that possible.</p></div>
+
+  <h3>How to ask</h3>
+  <p>Three things go into the request, and the third is the one people leave out.</p>
+  <ul>
+    <li><strong>The column names, in the site&rsquo;s order.</strong> Give them as a list. Without them you will get whatever columns the tool considers sensible, and they will not match the file you have to paste into.</li>
+    <li><strong>The notes, unedited.</strong> Tidying them first smooths over the gaps and the ambiguities you want reported back to you.</li>
+    <li><strong>Tell it to leave the empty cells empty.</strong> Ask it to put nothing in a cell it has no value for, and to list every cell it left blank and every note it could not place. Without that instruction it will fill the blanks with values of its own.</li>
+  </ul>
+  <p>The same request works on the as-built. Give it your location notes and the four parts a location entry carries, and it returns every device in one form.</p>
+
+  <h3>Two things that go wrong</h3>
+  <p>Open both cards. One damages the record, the other damages the site.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Hallucination</span><span class="rcard-sub">it fills a gap rather than leaving one</span><span class="rcard-detail" hidden><p>Filling gaps is what the tool does. Give it field notes with no VLAN for one drop and it will supply the number the drops either side of it carry. Give it a port map row with no outlet identifier and it will follow the pattern of the rows above and produce one.</p><p><b>A plausible wrong value is worse than a blank one.</b> A blank gets questioned. A number that looks like all the other numbers gets believed, and it is believed by the technician who is standing at the wrong outlet two years from now.</p><p><b>What to do.</b> Delete it. The cell is filled by going and reading the value off the hardware, not by leaving something plausible in place.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Information leak</span><span class="rcard-sub">what you paste does not come back</span><span class="rcard-detail" hidden><p>Text pasted into an outside tool may be stored, may be used to improve the tool, and may be readable by people at the company that runs it. You cannot take it back afterwards.</p><p>A port map, a floor plan and a set of Internet Protocol (IP) addresses together describe how a building is wired, where its equipment sits and how to reach it. That is worth something to somebody, and it is not yours to give away.</p><p><b>It is usually a conduct question before it is a technical one.</b> Pasting a customer&rsquo;s records into a personal account breaches most site agreements and most employment terms, whatever the tool then does with them.</p></span></button>
+  </div></div>
+
+
+  <h3>What to check when it comes back</h3>
+  <p>Read the returned port map against your notes one row at a time. Three faults account for most of what goes wrong.</p>
+  <ul>
+    <li><strong>A value that was not in the notes.</strong> A length, a class, a wattage or a date in a port map row that looks right and appears nowhere in what you wrote.</li>
+    <li><strong>Two notes merged into one row.</strong> Where you wrote about the same position twice &mdash; once on the first visit and once after a repair &mdash; the two can arrive as a single row holding a mix of both.</li>
+    <li><strong>A location description that reads well and names a different place.</strong> Shorthand gets expanded, and the expansion is a guess. Check every location entry against the note it came from.</li>
+  </ul>
+
+
+  <h3>What a day of notes does not contain</h3>
+  <p>Below is one technician&rsquo;s notes from one panel. The site&rsquo;s port map has eight columns: <b>Outlet</b>, <b>Panel / port</b>, <b>Switch port</b>, <b>VLAN</b>, <b>Serves</b>, <b>State</b>, <b>Last changed</b>, <b>Test ref</b>. Read the notes against that list before you read what follows them.</p>
+    <div class="cli">
+      <div class="cli-ttl">Field notes &mdash; TR-2, panel B, Tuesday</div>
+      <div class="cli-body"><pre><span class="out">b/11 -&gt; gi1/0/11   2a-11   desk 2a      wire map ok, 41 m
+b/12 -&gt; gi1/0/24   2a-12   AP corridor 2   ok 63 m   vlan 20  cls3
+b/14 -&gt; gi1/0/12   2a-14   AP rm 2A tile C2   wire map ok 58 m   vlan 20 cls3 15.4 oper on
+b/28  term, not patched   2b-04   tested ok
+b/29  dead run, do not use
+b/14 retest 14:20 after cord swap &mdash; 4/4 ping</span></pre></div>
+      <div class="cli-foot"><p>Those six lines do not fill the eight columns. No row has a state, a last-changed date or a test reference, though two of the lines describe a state in words the column does not use. B / 29 has neither an outlet identifier, nor a reading, nor anything saying what it serves. The two B / 14 lines may be one row or they may be two. The <code>b/11</code> line carries no VLAN, where the two lines around it do &mdash; and a VLAN number is the easiest of all of these to supply plausibly and the hardest to notice. And <code>cls3</code> &mdash; the device&rsquo;s power class &mdash; along with <code>15.4</code> and <code>oper on</code> belongs to the test record rather than to any of these columns, while <code>tile C2</code> belongs on the as-built.</p></div>
+    </div>
+
+  <p>A tool given those notes and those eight column names will return eight full columns. Everything listed above is what it had to invent to do so.</p>
+
+  <div class="cyu gate" data-answer="2" data-fb="Every one of the six notes is short, and a tool asked for a finished table will complete it rather than report that it cannot. Telling it to leave a cell empty and to list what it could not place turns the gaps into a list you can work through. Giving it the column order matters for the file but does not stop a value being invented, tidying the notes first removes the ambiguities you want reported, and asking for a second table leaves you comparing two tables without knowing which cells either of them invented.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">You paste a day of field notes into an AI chat tool and ask for a port map. Which instruction does most to keep invented values out of the result?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Give it the column names in the order the site uses</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Rewrite the notes into full sentences before pasting them</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Tell it to leave a cell empty where it has no value, and to list every gap</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Ask it for the same table twice and compare the two</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="2" data-group-title="Proving the Records and Handing Them Over" data-num="529.6.7" data-title="Reading the records back against the install">
+  <p class="crumb">Lesson 529.6 &middot; Section 2 Proving the Records and Handing Them Over</p>
+  <h2><span class="tnum">529.6.7</span> Reading the records back against the install</h2>
+  <p class="lead-in">The sweep held the labels against the port map rows &mdash; and a label is written from the record, so the two can agree while both are wrong about the room. The last check brings the install itself into the comparison.</p>
+  <p>Read the record first and say what you expect to find. Then look. Reading the hardware first and then turning to the record tends to confirm whatever the record says, because you already know the answer you are checking against.</p>
+
+  <h3>What the closing check covers</h3>
+  <p>The closing check is the last pass, run with the records in hand and the room still available to you. One part of it reads the switch and needs no walking; the rest holds the three records against each other and against the positions themselves, so keep the room until it is done. What it finds goes on the check list like any other exception.</p>
+  <ul>
+    <li>Every row in the port map names a position you can find, carrying the label the row gives.</li>
+    <li>Every device drawn on the as-built has an identifier beside it, and that identifier has a row.</li>
+    <li>Every line in the test record names a position that exists.</li>
+    <li>Every position you worked on has a line in the test record. This is the one that catches a drop nobody ever tested.</li>
+    <li>Every switch port named in a row reads what the row says it should &mdash; the Status and Vlan columns of <code>show interfaces status</code>.</li>
+    <li>No two rows name the same switch port.</li>
+    <li>Anything in service appears in the port map and on the as-built.</li>
+  </ul>
+
+  <p>Reading the switch ports back against the port map rows is the one check here you can make without walking to the room. Where you cannot reach the switch yourself, ask whoever owns it for the output, and record on the check list that you did.</p>
+
+  <p>Note what this does not reach. It tests what is patched, what is live and what is written down. Proving that a horizontal cable lands where its row says means tracing it, and that is its own job with the drop out of service. Where a label and a row agree and you have reason to doubt both, say so on the check list rather than ticking it off.</p>
+
+  <div class="cli">
+    <div class="cli-ttl">show interfaces status &mdash; read against the rows for panel B</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show interfaces status</span>
+
+<span class="out">Port      Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/11                     connected    20         a-full a-1000 10/100/1000BaseTX
+Gi1/0/12                     connected    20         a-full a-1000 10/100/1000BaseTX
+Gi1/0/15                     connected    20         a-full a-1000 10/100/1000BaseTX
+Gi1/0/24                     connected    1          a-full a-1000 10/100/1000BaseTX</span></pre></div>
+    <div class="cli-foot">
+      <ul>
+        <li><b>Gi1/0/11 and Gi1/0/12</b> &mdash; both read <code>connected</code>, and the Vlan column matches their rows. Outlets 2A-11 and 2A-14 are ticked off on the check list. The <code>a-</code> in <code>a-full a-1000</code> means the two ends negotiated those values rather than being fixed to them, and <code>10/100/1000BaseTX</code> is what the port itself can run at over copper.</li>
+        <li><b>Gi1/0/15</b> &mdash; a working link on a port that no row in the full port map names. Something is patched and in service and written down nowhere. Ask whoever owns the switch what is on that port, put the answer on the check list, and hand it over as an exception if nobody can say.</li>
+        <li><b>Gi1/0/24</b> &mdash; the row for outlet 2A-12 gives Virtual Local Area Network (VLAN) 20, and the Vlan column reads 1. One of the two is wrong. Which one gets corrected is a question for whoever owns the switch, and it is an exception line either way.</li>
+      </ul>
+      <p>Port names differ between switches; where a switch names its ports <code>Fa1/0/12</code> rather than <code>Gi1/0/12</code>, the columns read the same.</p></div>
+  </div>
+
+  <h3>Checking part of a room, and saying so</h3>
+  <p>A full check on a large room costs a day. Sites often accept a sample, and a sample holds up as long as the record says what it was.</p>
+  <ul>
+    <li><strong>How many port map rows were checked</strong>, as a count and out of how many. The same goes for the two walks: if you swept forty rows out of two hundred, the record says forty out of two hundred.</li>
+    <li><strong>How they were chosen</strong> &mdash; every fourth row, or every row changed since the last check, or all the powered drops. Whichever it was, name it.</li>
+    <li><strong>What the exceptions were</strong>, and how many rows they came from.</li>
+  </ul>
+  <p>A record that says <em>checked</em>, with none of that behind it, does not tell the next reader whether some of the room was checked or all of it.</p>
+
+  <p>Everything this check turns up goes on the same check list the walks have been feeding. By the time you stop, that list is the honest part of the hand-off: it says what you found, what you put right, and what you could not.</p>
+
+  <div class="note note"><div class="nt">The check is written down whether or not it finds anything</div>
+    <p>A closing check that raised no exceptions is recorded as a closing check that raised no exceptions, with the date, the scope and a name.</p>
+    <p>If nothing records the check, the next person has no way of knowing it happened.</p></div>
+
+  <div class="cyu gate" data-answer="3" data-fb="Nothing on a panel or a faceplate reports which port is carrying a link, or which VLAN a port sits in or whether a link has come up, so a port in service that no row names is only visible from the switch. A blank faceplate and a missing cable label are both found by walking the room with the rows in hand, and two rows naming one port is a contradiction you can find by reading the map at a desk.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Which finding could only come from reading the switch, and not from walking the room with the port map in your hand?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Two rows naming the same switch port</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>A row whose faceplate label is blank</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>A cable labeled at the panel end and not at the outlet end</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>A switch port carrying a working link that no row names</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="2" data-group-title="Proving the Records and Handing Them Over" data-num="529.6.8" data-title="The hand-off">
+  <p class="crumb">Lesson 529.6 &middot; Section 2 Proving the Records and Handing Them Over</p>
+  <h2><span class="tnum">529.6.8</span> The hand-off</h2>
+  <p class="lead-in">A hand-off goes to a named person on a named day. Leaving a folder where somebody could find it is not one.</p>
+  <p>Five things cross over: the three records, the check list you have been adding to since the first walk, and a covering note.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The hand-off package.</caption>
+      <thead><tr>
+        <th scope="col">Item</th><th scope="col">What it has to carry</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Port map</th><td>A row for every position the panel terminates, spares and retired positions included, each row carrying its state and its date</td></tr>
+        <tr><th scope="row">As-built</th><td>Outlets, pathways and devices at their positions, each with its identifier beside it. The drawing carries a date and a revision mark</td></tr>
+        <tr><th scope="row">Test record</th><td>One line per drop: what was measured, the value, the tool, the date, and who took the reading</td></tr>
+        <tr><th scope="row">Check list</th><td>Each check with its date, what it covered and who made it; every row ticked off or carrying an exception line; and the state of each exception &mdash; corrected, reported, or still open</td></tr>
+        <tr><th scope="row">Covering note</th><td>What was installed, what was tested and to what, what is outstanding, and who to call</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Outstanding items go in writing</h3>
+  <p>Most jobs finish with something unfinished, and each one of those is a line in the covering note.</p>
+  <ul>
+    <li>A position terminated and left unpatched because the device had not arrived.</li>
+    <li>A label ordered and not yet fitted, with a handwritten label in place meanwhile.</li>
+    <li>A run that the site wants certified, which needs a different tool and a separate visit.</li>
+    <li>A discrepancy reported and not yet decided on by whoever owns it.</li>
+  </ul>
+  <p>An outstanding item that was named on the day is part of the job. The same item unwritten becomes a defect somebody else discovers.</p>
+
+  <div class="warn note"><div class="nt">Do not write a position you did not check as working</div>
+    <p>A port map row nobody verified is recorded as not checked. Fill one in from the work order, on the assumption that it ought to be right, and it reads the same as a row somebody read off the hardware.</p>
+    <p>That is the port map row that sends the next technician to the wrong place with confidence.</p></div>
+
+  <div class="note note"><div class="nt">What accepted means</div>
+    <p>Name the person the set went to, and the date it went. Where the site has a form, the person receiving it signs; where it does not, an email listing what was sent does the same job.</p>
+    <p>Accepted means somebody has said they hold it. Until then the records are still yours, and so is anything found missing from them.</p></div>
+
+  <p>Read the covering note back as if you were the person receiving it. It should answer three questions: what state is this room in, what still needs doing, and who to call about it.</p>
+
+  <p>Each of the questions below is answered by one part of the package and only one. Match them.</p>
+  <div class="match gate" data-left="The question" data-right="What answers it"><div class="pair" data-left="Which switch port serves outlet 2A-14" data-right="The port map"></div><div class="pair" data-left="Which ceiling tile the access point in room 2A sits at" data-right="The as-built"></div><div class="pair" data-left="Whether the run to outlet 2A-14 passed a wire map, and on what date" data-right="The test record"></div><div class="pair" data-left="Which rows were checked against the hardware, and what did not agree" data-right="The check list"></div><div class="pair" data-left="What is still outstanding on this room, and who to call about it" data-right="The covering note"></div></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="A row filled in from the work order looks the same as a row somebody read off the hardware, so the next technician has no way to treat it with caution and will walk to the position it names. The unpatched spare, the handwritten label and the reported discrepancy are all written down &mdash; on the covering note or on the check list &mdash; which is what makes them part of the job rather than defects waiting to be found.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Four things are true of a room at hand-off. Which one makes the record unsafe to work from?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>One position is terminated and unpatched, and the covering note says so</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>One faceplate carries a handwritten label, and the covering note says a printed one is on order</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Three rows were filled in from the work order and never checked, and nothing says so</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>One discrepancy is listed as reported and awaiting a decision</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.6" data-lesson-title="Port Map, As-Built, and Hand-Off" data-group-num="3" data-group-title="Wrapping Up" data-num="529.6.9" data-title="What you covered">
+  <p class="crumb">Lesson 529.6 &middot; Section 3 Wrapping Up</p>
+  <h2><span class="tnum">529.6.9</span> What you covered</h2>
+  <p class="lead-in">Write the three records, check the labels against them, check them against the room, and hand them to a named person on a named day.</p>
+
+  <p>A finished install leaves three records. The <strong>port map</strong> says which switch port serves an outlet and what is on the end of it. The <strong>as-built</strong> says where the outlets and the devices are in the building. The <strong>test record</strong> says what each drop measured, when, with which tool, and who took the reading. The port map describes the room as it is today. The as-built is not the design drawing, which recorded what was intended. A test result describes one day and does not update itself, so the date is read with it. One drop carries the same identifier in all three, and that identifier lets a reader move between them. <strong>ANSI/TIA-606-C</strong> covers identifiers, labels, records and drawings as one subject: it sets out how an identifier is built and leaves the values to the site, and it requires the site to have a written scheme and to keep the labels and the records in step. Find the scheme before you read a label or write one. Find out too where all three records live and which of them you are allowed to change, because a good record written into the wrong file leaves the site with two records that disagree.</p>
+
+  <p>The port map belongs to the room, not to the job, so it carries a row for every termination position and not only the ones you worked on. That includes the spares &mdash; a position with no row is invisible to whoever is asked to bring up a new desk. Three columns only make sense across a whole room: a <strong>state</strong> column so a blank cell is never ambiguous, a <strong>last changed</strong> column, and a <strong>test reference</strong> so a reader can get from the row to the measurement. The state column runs in service, spare, reserved or retired. Three rules then hold the set of rows together. No two rows may name the same switch port, because a port serves one position at a time &mdash; where two rows do, one is stale and the map cannot say which. A position taken out of service keeps its row, with the state changed to retired and dated. And the old value is written down before the new one is typed &mdash; at the drop, into the port map or into your notes, rather than reconstructed from memory afterwards.</p>
+
+  <p>A room number gets somebody into the room; a device on a suspended ceiling can be at any of dozens of tiles. A location entry has four parts: the <strong>space</strong>, the <strong>position within the space</strong> measured from something that will still be there, the <strong>mount</strong>, and <strong>which way it faces</strong> for anything directional &mdash; written as not applicable where it is not, rather than left blank. On the drawing, a device gets a symbol at its position, with the identifier from its port map row printed beside it. The drawing carries a date and a revision mark. The device and the outlet it is patched to are two different positions in the building, and both are recorded.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What one line of a test record carries.</caption>
+      <thead><tr>
+        <th scope="col">Field</th><th scope="col">What goes in it</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Drop</th><td>The outlet identifier and the panel position it lands on</td></tr>
+        <tr><th scope="row">What was measured</th><td>Wire map, length, port speed advertised at the far end, power present &mdash; each named</td></tr>
+        <tr><th scope="row">Result</th><td>The value where there is one, and pass or fail where the tool gives a verdict</td></tr>
+        <tr><th scope="row">Tool</th><td>Make and model, and the serial number where the site asks for it</td></tr>
+        <tr><th scope="row">Date and time</th><td>When the reading was taken</td></tr>
+        <tr><th scope="row">Taken by</th><td>The name or initials of whoever held the tool</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p><strong>Verified is not certified.</strong> A verifier reads how the cabling is wired and how long it is, and reports whether power is present and what speed the far end advertised. A certifier measures performance &mdash; insertion loss, crosstalk and the rest &mdash; and its report can say a run meets a named category, as a permanent link or as a channel. A test record built from a wire map and a length reading may say the run is wired correctly and within length on the day it was tested. It may not say the run meets a category, because nothing in it measured one. Where a site wants a category on the record, that is a request for a certification test.</p>
+
+  <p>The four readings for a powered drop are recorded by column and value, with the command named. Link comes from the Status, Duplex, Speed and Vlan columns of <code>show interfaces status</code>. Power comes from the Admin, Oper, Class and Power columns of <code>show power inline</code>, where Power is what the port has set aside rather than what the device is drawing. It is recorded as <code>Oper on, class 3, 15.4 W set aside</code> rather than as <em>power fine</em>. Presence on the port is whether <code>show mac address-table interface</code> lists a Media Access Control (MAC) address for that port. The first three come off the switch. Reachability is a <code>ping</code> you run from a machine in the same Virtual Local Area Network (VLAN), recorded as counts sent and received.</p>
+
+  <p>A labeling sweep checks one row against four labels in two places: the faceplate, both ends of the horizontal cable, and the panel position. Two of the four sit behind something. The switch port carries no label at all and is read from the switch. The sweep runs in two directions, and running it one way leaves the other kind of defect standing. <strong>Record to hardware</strong> finds hardware that is missing, unlabeled or wrong. <strong>Hardware to record</strong> finds a label with no row &mdash; an outlet added in a later fit-out, a panel position labeled and never written down, a device somebody put in on a Friday. A row that agrees is ticked off on the check list rather than dated in the map; a row that does not gets an exception line naming the position, what the record says, what was found, and where and when. All of it goes on the <strong>check list</strong>, started on the first walk and added to at the closing check: the date, scope and name of each check, every row ticked off, and every exception line. The check list crosses over with the other records at the end. Bringing a label into line, where the row and the hardware agree and only the label is wrong, is a label job; anything that would move a cord or change a port goes back for a decision. A sweep compares two records against each other, so labels and rows copied from the same wrong drawing will agree with one another.</p>
+
+  <p>An Artificial Intelligence (AI) chat tool converts field notes into the site&rsquo;s columns quickly and consistently, and it knows nothing about the building beyond what the notes contain. Every figure it returns came from your notes or from nowhere. Every figure in the finished record traces back to a reading you took or a label you read. Three things go into the request: the column names in the site&rsquo;s order, the notes unedited, and an instruction to leave the empty cells empty and list them. Check the result row by row for a value that was not in the notes, two notes merged into one row, and a location description that reads well and names a different place. Port maps, floor plans, device identifiers and Internet Protocol (IP) addressing are restricted on many sites, so find out whether they may be pasted into an outside tool before the job.</p>
+
+  <p>The closing check runs from the record out to the install: read the row, say what you expect, then look. Seven things are checked. Every row names a position you can find, carrying the label the row gives. Every device on the as-built has an identifier, and that identifier has a port map row. Every test line names a position that exists, and every position you worked on has a test line &mdash; the direction that catches a drop nobody ever tested. Every switch port named in a row reads what the row says, in the Status and Vlan columns of <code>show interfaces status</code>. No two rows name one port. Anything in service appears in the port map and on the as-built &mdash; and a working link on a port that no row names is only visible from the switch. Where the check is a sample, the record says how many rows out of how many, how they were chosen, what the exceptions were, and how many rows they came from. A check that found nothing is written down on the check list as a check that found nothing, with the date, the scope and a name. What none of it reaches is whether a horizontal cable lands where its row says; that needs a trace, with the drop out of service.</p>
+
+  <div class="note note"><div class="nt">The hand-off is to a person, on a date</div>
+    <p>Five things cross over: the port map, the as-built, the test record, the check list, and a covering note. The check list carries every check made and the state of each exception on it &mdash; corrected, reported or still open. The covering note says what was installed, what was tested and to what, what is outstanding, and who to call. Outstanding items named on the day are part of the job; the same items unwritten become defects found by somebody else. A position nobody checked is recorded as not checked, never as working. Accepted means a named person has said they hold the set. Where the site has a form, the person receiving it signs; where it does not, an email listing what was sent does the same job. Until then the records are still yours.</p></div>
+
+  <button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button>
+</section>
+</div>
+
+    <nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">&lsaquo; Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next &rsaquo;</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true"
+     aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>

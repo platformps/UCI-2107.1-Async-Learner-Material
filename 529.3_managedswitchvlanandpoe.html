@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 529 (M07) - Network Fundamentals for Low Voltage Technicians
+  Lesson 529.3 - Managed Switch VLAN and PoE Configuration (Async Reading)
+  VERSION: v0.2.0  (2026-08-26)  DRAFT - for review
+
+  Engine (CSS, JS, header, sidebar, navigation, lightbox) reused verbatim from
+  the Lesson 529.1 async reading page. One component stylesheet is appended
+  after the engine stylesheet for the console transcript blocks; the engine
+  itself is untouched.
+
+  OBJECTIVES, one verb each, taking the D08 subtask verbs verbatim where they exist.
+  All six 7.3 subtasks are covered; two objectives sit outside the subtask list and are
+  marked. Subtask 4 reads "Enable and verify PoE on a port" - two verbs - so it is split,
+  with the verify half carried by the objective for subtask 5.
+
+    Explain  what a VLAN does to a switch's broadcast domains        [+ beyond D08]
+    Connect  to the switch console to reach the command line          7.3 subtask 1
+    Create   a VLAN for data or device separation                     7.3 subtask 2
+    Assign   access ports to the VLAN                                 7.3 subtask 3
+    Enable   Power over Ethernet on a port                            7.3 subtask 4a
+    Verify   link status and PoE delivery                             7.3 subtask 4b, 5
+    Save     the running configuration                                7.3 subtask 6
+    Identify the tasks that belong to the network team               [+ beyond D08]
+
+  TOPIC OUTLINE, with the subtask each topic delivers.
+    Section 1  What the Switch Is Doing
+      529.3.1   One switch, more than one network             concept, + beyond D08
+      529.3.2   Getting to the command line                   subtask 1
+      529.3.3   Where you are, and what you can type there    subtask 1 (CLI navigation)
+    Section 2  Building the Configuration
+      529.3.4   Naming the port you are about to configure    subtask 3 (enabling skill)
+      529.3.5   Creating the VLAN and assigning the port      subtasks 2 and 3
+      529.3.6   Turning the power on                          subtask 4a
+    Section 3  Proving It, Saving It, Knowing Where to Stop
+      529.3.7   Reading the verification commands             subtasks 4b and 5
+      529.3.8   Two configurations, and why it matters        subtask 6
+      529.3.9   Where your scope ends                         scope cap, + beyond D08
+    Section 4  Wrapping Up
+      529.3.10  What you covered                              summary
+
+  FOUR sections, not three. The summary sits in its own Wrapping Up section,
+  matching 529.1 and 529.2. Eldad 2026-08-26.
+
+  ACTIVITY GATES: 11 - one reveal-card set, one matching, eight knowledge
+  checks, one acknowledgement. Topic 529.3.1 carries two: the card set and a
+  knowledge check, because it holds the concept the rest of the lesson rests
+  on and a card set only requires opening.
+
+  NO ordering activity. One was drafted for 529.3.5 and removed: within a
+  port's configuration mode the settings can be typed in any order and all
+  orders work, so the activity had more than one correct answer. It is
+  replaced by a knowledge check that makes the point directly: three of its four
+  options are reorderings that reach the same result, and the fourth is a command
+  typed in the wrong mode, which never runs. A command-to-mode matching activity
+  was tried first and dropped as confusing. Eldad 2026-08-26.
+  DIAGRAMS: 3 original SVG, each with a full text description.
+
+  BUILD NOTES
+  - Interface type is deliberately NOT hard-coded. Topic 529.3.4 teaches the
+    learner to confirm which switch they are at and use the matching form.
+    The MIR inventory is unresolved; Fa and Gi both appear on the register.
+  - Console access is taught as the primary method, with a network-access
+    fallback box, so the console cable decision can be taken late without a
+    rewrite of this page.
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 529.3 &mdash; Managed Switch VLAN and PoE Configuration &middot; Async Reading &middot; UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+<style>
+  /* Console transcript block. Light card, navy title bar, monospace body that
+     scrolls sideways on a narrow screen rather than wrapping a command line.
+     Appended after the engine stylesheet so the engine stays untouched. */
+  .cli{background:#fbfcfd;border:1.6px solid #c8d4de;border-radius:8px;
+    margin:18px 0;box-shadow:var(--shadow);overflow:hidden}
+  .cli .cli-ttl{background:#09507C;color:#fff;font-weight:700;font-size:.95rem;
+    padding:9px 14px;letter-spacing:.01em}
+  .cli .cli-body{overflow-x:auto;padding:12px 14px}
+  .cli pre{margin:0;min-width:520px;color:#1b2a3a;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.94rem;line-height:1.8}
+  .cli .pr{color:#5a6772}
+  .cli .cmd{color:#09507C;font-weight:700}
+  .cli .cmt{color:#5a6772;font-style:italic}
+  .cli .out{color:#3c4956}
+  .cli .cli-foot{border-top:1px solid #dbe4ec;padding:10px 14px;
+    color:#3c4956;font-size:.95rem;background:#f4f7fa}
+  .cli .cli-foot p{margin:0}
+  /* Inline command names in running prose and in table cells. */
+  .topic code, .overview code, .longdesc code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.92em;color:#09507C;background:#eef4f9;border:1px solid #dbe4ec;
+    border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .tbl th code, .tbl td code{background:#f4f7fa}
+  kbd{font-family:inherit;font-size:.9em;color:#1b2a3a;background:#f4f7fa;
+    border:1px solid #c8d4de;border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+</style>
+
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false"
+          aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div class="head-title"><b>Module 529</b> &middot; Lesson 529.3 &mdash; Managed Switch VLAN and PoE Configuration</div>
+  </div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.2.0</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel"
+              aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList"
+              aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel"
+             aria-labelledby="tab-overview" hidden>
+      <p class="crumb"><b>UCI 2107.1 &middot; Low Voltage Fiber Technician</b>
+         &middot; Module 529 &mdash; Network Fundamentals</p>
+      <h2 id="ovh" tabindex="-1">Lesson 529.3 &mdash; Managed Switch VLAN and PoE Configuration</h2>
+      <p class="lead-in">The written half of this lesson.</p>
+
+      <p>Many managed switches offer a web interface. The command line is the other interface,
+         available on any switch with a console port and producing output you can read back and
+         record &mdash; so that is what this lesson uses.</p>
+
+      <p>The job this lesson prepares you for is bringing up one port: creating the group the
+         device belongs to, putting the port into that group, allowing the port to supply power
+         over the cable, and switching the port on. This lesson gives you that sequence line by
+         line, the commands that prove the port is working rather than assume it, the one command
+         that keeps the work through the next power cut, and a written boundary marking where
+         switch configuration stops being yours.</p>
+
+      <h3>How the lesson is organized</h3>
+      <ul>
+        <li><b>What the Switch Is Doing.</b> What a Virtual Local Area Network (VLAN) changes and what it leaves alone, how a
+            console connection is made and why it works when nothing else does, and how to read the
+            prompt in front of you to know which commands are valid there.</li>
+        <li><b>Building the Configuration.</b> Naming a port the way the switch names it, creating
+            and naming a VLAN, assigning an access port to it, and permitting Power over Ethernet
+            (PoE) &mdash; line by line, with the mode each line belongs to.</li>
+        <li><b>Proving It, Saving It, Knowing Where to Stop.</b> Reading the five verification
+            commands and what each failure looks like, the difference between the running and
+            startup configurations, and the configuration tasks that belong to the network team.</li>
+        <li><b>Wrapping Up.</b> The whole lesson in one place.</li>
+      </ul>
+
+      <div class="ov-grid">
+        <div class="ov-stat"><b>4</b><span>Sections</span></div>
+        <div class="ov-stat"><b>10</b><span>Topics</span></div>
+        <div class="ov-stat"><b>11</b><span>Activities</span></div>
+        <div class="ov-stat"><b>3</b><span>Diagrams</span></div>
+      </div>
+
+      <h3>A note on the equipment</h3>
+      <p>Switches of the same age and family do not all name their ports the same way. Some use
+         <b>FastEthernet</b> on their access ports and some use <b>GigabitEthernet</b>, and a
+         command naming the wrong one is rejected. Every command sequence here shows one form and
+         says so; topic 529.3.4 covers how to confirm which form the switch in front of you uses,
+         in one command, before you type an interface line.</p>
+
+      <h3>How this page works</h3>
+      <p>Work through the topics in order using the <strong>Next</strong> button, or jump
+         about using the <strong>Curriculum</strong> tab in the sidebar. Some topics contain
+         an activity you need to complete before <strong>Next</strong> unlocks &mdash; a
+         knowledge check, a set of cards to open, or a matching exercise. Getting a knowledge
+         check wrong never blocks you: the answer is shown
+         and you can try again. Your progress through the lesson is saved in the header and
+         the contents list.</p>
+
+      <h3>Working without a mouse, or with a screen reader</h3>
+      <p>Everything here is operable from the keyboard. <kbd>Tab</kbd> moves between
+         controls and <kbd>Enter</kbd> or <kbd>Space</kbd> activates them; the arrow keys
+         move between the sidebar tabs. In the matching activity every item is
+         a button, and your selections are announced as you make them. Right and wrong answers
+         are always labeled in words as well as color. Each diagram carries a full text
+         description, console output is plain text rather than an image, and tables have
+         headings and captions that read correctly aloud.</p>
+
+      <button class="btn" id="ovBegin" type="button">Begin Lesson 529.3</button>
+    </section>
+
+    <div id="topicWrap">
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="1" data-group-title="What the Switch Is Doing" data-num="529.3.1" data-title="One switch, more than one network">
+  <p class="crumb">Lesson 529.3 &middot; Section 1 What the Switch Is Doing</p>
+  <h2><span class="tnum">529.3.1</span> One switch, more than one network</h2>
+  <div class="les-banner">
+    <span class="lb-k">Lesson 529.3</span>
+    <h3>Managed Switch VLAN and PoE Configuration</h3>
+    <p>A managed switch is configured by typing commands into it, one line at a time. Bringing up a single port is a short, fixed sequence: create the group the device belongs to, put the port into that group, allow it to supply power over the cable, and switch it on. This lesson gives you that sequence and what each line does, along with the commands that prove the port is working rather than assume it. It also gives you the one command that keeps the work through the next power cut, and a written boundary marking where switch configuration stops being your job.</p>
+    <p class="lb-meta"><b>4</b> sections &nbsp;&middot;&nbsp;
+       <b>10</b> topics &nbsp;&middot;&nbsp;
+       <b>11</b> activities</p>
+  </div>
+  <div class="note note"><div class="nt">By the end of Lesson 529.3 you will be able to</div>
+    <ul>
+      <li><b>Explain</b> what a Virtual Local Area Network (VLAN) does to a switch&rsquo;s broadcast domains.</li>
+      <li><b>Connect</b> to the switch console to reach the command line.</li>
+      <li><b>Create</b> a VLAN for data or device separation.</li>
+      <li><b>Assign</b> access ports to the VLAN.</li>
+      <li><b>Enable</b> Power over Ethernet (PoE) on a port.</li>
+      <li><b>Verify</b> link status and PoE delivery.</li>
+      <li><b>Save</b> the running configuration.</li>
+      <li><b>Identify</b> the switch configuration tasks that belong to the network team.</li>
+    </ul></div>
+  <p class="lead-in">Out of the box, every port on a switch is in the same group. Most buildings need more groups than that, and buying more switches is not how you get them.</p>
+  <p>Until its ports are assigned to VLANs, a switch keeps all of them in one group. Plug in eight devices and all eight can reach each other. Two terms describe what that traffic is. A single unit of data on the local network is a <span class="keyterm">frame</span>. A frame addressed to everyone at once is a <span class="keyterm">broadcast</span>, and a broadcast arriving on any port goes out of every other port on the switch. The set of ports that receive a broadcast is a <span class="keyterm">broadcast domain</span>, and by default the switch is one broadcast domain.</p>
+  <p>That is fine for eight devices. It stops being fine at a scale you meet in almost every commercial building, and for three separate reasons.</p>
+  <ul>
+    <li><strong>Volume.</strong> Devices announce themselves constantly. A few dozen devices produce background chatter nobody notices. A few hundred in one broadcast domain produce enough that every device on it spends real effort receiving and discarding traffic meant for somebody else.</li>
+    <li><strong>Reach.</strong> Anything in one broadcast domain can attempt to talk to anything else in it. A door controller, a camera, a payment terminal, and a guest laptop sharing one domain is a design nobody would choose on purpose.</li>
+    <li><strong>Blast radius.</strong> A misbehaving device floods the domain it is in. If that domain is the whole building, the whole building slows down.</li>
+  </ul>
+  <p>All three problems have the same fix: stop putting every device in one broadcast domain. The obvious way to do that is physical. Give each group of devices its own switch, and the groups are separated because there is no wire between them. It works, and it is how small separated networks are still built. It is also expensive, it wastes ports, and it means a change of use at one desk becomes a cabling job.</p>
+  <p>A <span class="keyterm">VLAN</span> produces the same separation as a setting rather than as a purchase. You tell the switch which group each port belongs to. Ports in one group exchange frames with each other and receive each other&rsquo;s broadcasts. Ports in a different group do the same among themselves, and nothing passes between the two groups. <strong>One physical switch behaves as though it were several separate switches, and the boundary between them is a line in the configuration rather than a gap in the wiring.</strong></p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:900px" viewBox="0 0 900 396" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram comparing one switch with a single broadcast domain against the same switch divided into two VLANs, showing how far a broadcast travels in each case. A full text description follows.">
+    <defs>
+      <marker id="a529c" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#B45309"/>
+      </marker>
+    </defs>
+
+    <!-- ================= LEFT PANEL ================= -->
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">DEFAULT &mdash; one broadcast domain</text>
+    <rect x="24" y="46" width="396" height="66" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="40" y="72" font-size="14" fill="#5a6772">Switch, no VLAN configured</text>
+    <g fill="#fff" stroke="#0079C0" stroke-width="1.4">
+      <rect x="40" y="82" width="40" height="22" rx="4"/>
+      <rect x="88" y="82" width="40" height="22" rx="4"/>
+      <rect x="136" y="82" width="40" height="22" rx="4"/>
+      <rect x="184" y="82" width="40" height="22" rx="4"/>
+      <rect x="232" y="82" width="40" height="22" rx="4"/>
+      <rect x="280" y="82" width="40" height="22" rx="4"/>
+      <rect x="328" y="82" width="40" height="22" rx="4"/>
+      <rect x="376" y="82" width="32" height="22" rx="4"/>
+    </g>
+    <g font-size="13" fill="#1b2a3a" text-anchor="middle">
+      <text x="60" y="98">1</text><text x="108" y="98">2</text><text x="156" y="98">3</text>
+      <text x="204" y="98">4</text><text x="252" y="98">5</text><text x="300" y="98">6</text>
+      <text x="348" y="98">7</text><text x="392" y="98">8</text>
+    </g>
+    <line x1="40" y1="124" x2="408" y2="124" stroke="#7f8b95" stroke-width="2.4"/>
+    <text x="224" y="144" font-size="14" font-weight="700" fill="#5a6772" text-anchor="middle">One group &mdash; all eight ports</text>
+
+    <line x1="60" y1="192" x2="60" y2="158" stroke="#B45309" stroke-width="2.8" marker-end="url(#a529c)"/>
+    <g stroke="#B45309" stroke-width="2" marker-end="url(#a529c)">
+      <line x1="108" y1="158" x2="108" y2="192"/><line x1="156" y1="158" x2="156" y2="192"/>
+      <line x1="204" y1="158" x2="204" y2="192"/><line x1="252" y1="158" x2="252" y2="192"/>
+      <line x1="300" y1="158" x2="300" y2="192"/><line x1="348" y1="158" x2="348" y2="192"/>
+      <line x1="392" y1="158" x2="392" y2="192"/>
+    </g>
+    <text x="60" y="214" font-size="13" fill="#8a4a06" text-anchor="middle">arrives</text>
+    <text x="250" y="214" font-size="13" fill="#8a4a06" text-anchor="middle">leaves by all seven others</text>
+
+    <text x="24" y="244" font-size="14" font-weight="700" fill="#B45309">A broadcast arriving on port 1 leaves by every other port.</text>
+    <text x="24" y="266" font-size="14" fill="#5a6772">One group, one blast radius.</text>
+
+    <line x1="452" y1="16" x2="452" y2="286" stroke="#d9e3ec" stroke-width="2" stroke-dasharray="6 5"/>
+
+    <!-- ================= RIGHT PANEL ================= -->
+    <text x="480" y="28" font-size="16" font-weight="700" fill="#09507C">CONFIGURED &mdash; two broadcast domains</text>
+    <rect x="480" y="46" width="396" height="66" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="496" y="72" font-size="14" fill="#5a6772">Same switch, ports assigned to two VLANs</text>
+    <g fill="#fff" stroke="#0079C0" stroke-width="1.4">
+      <rect x="496" y="82" width="40" height="22" rx="4"/>
+      <rect x="544" y="82" width="40" height="22" rx="4"/>
+      <rect x="592" y="82" width="40" height="22" rx="4"/>
+      <rect x="640" y="82" width="40" height="22" rx="4"/>
+    </g>
+    <g fill="#f7f1e4" stroke="#B45309" stroke-width="1.4">
+      <rect x="696" y="82" width="40" height="22" rx="4"/>
+      <rect x="744" y="82" width="40" height="22" rx="4"/>
+      <rect x="792" y="82" width="40" height="22" rx="4"/>
+      <rect x="840" y="82" width="26" height="22" rx="4"/>
+    </g>
+    <g font-size="13" fill="#1b2a3a" text-anchor="middle">
+      <text x="516" y="98">1</text><text x="564" y="98">2</text><text x="612" y="98">3</text>
+      <text x="660" y="98">4</text><text x="716" y="98">5</text><text x="764" y="98">6</text>
+      <text x="812" y="98">7</text><text x="853" y="98">8</text>
+    </g>
+    <line x1="496" y1="124" x2="680" y2="124" stroke="#0079C0" stroke-width="2.4"/>
+    <text x="588" y="144" font-size="14" font-weight="700" fill="#09507C" text-anchor="middle">VLAN 20</text>
+    <line x1="696" y1="124" x2="866" y2="124" stroke="#B45309" stroke-width="2.4"/>
+    <text x="781" y="144" font-size="14" font-weight="700" fill="#8a4a06" text-anchor="middle">VLAN 30</text>
+
+    <line x1="516" y1="192" x2="516" y2="158" stroke="#B45309" stroke-width="2.8" marker-end="url(#a529c)"/>
+    <g stroke="#B45309" stroke-width="2" marker-end="url(#a529c)">
+      <line x1="564" y1="158" x2="564" y2="192"/><line x1="612" y1="158" x2="612" y2="192"/>
+      <line x1="660" y1="158" x2="660" y2="192"/>
+    </g>
+    <text x="516" y="214" font-size="13" fill="#8a4a06" text-anchor="middle">arrives</text>
+    <text x="612" y="214" font-size="13" fill="#8a4a06" text-anchor="middle">leaves by these three</text>
+    <text x="781" y="180" font-size="13" fill="#5a6772" text-anchor="middle">no arrows &mdash; nothing reaches</text>
+    <text x="781" y="200" font-size="13" fill="#5a6772" text-anchor="middle">ports 5 to 8</text>
+
+    <text x="480" y="244" font-size="14" font-weight="700" fill="#B45309">The same broadcast reaches ports 2, 3 and 4 only.</text>
+    <text x="480" y="266" font-size="14" fill="#5a6772">Two groups, two blast radii, one switch.</text>
+
+    <!-- ================= FOOTER PANEL ================= -->
+    <rect x="24" y="290" width="852" height="94" rx="7" fill="#fff" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="44" y="316" font-size="15" font-weight="700" fill="#09507C">What changed, and what did not</text>
+    <text x="44" y="342" font-size="14" fill="#1b2a3a">Changed: which ports hear each other, and how far a broadcast travels.</text>
+    <text x="44" y="364" font-size="14" fill="#1b2a3a">Unchanged: the cabling, the connectors, the link speed, and the power the switch supplies.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram compares the same eight-port switch in two states, side by side, separated by a vertical dashed line. In both panels the ports are drawn in a row along the switch, with a bar beneath them showing which group each port belongs to, and arrows below that showing where a broadcast goes.</p>
+    <p><b>On the left, headed Default, one broadcast domain.</b> A switch with no VLAN configured has eight numbered ports, and a single gray bar underneath spans all of them, labeled One group, all eight ports. Below the bar, an arrow points up into port 1, labeled arrives. Seven arrows point down and away from ports 2 through 8, labeled leaves by all seven others. The caption reads: a broadcast arriving on port 1 leaves by every other port. One group, one blast radius.</p>
+    <p><b>On the right, headed Configured, two broadcast domains.</b> The same switch has two bars underneath: one spanning ports 1 through 4 labeled VLAN 20, and a second spanning ports 5 through 8 labeled VLAN 30. An arrow points up into port 1, labeled arrives. Three arrows point down and away from ports 2, 3 and 4, labeled leaves by these three. Under the VLAN 30 group there are no arrows at all, and a note reads: no arrows, nothing reaches ports 5 to 8. The caption reads: the same broadcast reaches ports 2, 3 and 4 only. Two groups, two blast radii, one switch.</p>
+    <p>A panel across the bottom is headed What changed, and what did not. It states that what changed is which ports hear each other and how far a broadcast travels, and that what did not change is the cabling, the connectors, the link speed, or the power the switch supplies.</p>
+  </details>
+
+  <p>Nothing in that comparison was rewired. One setting per port decided all of it &mdash; which is also why the wrong VLAN is awkward to spot from the desk. The link comes up and the light is on, so nothing looks broken; the device simply cannot reach what it expects to.</p>
+  <p>Open each card below. The separation a VLAN produces is narrower than it first appears, and knowing what it leaves untouched is what keeps you from reaching for it as an explanation when something else is wrong.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">It contains broadcasts</span><span class="rcard-sub">What a VLAN does</span><span class="rcard-detail" hidden><p>A broadcast arriving on a port goes out of the other ports in that VLAN and no further. Each VLAN on the switch is its own broadcast domain, which is the whole mechanism in one sentence.</p><p>This is why a device that floods traffic affects the group it is in rather than the building.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">It separates groups that must not reach each other</span><span class="rcard-sub">What a VLAN does</span><span class="rcard-detail" hidden><p>Two devices in different VLANs on the same switch cannot exchange frames directly. To reach each other at all, their traffic has to pass through a router, or through a switch that can route &mdash; and either way, whether that is permitted is a decision somebody makes deliberately.</p><p>That is the point of putting cameras, door controllers, or payment devices in their own VLAN: reaching them becomes something that must be allowed rather than something that happens by default.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">It is a per-port setting, not a piece of wiring</span><span class="rcard-sub">What a VLAN does</span><span class="rcard-detail" hidden><p>Every port carries a VLAN assignment. Changing which group a desk belongs to is one line typed at a switch, with nothing unplugged and nobody in the ceiling.</p><p>The flip side is that the assignment is invisible from the outside. Nothing about the jack, the cord, or the panel tells you which VLAN a port is in. To find out, ask the switch or read the port map.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">It has a number, and it should have a name</span><span class="rcard-sub">What a VLAN does</span><span class="rcard-detail" hidden><p>The switch identifies a VLAN by number. VLAN 1 exists by default on this equipment and every port starts in it. Other numbers are created as they are needed.</p><p>The name is for people. <span class="keyterm">DATA-20</span> or <span class="keyterm">CAMERA-30</span> tells the next technician what the group is for; VLAN 30 on its own tells them nothing. The switch does not care either way, which is why the name gets skipped and why skipping it costs somebody an afternoon later.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">It does not change the physical link</span><span class="rcard-sub">What a VLAN does not do</span><span class="rcard-detail" hidden><p>Speed, duplex, cable length, connector quality, and interference are all unaffected by a VLAN assignment. A marginal run stays marginal in any VLAN.</p><p>If a link is negotiating at 100 Mbps when it should be at 1 Gbps, the VLAN is not the reason and moving the port to another one will not fix it.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">It does not deliver power</span><span class="rcard-sub">What a VLAN does not do</span><span class="rcard-detail" hidden><p>Power over Ethernet is a separate per-port setting with its own commands and its own verification. A port can be in the correct VLAN and supply no power, or supply power while sitting in the wrong VLAN.</p><p>The two are configured in the same place and confirmed by different commands. Keep them separate in your head, because the symptoms are nothing alike: no power means a dark device, while the wrong VLAN means a device that powers up perfectly and reaches nothing.</p></span></button>
+  </div></div>
+
+  <div class="note note"><div class="nt">The distinction that decides who owns the problem</div>
+    <p>In a correctly built network, one VLAN carries one Internet Protocol (IP) address range. Two devices in the same VLAN, with addresses in that range, can talk to each other. Two devices in different VLANs cannot, and connecting them is a router&rsquo;s job rather than a switch&rsquo;s. That single distinction decides, more often than any other, whether a connectivity problem in front of you is yours to fix or somebody else&rsquo;s to answer for.</p></div>
+
+  <div class="cyu gate" data-answer="0" data-fb="A broadcast reaches the other ports in its own VLAN and stops there. The camera is on port 6, which is in VLAN 30, so ports 5, 7 and 8 receive it and ports 1 to 4 never see it. Sharing a switch is not the same as sharing a broadcast domain once VLANs are configured &mdash; separating the two is the reason for configuring them. And a broadcast is addressed to every device at once rather than to one, which is what makes containing it worth doing.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Ports 1 to 4 are in VLAN 20 and ports 5 to 8 are in VLAN 30, on one switch. A camera on port 6 sends a broadcast. Which ports receive it?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Ports 5, 7 and 8 &mdash; the other ports in VLAN 30</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Every other port, because they are all on one switch</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Ports 1 to 4, because VLAN 20 is the first group</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>None &mdash; a broadcast reaches only the device it is addressed to</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="1" data-group-title="What the Switch Is Doing" data-num="529.3.2" data-title="Getting to the command line">
+  <p class="crumb">Lesson 529.3 &middot; Section 1 What the Switch Is Doing</p>
+  <h2><span class="tnum">529.3.2</span> Getting to the command line</h2>
+  <p class="lead-in">A managed switch has no screen and no keyboard of its own. Your laptop supplies both, joined to the switch by a cable that carries your keystrokes over and its replies back.</p>
+  <p>A switch out of its box has no IP address, no password, and no way to be reached over the network, because the network is the thing you have not configured yet. What it does have is a <span class="keyterm">console port</span>: a dedicated socket whose only purpose is to accept a terminal.</p>
+  <p>The console connection is not a network connection. It carries no network traffic and needs no IP addressing, so it keeps working on a switch whose network settings are wrong or whose ports are all shut down. It is also the only way to watch the switch start up. <strong>That is what it is for.</strong></p>
+
+  <figure class="photo">
+    <img src="images/529.3.2_console-port.jpg" loading="lazy" alt="Close-up of the rear corner of a rack-mount switch. An RJ45 socket is labeled CONSOLE in pale blue lettering above it, with a light gray console cable plugged into it. A product label to the right reads WS-C2960-24TC-S.">
+    <figcaption class="cap">The console port on a rack-mount switch, with a console cable seated in it. The socket is an RJ45 the same shape as every network port on the front of the unit &mdash; the printed word above it is the only thing distinguishing the two.</figcaption>
+  </figure>
+
+  <h3>What the connection needs</h3>
+  <p>Three things: a physical path from your laptop to the console port, a terminal program on the laptop, and the right serial settings.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What a console connection is made of.</caption>
+      <thead><tr>
+        <th scope="col">Part</th><th scope="col">What it is</th><th scope="col">What to watch</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">The console port</th><td>On most switches an RJ45 socket labeled CONSOLE, physically identical to a network port. Newer equipment may offer a USB console socket instead or as well</td><td>It looks like a network port and it is not one. A patch cord plugged into it does nothing, and a console cable plugged into a network port does nothing either</td></tr>
+        <tr><th scope="row">The cable</th><td>A console cable, often called a rollover cable. One end goes to the console port; the other presents a serial connection to the laptop, usually over USB</td><td>Not a patch cord. The pin order is reversed end to end, which is what rollover means, and it is not interchangeable with anything else in the rack</td></tr>
+        <tr><th scope="row">The driver</th><td>A USB console cable appears to the laptop as a serial port only after its driver is installed</td><td>No driver, no port in the list. This is the most common reason a working cable appears to do nothing</td></tr>
+        <tr><th scope="row">The terminal program</th><td>PuTTY or Tera Term on the laptop. You choose a serial connection, name the port, and set the speed</td><td>Choosing the wrong port number connects you to nothing. The port list shows which ones exist</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The serial settings</h3>
+  <p>The terminal and the switch have to agree on how fast to talk and how to frame each character. One combination is near-universal on network equipment, and it is worth memorizing because there is no way to discover it from the far end.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Standard console settings, usually written as 9600 8-N-1.</caption>
+      <thead><tr>
+        <th scope="col">Setting</th><th scope="col">Value</th><th scope="col">Meaning</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Speed</th><td>9600 baud</td><td>How fast characters move. Slow by any modern measure, and fine for typing</td></tr>
+        <tr><th scope="row">Data bits</th><td>8</td><td>Eight bits to a character</td></tr>
+        <tr><th scope="row">Parity</th><td>None</td><td>No error-checking bit added</td></tr>
+        <tr><th scope="row">Stop bits</th><td>1</td><td>One bit marks the end of each character</td></tr>
+        <tr><th scope="row">Flow control</th><td>None</td><td>Leave this off. Set to hardware, the session can appear to freeze</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <figure class="photo">
+    <img src="images/529.3.2_putty-serial.png" loading="lazy" alt="The PuTTY Configuration window. Connection type is set to Serial. The Serial line box reads COM3 and the Speed box reads 9600.">
+    <figcaption class="cap">The same settings entered in a terminal program. <b>Serial</b> is selected rather than Secure Shell (SSH), the serial line is the port the console cable appeared as, and the speed is 9600. The remaining values sit under the Serial category and are already correct by default.</figcaption>
+  </figure>
+
+  <div class="note tip"><div class="nt">A blank window is not a failed connection</div>
+    <p>Once the terminal opens, the window is often empty. The switch has nothing to say until you say something. Press <kbd>Enter</kbd> and a prompt appears.</p>
+    <p>If pressing <kbd>Enter</kbd> produces nothing, work through the list in order: the cable seated at both ends, the correct serial port chosen, the speed set to 9600, and flow control off. If characters appear but arrive as unreadable symbols, the two ends disagree on how to frame them &mdash; the speed is wrong, or less often the data bits or parity. Start with the speed.</p></div>
+
+  <h3>The first prompt</h3>
+  <p>A switch that has just been powered on prints its startup messages to the console as it goes: the model it is, the software it is running, and the state of its interfaces. The earliest of those messages appear on the console as they happen and are gone once they have scrolled past &mdash; the switch only starts keeping a copy of its messages later in the startup. That is the reason for connecting before you power a switch on rather than after.</p>
+  <div class="photo-row">
+    <figure class="photo">
+      <img src="images/529.3.2_boot-messages.png" loading="lazy" alt="A terminal window titled COM3 - PuTTY showing switch startup output, including a table giving the switch model as WS-C2960-24TC-S and the software version as 12.2 parenthesis 55 SE, several system log lines, and a final line reading Press RETURN to get started.">
+      <figcaption class="cap">Startup output. The model and software version are stated, then the interface and system messages, then an invitation to press <kbd>Return</kbd>.</figcaption>
+    </figure>
+    <figure class="photo">
+      <img src="images/529.3.2_first-prompt.png" loading="lazy" alt="The same terminal window further on, showing a System Configuration Dialog with an enable secret warning, a question reading Would you like to enter the initial configuration dialog with yes or no in brackets, answered n, and beneath it the prompt Switch followed by a greater-than sign.">
+      <figcaption class="cap">On a switch with no saved configuration, the next thing offered is a setup dialog. Answering <code>n</code> declines it and leaves you at the command line.</figcaption>
+    </figure>
+  </div>
+  <div class="note tip"><div class="nt">Decline the setup dialog</div>
+    <p>The initial configuration dialog asks a series of questions and writes a configuration from the answers. It is not how the work in this lesson is done, and it does not ask about VLANs or Power over Ethernet at all.</p>
+    <p>Answer <code>n</code> and you are left at the command line, where every setting is made deliberately and one line at a time. The dialog is offered only on a switch with nothing saved, so on a switch already in service you will not see it.</p></div>
+  <p>What you are left with is short, and it tells you three things.</p>
+  <div class="cli">
+    <div class="cli-ttl">Console session, first contact</div>
+    <div class="cli-body"><pre><span class="out">Switch&gt;</span></pre></div>
+    <div class="cli-foot"><p><b>Switch</b> is the device name, unchanged from the factory. The <b>&gt;</b> says you are in the lowest privilege level. The cursor after it says the switch is listening.</p></div>
+  </div>
+  <p>That is a working command line. Everything else in this lesson happens from here.</p>
+
+  <div class="note note"><div class="nt">If the switch is reached over the network instead</div>
+    <p>A switch that has already been given a management IP address and had network access enabled can be reached with the same terminal program over the network, rather than through the console port. You select a network connection instead of a serial one, enter the switch&rsquo;s IP address, and sign in.</p>
+    <p><b>What is identical.</b> Everything after the prompt appears. The modes, the commands, the verification, and the save are exactly the same, and nothing in the rest of this lesson changes.</p>
+    <figure class="photo">
+      <img src="images/529.3.2_putty-ssh.png" loading="lazy" alt="The PuTTY Configuration window with Connection type set to SSH. The Host Name box reads 10.10.10.1 and the Port box reads 22.">
+      <figcaption class="cap">The same dialog, one setting different. <b>SSH</b> is selected instead of Serial, and the switch is named by IP address rather than by serial port.</figcaption>
+    </figure>
+    <p><b>What is not.</b> A network connection depends on the switch already being configured correctly &mdash; it has an IP address, its management path is up, and your laptop can reach it. Break any of those from the command line and the session you are typing in disappears with them. The console connection has no such dependency, which is why it stays the method of last resort and the method used on a switch that has never been configured.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Readable characters mean the connection is working; unreadable ones mean it is working at the wrong speed. The terminal and the switch are framing characters differently, so the bits arrive and get assembled into the wrong symbols. Set the speed to 9600 and the text becomes readable. A faulty cable or a wrong port number produces no characters at all rather than garbled ones, and the switch does not need restarting &mdash; it has been sending correctly the whole time.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">You open a console session and press Enter. Characters appear, but they are unreadable symbols rather than text. What is the most likely cause?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The console cable is faulty and should be replaced</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The terminal speed does not match the switch</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The wrong serial port was chosen in the terminal program</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The switch needs to be restarted before it will accept a session</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="1" data-group-title="What the Switch Is Doing" data-num="529.3.3" data-title="Where you are, and what you can type there">
+  <p class="crumb">Lesson 529.3 &middot; Section 1 What the Switch Is Doing</p>
+  <h2><span class="tnum">529.3.3</span> Where you are, and what you can type there</h2>
+  <p class="lead-in">The command line accepts different commands depending on where in it you are standing. The prompt tells you where that is, and reading it is the skill.</p>
+  <p>A switch command line is not one flat list of commands. It is a set of <span class="keyterm">modes</span>, each holding the commands that make sense in it. A command the switch does not recognize in the mode you are in is rejected &mdash; not because the command is wrong, but because it does not belong where you are.</p>
+  <p>This is the single most common source of confusion for somebody new to a switch. <strong>The prompt always states the mode. It is not decoration.</strong></p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:900px" viewBox="0 0 900 430" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram of the command line mode ladder, showing five modes with the prompt each displays, the command that enters it, and the command that leaves it. A full text description follows.">
+    <defs>
+      <marker id="a529d" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#0079C0"/>
+      </marker>
+      <marker id="a529e" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#7f8b95"/>
+      </marker>
+    </defs>
+
+    <text x="20" y="26" font-size="15" font-weight="700" fill="#0079C0">GOING IN</text>
+    <text x="880" y="26" font-size="15" font-weight="700" fill="#5a6772" text-anchor="end">COMING OUT</text>
+
+    <rect x="150" y="42" width="420" height="56" rx="7" fill="#fff" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="168" y="66" font-size="15" font-weight="700" fill="#09507C">User EXEC</text>
+    <text x="168" y="88" font-size="14" fill="#5a6772">Look, but change nothing</text>
+    <text x="552" y="76" font-size="15" text-anchor="end" fill="#1b2a3a" font-family="monospace">Switch&gt;</text>
+
+    <line x1="360" y1="98" x2="360" y2="130" stroke="#0079C0" stroke-width="2" marker-end="url(#a529d)"/>
+    <rect x="372" y="104" width="74" height="24" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.2"/>
+    <text x="382" y="121" font-size="14" fill="#09507C" font-family="monospace" font-weight="700">enable</text>
+    <line x1="700" y1="130" x2="700" y2="98" stroke="#7f8b95" stroke-width="2" marker-end="url(#a529e)"/>
+    <rect x="712" y="104" width="82" height="24" rx="5" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.2"/>
+    <text x="722" y="121" font-size="14" fill="#3c4956" font-family="monospace">disable</text>
+
+    <rect x="150" y="130" width="420" height="56" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="168" y="154" font-size="15" font-weight="700" fill="#09507C">Privileged EXEC</text>
+    <text x="168" y="176" font-size="14" fill="#5a6772">Read everything, save, restart</text>
+    <text x="552" y="164" font-size="15" text-anchor="end" fill="#1b2a3a" font-family="monospace">Switch#</text>
+
+    <line x1="360" y1="186" x2="360" y2="218" stroke="#0079C0" stroke-width="2" marker-end="url(#a529d)"/>
+    <rect x="372" y="192" width="176" height="24" rx="5" fill="#eef4f9" stroke="#0079C0" stroke-width="1.2"/>
+    <text x="382" y="209" font-size="14" fill="#09507C" font-family="monospace" font-weight="700">configure terminal</text>
+    <line x1="700" y1="218" x2="700" y2="186" stroke="#7f8b95" stroke-width="2" marker-end="url(#a529e)"/>
+    <rect x="712" y="192" width="50" height="24" rx="5" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.2"/>
+    <text x="722" y="209" font-size="14" fill="#3c4956" font-family="monospace">end</text>
+
+    <rect x="150" y="218" width="420" height="56" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="168" y="242" font-size="15" font-weight="700" fill="#09507C">Global configuration</text>
+    <text x="168" y="264" font-size="14" fill="#5a6772">Change settings for the whole switch</text>
+    <text x="552" y="252" font-size="15" text-anchor="end" fill="#1b2a3a" font-family="monospace">Switch(config)#</text>
+
+    <line x1="248" y1="274" x2="248" y2="316" stroke="#0079C0" stroke-width="2" marker-end="url(#a529d)"/>
+    <rect x="60" y="283" width="176" height="24" rx="5" fill="#f7f1e4" stroke="#B45309" stroke-width="1.2"/>
+    <text x="70" y="300" font-size="14" fill="#8a4a06" font-family="monospace" font-weight="700">vlan &lt;number&gt;</text>
+
+    <line x1="472" y1="274" x2="472" y2="316" stroke="#0079C0" stroke-width="2" marker-end="url(#a529d)"/>
+    <rect x="484" y="283" width="184" height="24" rx="5" fill="#f7f1e4" stroke="#B45309" stroke-width="1.2"/>
+    <text x="494" y="300" font-size="14" fill="#8a4a06" font-family="monospace" font-weight="700">interface &lt;name&gt;</text>
+
+    <rect x="40" y="316" width="330" height="58" rx="7" fill="#fff" stroke="#B45309" stroke-width="1.6"/>
+    <text x="58" y="340" font-size="15" font-weight="700" fill="#8a4a06">VLAN configuration</text>
+    <text x="58" y="362" font-size="14" fill="#5a6772">Settings for one VLAN</text>
+    <text x="352" y="351" font-size="14" text-anchor="end" fill="#1b2a3a" font-family="monospace">(config-vlan)#</text>
+
+    <rect x="400" y="316" width="340" height="58" rx="7" fill="#fff" stroke="#B45309" stroke-width="1.6"/>
+    <text x="418" y="340" font-size="15" font-weight="700" fill="#8a4a06">Interface configuration</text>
+    <text x="418" y="362" font-size="14" fill="#5a6772">Settings for one port</text>
+    <text x="722" y="351" font-size="14" text-anchor="end" fill="#1b2a3a" font-family="monospace">(config-if)#</text>
+
+    <rect x="40" y="392" width="298" height="24" rx="5" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.2"/>
+    <text x="50" y="409" font-size="13" fill="#3c4956" font-family="monospace">boxed monospace = a command you type</text>
+    <text x="352" y="409" font-size="14" fill="#5a6772">Downward commands enter a mode. Upward commands leave one.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram is a ladder of five command line modes, drawn top to bottom. Every command is shown in a small box in monospace type; a key at the foot of the diagram states that boxed monospace text is a command you type. Commands on the left of the ladder point downward and enter a mode. Commands on the right point upward and leave one.</p>
+    <ol>
+      <li><b>User EXEC</b>, described as look but change nothing, displays the prompt <code>Switch&gt;</code>.</li>
+      <li>Typing <code>enable</code> moves down to <b>Privileged EXEC</b>, described as read everything, save, restart, displaying the prompt <code>Switch#</code>. Typing <code>disable</code> moves back up.</li>
+      <li>Typing <code>configure terminal</code> moves down to <b>Global configuration</b>, described as change settings for the whole switch, displaying the prompt <code>Switch(config)#</code>. Typing <code>end</code> returns upward.</li>
+      <li>From global configuration, two branches lead downward. Typing <code>vlan</code> followed by a number enters <b>VLAN configuration</b>, settings for one VLAN, with the prompt <code>(config-vlan)#</code>. Typing <code>interface</code> followed by a port name enters <b>Interface configuration</b>, settings for one port, with the prompt <code>(config-if)#</code>.</li>
+    </ol>
+  </details>
+
+  <h3>Reading the five prompts</h3>
+  <p>Each prompt has two parts: the device name, and a symbol or bracketed word saying what you may do.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The five modes used in this lesson, how you enter each one, and what it is for.</caption>
+      <thead><tr>
+        <th scope="col">Prompt</th><th scope="col">Mode</th><th scope="col">Command that enters it</th><th scope="col">What you can do there</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>Switch&gt;</code></th><td>User EXEC</td><td>None &mdash; a console session opens here</td><td>A small set of look-only commands. Where a session starts. You cannot change or even fully read the configuration from here</td></tr>
+        <tr><th scope="row"><code>Switch#</code></th><td>Privileged EXEC</td><td><code>enable</code></td><td>Every <code>show</code> command, saving the configuration, and restarting the switch. This is where you verify work and where you save it</td></tr>
+        <tr><th scope="row"><code>Switch(config)#</code></th><td>Global configuration</td><td><code>configure terminal</code></td><td>Settings that apply to the switch as a whole, including creating a VLAN and choosing which port to work on next</td></tr>
+        <tr><th scope="row"><code>Switch(config-vlan)#</code></th><td>VLAN configuration</td><td><code>vlan &lt;number&gt;</code></td><td>Settings for the one VLAN you named on the way in, such as its name. Everything typed here applies to that VLAN and nothing else</td></tr>
+        <tr><th scope="row"><code>Switch(config-if)#</code></th><td>Interface configuration</td><td><code>interface &lt;name&gt;</code></td><td>Settings for the one port you named on the way in. Everything typed here applies to that port and nothing else</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn note"><div class="nt">Read the bracket before you type</div>
+    <p><code>Switch(config)#</code> and <code>Switch(config-if)#</code> differ by three characters and by everything that matters. The first applies to the whole switch. The second applies to one port. Watch for a command that is valid in both, such as <code>shutdown</code>: it is accepted wherever you type it, and applied to whatever that mode governs &mdash; the whole switch, or the one port. Read the prompt before you press Enter.</p>
+    <p>The habit that prevents this costs nothing: look at the prompt, then type. Every time.</p></div>
+
+  <h3>Three things the command line does to help</h3>
+  <ul>
+    <li><strong>Abbreviation.</strong> A command can be shortened as long as what you type is unambiguous. <code>conf t</code> is accepted for <code>configure terminal</code>, and <code>sh ru</code> for <code>show running-config</code>. Read abbreviations comfortably, because other people use them; type commands in full while you are learning, because a full command is one you can also read back.</li>
+    <li><strong>The question mark.</strong> Typing <code>?</code> lists what is valid at that point. On its own it lists every command available in the current mode. After a partial command it lists the ways that command can be completed. It is the fastest way to answer &ldquo;what am I allowed to type here&rdquo; without guessing.</li>
+    <li><strong>The Tab key.</strong> Completes a command you have started typing enough of. Useful, and a quiet check on your spelling: nothing completes if the word is wrong.</li>
+  </ul>
+  <div class="note note"><div class="nt">Two messages, two different problems</div>
+    <p><code>% Invalid input detected at '^' marker</code> means the switch did not recognize what you typed at the point the caret marks. The usual causes are a typing error, or a command that does not exist in the mode you are in.</p>
+    <p><code>% Incomplete command</code> means the command was recognized but is missing something &mdash; a number, a name, an interface. Press the up arrow to bring the line back, add a space and a question mark, and the switch lists what is missing.</p>
+    <p>Neither message changes anything on the switch. A rejected command is a command that did not run.</p></div>
+
+  <p>Match each prompt to the mode it announces.</p>
+  <div class="match gate" data-left="Prompt" data-right="Mode"><div class="pair" data-left="Switch&gt;" data-right="User EXEC"></div><div class="pair" data-left="Switch#" data-right="Privileged EXEC"></div><div class="pair" data-left="Switch(config)#" data-right="Global configuration"></div><div class="pair" data-left="Switch(config-vlan)#" data-right="VLAN configuration"></div><div class="pair" data-left="Switch(config-if)#" data-right="Interface configuration"></div></div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="2" data-group-title="Building the Configuration" data-num="529.3.4" data-title="Naming the port you are about to configure">
+  <p class="crumb">Lesson 529.3 &middot; Section 2 Building the Configuration</p>
+  <h2><span class="tnum">529.3.4</span> Naming the port you are about to configure</h2>
+  <p class="lead-in">Before you can configure a port you have to name it the way the switch names it &mdash; and the switch in front of you may not use the same form as the one beside it.</p>
+  <p>A work order names a port by where it is: the twelfth port on the switch in the second-floor room. The switch names it differently, and the two have to be reconciled before anything can be typed. Get the name wrong and one of two things happens. Either the switch rejects it, which is harmless, or it accepts it and you have configured a port belonging to somebody else, which is not.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:880px" viewBox="0 0 880 344" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram breaking the interface name GigabitEthernet1/0/12 into its four numbered parts: port type, stack member, module, and port number. A full text description follows.">
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">ANATOMY OF AN INTERFACE NAME</text>
+
+    <g fill="#eef4f9" stroke="#0079C0" stroke-width="1.6">
+      <rect x="24" y="56" width="250" height="44" rx="6"/>
+      <rect x="282" y="56" width="44" height="44" rx="6"/>
+      <rect x="348" y="56" width="44" height="44" rx="6"/>
+      <rect x="414" y="56" width="56" height="44" rx="6"/>
+    </g>
+    <g font-size="23" font-family="monospace" font-weight="700" fill="#09507C" text-anchor="middle">
+      <text x="149" y="87">GigabitEthernet</text>
+      <text x="304" y="87">1</text>
+      <text x="370" y="87">0</text>
+      <text x="442" y="87">12</text>
+    </g>
+    <g font-size="23" font-family="monospace" fill="#5a6772" text-anchor="middle">
+      <text x="337" y="87">/</text>
+      <text x="403" y="87">/</text>
+    </g>
+
+    <g fill="#09507C">
+      <circle cx="149" cy="120" r="11"/><circle cx="304" cy="120" r="11"/>
+      <circle cx="370" cy="120" r="11"/><circle cx="442" cy="120" r="11"/>
+    </g>
+    <g font-size="14" font-weight="700" fill="#fff" text-anchor="middle">
+      <text x="149" y="125">1</text><text x="304" y="125">2</text>
+      <text x="370" y="125">3</text><text x="442" y="125">4</text>
+    </g>
+    <text x="24" y="156" font-size="14" fill="#5a6772">The name is one unbroken string. It is split here to show its parts &mdash; you do not type spaces.</text>
+
+    <g fill="#09507C">
+      <circle cx="34" cy="187" r="11"/><circle cx="34" cy="219" r="11"/>
+      <circle cx="34" cy="251" r="11"/><circle cx="34" cy="283" r="11"/>
+    </g>
+    <g font-size="14" font-weight="700" fill="#fff" text-anchor="middle">
+      <text x="34" y="192">1</text><text x="34" y="224">2</text>
+      <text x="34" y="256">3</text><text x="34" y="288">4</text>
+    </g>
+    <g font-size="15" font-family="monospace" fill="#1b2a3a">
+      <text x="56" y="192">GigabitEthernet</text><text x="56" y="224">1</text>
+      <text x="56" y="256">0</text><text x="56" y="288">12</text>
+    </g>
+    <g font-size="15" font-weight="700" fill="#09507C">
+      <text x="212" y="192">Port type</text><text x="212" y="224">Stack member</text>
+      <text x="212" y="256">Module</text><text x="212" y="288">Port number</text>
+    </g>
+    <g font-size="14" fill="#5a6772">
+      <text x="352" y="192">The speed family of this port</text>
+      <text x="352" y="224">Which switch, when several are joined as one. A lone switch is 1</text>
+      <text x="352" y="256">Which card in the switch. Fixed-port switches use 0</text>
+      <text x="352" y="288">The socket itself, numbered as printed on the front of the switch</text>
+    </g>
+
+    <rect x="24" y="306" width="470" height="30" rx="6" fill="#f4f7fa" stroke="#c8d4de" stroke-width="1.4"/>
+    <text x="40" y="326" font-size="14" fill="#3c4956">Written short: GigabitEthernet1/0/12 is Gi1/0/12, FastEthernet1/0/12 is Fa1/0/12.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The interface name <code>GigabitEthernet1/0/12</code> is drawn along the top as four boxed segments, each with a numbered marker beneath it. The two forward slashes sit between the last three segments, and nothing separates the port type from the first number. A note states that the name is one unbroken string, split only to show its parts, and that you do not type spaces. The same four numbers key the list below, so each part can be matched to its description without relying on color.</p>
+    <ol>
+      <li><code>GigabitEthernet</code> is the <b>port type</b> &mdash; the speed family of this port.</li>
+      <li><code>1</code> is the <b>stack member</b>: which switch, when several are joined and managed as one. A switch on its own is number 1.</li>
+      <li><code>0</code> is the <b>module</b>: which card in the switch. Fixed-port switches use 0.</li>
+      <li><code>12</code> is the <b>port number</b>: the socket itself, numbered as printed on the front of the switch.</li>
+    </ol>
+    <p>A strip at the foot gives the short forms: <code>GigabitEthernet1/0/12</code> is written <code>Gi1/0/12</code>, and <code>FastEthernet1/0/12</code> is written <code>Fa1/0/12</code>.</p>
+  </details>
+
+  <h3>Two port types, and why it matters which one you are looking at</h3>
+  <p>Switch ports come in two roles. The <span class="keyterm">access ports</span> are the numbered sockets across the front, and a work area drop is patched to one of them. The <span class="keyterm">uplink ports</span> are the few at the end that carry the switch&rsquo;s traffic onward to the rest of the network. A desk drop lands on an access port, and an access port is the only kind you configure.</p>
+  <p>The first part of the interface name is the port type, and it states the speed family the port belongs to.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The two port types you will meet on switches of this kind.</caption>
+      <thead><tr>
+        <th scope="col">Written in full</th><th scope="col">Short</th><th scope="col">Speed</th><th scope="col">Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">FastEthernet</th><td><code>Fa</code></td><td>10 or 100 Mbps</td><td>Found on the access ports of older switches, including models that supply Power over Ethernet</td></tr>
+        <tr><th scope="row">GigabitEthernet</th><td><code>Gi</code></td><td>10, 100 or 1000 Mbps</td><td>Found on the access ports of newer switches, and on the uplink ports of almost all of them</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="warn note"><div class="nt">Do not assume the type &mdash; confirm it</div>
+    <p>Two switches sitting in the same rack can name their ports differently. A switch whose access ports are FastEthernet will reject <code>interface gigabitethernet 1/0/12</code>, because it has no such port. The reverse is equally true.</p>
+    <p>It is also common for one switch to use both: FastEthernet access ports across the front, and GigabitEthernet uplink ports at the end. The uplink is not where a desk gets patched, so the type you need is whatever the access ports use.</p>
+    <p><b>Confirm the type on the switch you are actually at, every time, before you type an interface command.</b> It takes one command and it removes the whole problem.</p></div>
+
+  <h3>Confirming it from the switch</h3>
+  <p>One command lists every port with its name, its state, and the VLAN it is in. The <b>Port</b> column on the left is the switch telling you what it calls its own ports, which is the only opinion that counts.</p>
+  <div class="cli">
+    <div class="cli-ttl">Privileged EXEC &mdash; list the ports and their names</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show interfaces status</span>
+
+<span class="out">Port      Name          Status       Vlan    Duplex  Speed Type
+Fa1/0/10                notconnect   1         auto   auto 10/100BaseTX
+Fa1/0/11                notconnect   1         auto   auto 10/100BaseTX
+Fa1/0/12                notconnect   1         auto   auto 10/100BaseTX
+Fa1/0/13                notconnect   1         auto   auto 10/100BaseTX
+Gi1/0/1                 notconnect   1         auto   auto unknown</span></pre></div>
+    <div class="cli-foot"><p>The access ports on this switch are <b>Fa</b>, and the <b>Type</b> column confirms why: 10/100BaseTX, meaning the port runs at 10 or 100 Mbps over copper. <code>Gi1/0/1</code> at the bottom is an uplink, and its Type reads <code>unknown</code> because nothing is plugged into it yet &mdash; that socket takes a module, and the switch cannot say what kind until one is fitted. <b>Name</b> is a label somebody can write on a port and is empty on all five. <b>Duplex</b> and <b>Speed</b> read <code>auto</code> because no link has formed for them to settle. On this switch, an interface command has to say <code>fastethernet</code>.</p></div>
+  </div>
+  <p>Two other commands answer the same question from a different angle, and each also tells you what you are standing in front of.</p>
+  <ul>
+    <li><code>show version</code> reports the model and the software running on it, along with a count of how many ports of each type the switch has.</li>
+    <li><code>show inventory</code> reports the model number and serial number of the switch and of anything plugged into it.</li>
+  </ul>
+  <div class="note tip"><div class="nt">Reading a model number</div>
+    <p>Switch model numbers state the port configuration if you know where to look. In a model number such as <code>WS-C3750-48PS-S</code>, the number is the access port count and the letter straight after it describes those ports: <b>P</b> for Power over Ethernet, <b>T</b> for plain copper with no power. An <b>S</b> in that same group indicates Small Form-factor Pluggable (SFP) uplink sockets &mdash; slots that take a plug-in fiber or copper module &mdash; and a <b>G</b> in the family name indicates Gigabit access ports.</p>
+    <p>So <code>48PS</code> is forty-eight ports with power, and <code>24TS</code> is twenty-four without. You can read this off a label, and it is not a substitute for <code>show interfaces status</code> &mdash; read the label to know what to expect, and read the switch to know what is true.</p></div>
+
+  <div class="cyu gate" data-answer="0" data-fb="The port name has to match what the switch calls the port. This switch calls it Fa1/0/12, so the interface command has to say fastethernet 1/0/12. Naming it as gigabitethernet is rejected, because the switch has no gigabitethernet port at that position. Restarting changes nothing &mdash; the port type is set by the hardware, not by the configuration &mdash; and the uplink port is not where a work area drop is patched.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">The work order asks you to configure the twelfth access port. <code>show interfaces status</code> lists that port as <code>Fa1/0/12</code>. What do you type to begin configuring it?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span><code>interface fastethernet 1/0/12</code></button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span><code>interface gigabitethernet 1/0/12</code></button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Restart the switch so the port comes up as gigabit</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span><code>interface gigabitethernet 1/0/1</code>, the uplink port</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="2" data-group-title="Building the Configuration" data-num="529.3.5" data-title="Creating the VLAN and assigning the port">
+  <p class="crumb">Lesson 529.3 &middot; Section 2 Building the Configuration</p>
+  <h2><span class="tnum">529.3.5</span> Creating the VLAN and assigning the port</h2>
+  <p class="lead-in">Two jobs, done in one visit to the command line: bring the VLAN into existence, then put a port into it.</p>
+  <p>Creating a VLAN and putting a port into it are two separate jobs, and each is done in a different mode. A VLAN belongs to the switch, so it is created in global configuration. A port assignment belongs to one port, so it is made in that port&rsquo;s own configuration mode. Assign a port to a VLAN that has not been created and the switch creates it for you, unnamed and undescribed. That works, and it leaves the next technician a bare number with nothing attached to it. Create the VLAN first, and name it.</p>
+
+  <h3>Part one &mdash; create the VLAN and name it</h3>
+  <div class="cli">
+    <div class="cli-ttl">Creating VLAN 20</div>
+    <div class="cli-body"><pre><span class="pr">Switch&gt;</span> <span class="cmd">enable</span>
+<span class="pr">Switch#</span> <span class="cmd">configure terminal</span>
+<span class="pr">Switch(config)#</span> <span class="cmd">vlan 20</span>
+<span class="pr">Switch(config-vlan)#</span> <span class="cmd">name DATA-20</span>
+<span class="pr">Switch(config-vlan)#</span> <span class="cmd">exit</span>
+<span class="pr">Switch(config)#</span></pre></div>
+    <div class="cli-foot"><p>Watch the prompt change at each step. It moved from <code>&gt;</code> to <code>#</code>, into <code>(config)</code>, into <code>(config-vlan)</code>, and back out to where the port work begins.</p></div>
+  </div>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What each command in part one does.</caption>
+      <thead><tr>
+        <th scope="col">Command</th><th scope="col">What it does</th><th scope="col">Where it leaves you</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>enable</code></th><td>Raises you from look-only to full privilege</td><td><code>Switch#</code></td></tr>
+        <tr><th scope="row"><code>configure terminal</code></th><td>Opens configuration, with your terminal as the source of the changes</td><td><code>Switch(config)#</code></td></tr>
+        <tr><th scope="row"><code>vlan 20</code></th><td>Creates VLAN 20 if it does not exist, and enters its configuration either way. Naming the number is what creates it, so there is no separate create command</td><td><code>Switch(config-vlan)#</code></td></tr>
+        <tr><th scope="row"><code>name DATA-20</code></th><td>Gives the VLAN a name that means something to a person. Optional to the switch, expected of you</td><td><code>Switch(config-vlan)#</code></td></tr>
+        <tr><th scope="row"><code>exit</code></th><td>Steps back out to global configuration, ready for the port</td><td><code>Switch(config)#</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note tip"><div class="nt">Naming is not decoration</div>
+    <p>A VLAN with no name still works. It also arrives at the next technician as a bare number with no indication of what it is for. Nobody will then move a port into or out of it without asking somebody first, and the person who could answer has often moved on.</p>
+    <p>Names are short, upper case by convention, and describe the group rather than the room: <code>DATA-20</code>, <code>VOICE-25</code>, <code>CAMERA-30</code>. Whatever scheme the site already uses beats whatever scheme you would have chosen.</p></div>
+
+  <h3>Part two &mdash; put the port in it</h3>
+  <p>Now name the port, in the form the switch uses, and give it three settings.</p>
+  <div class="cli">
+    <div class="cli-ttl">Assigning a port to VLAN 20</div>
+    <div class="cli-body"><pre><span class="pr">Switch(config)#</span> <span class="cmd">interface gigabitethernet 1/0/12</span>   <span class="cmt">! or fastethernet, per the switch</span>
+<span class="pr">Switch(config-if)#</span> <span class="cmd">switchport mode access</span>
+<span class="pr">Switch(config-if)#</span> <span class="cmd">switchport access vlan 20</span>
+<span class="pr">Switch(config-if)#</span> <span class="cmd">no shutdown</span>
+<span class="pr">Switch(config-if)#</span> <span class="cmd">end</span>
+<span class="pr">Switch#</span></pre></div>
+    <div class="cli-foot"><p><code>end</code> rather than <code>exit</code> at the close. <code>exit</code> would step back to <code>(config)#</code>; <code>end</code> leaves configuration altogether and returns you to <code>Switch#</code>, which is where verification happens.</p></div>
+  </div>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What each command in part two does.</caption>
+      <thead><tr>
+        <th scope="col">Command</th><th scope="col">What it does</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>interface &hellip;</code></th><td>Selects one port. Everything typed after this applies to that port and to nothing else, until you leave</td></tr>
+        <tr><th scope="row"><code>switchport mode access</code></th><td>Declares this port as one that serves a single device in a single VLAN. It is what an outlet at a desk is. Setting it explicitly means the port cannot negotiate itself into behaving some other way</td></tr>
+        <tr><th scope="row"><code>switchport access vlan 20</code></th><td>Places the port in VLAN 20. This is the assignment itself &mdash; one command, and the reason the whole visit was made</td></tr>
+        <tr><th scope="row"><code>no shutdown</code></th><td>Brings the port up administratively. A port disabled by a previous technician stays disabled until this is typed, and a disabled port looks identical to a broken cable from the desk</td></tr>
+        <tr><th scope="row"><code>end</code></th><td>Leaves configuration and returns to <code>Switch#</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note note"><div class="nt">Why <code>no shutdown</code> is in the sequence even when the port is already up</div>
+    <p>On most switches an access port is enabled by default, so on a port nobody has touched, this command changes nothing.</p>
+    <p>It is in the sequence because you are rarely the first person at the port. Disabling a port is a normal thing to do when a desk is vacated, and it leaves no trace at the desk end: no light, no link, and a user reporting a broken cable. Typing <code>no shutdown</code> as part of the standard sequence removes that possibility for the cost of one command.</p>
+    <p>On this equipment, prefixing a command with <code>no</code> undoes it. <code>shutdown</code> disables the port and <code>no shutdown</code> re-enables it. The same pattern applies throughout: <code>no switchport access vlan 20</code> would return the port to the default VLAN.</p></div>
+  <div class="warn note"><div class="nt">The port takes effect the moment you press Enter</div>
+    <p>There is no apply step and no confirmation. A configuration line runs when you press <kbd>Enter</kbd>, and if a device is connected to that port, the change reaches it immediately.</p>
+    <p>This is why the port number is checked against the work order before the interface line is typed rather than after. Configuring the wrong port disconnects whoever is on it, and they will find out before you do.</p></div>
+
+  <p>One more command belongs inside the port&rsquo;s own configuration mode, alongside the three settings already there. It is the subject of the next topic.</p>
+  <div class="cyu gate" data-answer="0" data-fb="&lsquo;end&rsquo; leaves configuration altogether and returns you to Switch#, which is where every show command is run. &lsquo;exit&rsquo; steps back only one level, to Switch(config)#, which is still inside configuration and still will not accept a show command. &lsquo;enable&rsquo; raises privilege, which you already hold. &lsquo;disable&rsquo; would give it up.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">The port settings are typed and the prompt reads <code>Switch(config-if)#</code>. Verification commands are run at <code>Switch#</code>. Which command takes you there in one step?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span><code>end</code></button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span><code>exit</code></button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span><code>enable</code></button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span><code>disable</code></button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="2" data-group-title="Building the Configuration" data-num="529.3.6" data-title="Allowing the port to supply power">
+  <p class="crumb">Lesson 529.3 &middot; Section 2 Building the Configuration</p>
+  <h2><span class="tnum">529.3.6</span> Allowing the port to supply power</h2>
+  <p class="lead-in">A port on a PoE-capable switch is already allowed to supply power; that is how it leaves the factory. One command states that permission, changes it, or withdraws it.</p>
+  <p>On a Power over Ethernet link the switch port supplies the power and the connected device consumes it. The supplying end is the <span class="keyterm">PSE</span>, power sourcing equipment. The consuming end is the <span class="keyterm">PD</span>, powered device. Both terms appear in switch output and on equipment datasheets.</p>
+  <p>A PoE-capable switch does not simply energize its ports. Doing so would put voltage on a cable that might be connected to something that cannot survive it. Instead the switch tests each port before supplying anything.</p>
+  <ol>
+    <li><strong>Detection.</strong> The switch applies a small voltage and looks for a specific electrical signature that a powered device presents. No signature, no power &mdash; which is what protects a laptop plugged into a PoE port.</li>
+    <li><strong>Classification.</strong> Having found a powered device, the switch asks how much power it needs. The device answers with a class, and the switch reserves that much from its budget.</li>
+    <li><strong>Delivery.</strong> The switch supplies power, and keeps checking that the device is still there. Unplug the device and the port stops supplying within moments.</li>
+  </ol>
+  <p>All three steps happen in under a second, with no involvement from you beyond having allowed them.</p>
+
+  <p>By default a PoE-capable port runs that check on whatever is connected and powers anything that passes it. The command below does not switch power on; it states that default, changes it, or withdraws it.</p>
+
+  <h3>The command, and its three settings</h3>
+  <div class="cli">
+    <div class="cli-ttl">power inline auto</div>
+    <div class="cli-body"><pre><span class="pr">Switch(config)#</span> <span class="cmd">interface gigabitethernet 1/0/12</span>
+<span class="pr">Switch(config-if)#</span> <span class="cmd">power inline auto</span>
+<span class="pr">Switch(config-if)#</span> <span class="cmd">end</span>
+<span class="pr">Switch#</span></pre></div>
+    <div class="cli-foot"><p><code>auto</code> is one of three settings the command accepts, and all three are in the table below. It is also the default, so on a port nobody has changed you would not need to type this at all. In the full sequence this command sits with the other port settings, between <code>switchport access vlan 20</code> and <code>no shutdown</code>.</p></div>
+  </div>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The three settings <code>power inline</code> accepts.</caption>
+      <thead><tr>
+        <th scope="col">Setting</th><th scope="col">What the switch does</th><th scope="col">When it is used</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>auto</code></th><td>Detects, classifies, and supplies what the device asks for, up to the port maximum. The default on a PoE-capable port</td><td>Nearly always. It is the normal setting for a port serving a powered device</td></tr>
+        <tr><th scope="row"><code>static</code></th><td>Reserves the power for this port whether or not a device is connected, so the port keeps its allocation when the budget is tight</td><td>Rare, and a network team decision rather than a technician one</td></tr>
+        <tr><th scope="row"><code>never</code></th><td>Disables detection entirely. The port will never supply power to anything</td><td>Where power on a port would be a hazard or a policy breach. Also a fault you will meet, because a port set this way looks broken</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note note"><div class="nt">What typing <code>auto</code> actually clears</div>
+    <p>On a port nobody has changed, this command changes nothing and leaves nothing in the configuration.</p>
+    <p>On a port somebody set to <code>power inline never</code>, it removes that setting and restores detection. A device on a <code>never</code> port looks dead, so typing <code>auto</code> rules that out first.</p></div>
+
+  <h3>Classes and the budget</h3>
+  <p>Power over Ethernet is defined by the Institute of Electrical and Electronics Engineers (IEEE). Two of its standards set the limits on the equipment in this lesson: <strong>802.3af</strong>, the original, and <strong>802.3at</strong>, which raised the power a port may supply. A later standard, <strong>802.3bt</strong>, raises it further still on newer switches, into the tens of watts. Which one a switch supports sets the ceiling for every port on it.</p>
+  <p>The class the device reports during classification tells the switch how much to reserve. The numbers matter for two decisions: whether a given port can power a given device, and whether the switch as a whole can power all of them.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Power classes, as the switch reserves them at the port.</caption>
+      <thead><tr>
+        <th scope="col">Class</th><th scope="col">Reserved at the port</th><th scope="col">Typical device</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">0</th><td>15.4 W</td><td>A device that reports no class. The switch reserves the full amount rather than guess</td></tr>
+        <tr><th scope="row">1</th><td>4.0 W</td><td>Low-draw devices such as some sensors</td></tr>
+        <tr><th scope="row">2</th><td>7.0 W</td><td>Basic desk phones, simple cameras</td></tr>
+        <tr><th scope="row">3</th><td>15.4 W</td><td>Wireless access points, pan-tilt-zoom cameras, feature phones</td></tr>
+        <tr><th scope="row">4</th><td>30.0 W</td><td>Higher-draw devices, and only on a switch that supports 802.3at</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Two separate limits apply, and confusing them leads to the wrong diagnosis.</p>
+  <ul>
+    <li><strong>The per-port limit</strong> is what one port can supply. A switch supporting 802.3af supplies up to 15.4 W per port, which covers classes 0 through 3. A class 4 device on such a port will not power up, and no configuration changes that.</li>
+    <li><strong>The switch budget</strong> is the total the switch has to share across all of its ports, and it is far less than the per-port limit multiplied by the port count. A switch with a 370 W budget cannot supply 15.4 W to forty-eight ports at once. It supplies what it has, in the order the ports were allocated, and refuses the rest.</li>
+  </ul>
+  <div class="warn note"><div class="nt">A budget that runs out looks like a cabling fault</div>
+    <p>When the switch has no power left to allocate, the next device connected does not power up. There is no alarm at the desk and nothing visibly different about that port. The technician standing at the far end sees a device that will not start on a cable that tests good, and starts re-terminating a jack that was never the problem.</p>
+    <p>The switch knows, and says so plainly when asked. That is the reason power is checked at the switch rather than inferred from the device.</p></div>
+  <div class="note tip"><div class="nt">Power and data are independent</div>
+    <p>A link can carry data with no power, and a device can be powered on a link carrying no useful data. The two are configured by different commands and confirmed by different commands.</p>
+    <p>Keeping them separate gives you two facts instead of one when something goes wrong: a device that is dark has a power problem, while a device that lights up and reaches nothing has a data problem. Those lead in opposite directions.</p></div>
+
+  <h3>The configuration, complete</h3>
+  <p>That is the last of the configuration commands. Assembled in order, they are the whole job.</p>
+  <div class="cli">
+    <div class="cli-ttl">The configuration sequence, start to finish</div>
+    <div class="cli-body"><pre><span class="cmd">enable</span>
+<span class="cmd">configure terminal</span>
+ <span class="cmd">vlan 20</span>
+  <span class="cmd">name DATA-20</span>
+  <span class="cmd">exit</span>
+ <span class="cmd">interface gigabitethernet 1/0/12</span>   <span class="cmt">! or fastethernet, per the switch</span>
+  <span class="cmd">switchport mode access</span>
+  <span class="cmd">switchport access vlan 20</span>
+  <span class="cmd">power inline auto</span>
+  <span class="cmd">no shutdown</span>
+  <span class="cmd">end</span></pre></div>
+    <div class="cli-foot"><p>The indentation is a reading aid rather than something you type. Lines sit under the mode they belong to: the VLAN setting under <code>vlan 20</code>, and the four port settings under <code>interface</code>. Anything after a <code>!</code> is a note for you and is not typed either.</p></div>
+  </div>
+  <p>Nothing has been proven yet. A sequence typed without a single error still leaves three questions open &mdash; whether the VLAN is there, whether the port came up in it, and whether the device is drawing power. The switch answers all three when asked, and the next section is how you ask.</p>
+
+  <div class="cyu gate" data-answer="3" data-fb="Both the tester and the switch are telling the truth. The cable is fine, and the switch has no power left to allocate &mdash; so the port never gets past the detection and classification stage and the device stays dark. Re-terminating a run that passed a wire map fixes nothing, moving the device to another port on the same switch draws from the same exhausted budget, and the class the device reports is not the problem when there is nothing left to reserve for it.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">An access point does not power up. The run passes a wire map test, and the switch reports that its power budget is fully allocated to other ports. What is the most likely cause?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The run needs re-terminating at the patch panel</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The access point is reporting the wrong power class</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The port is in the wrong VLAN</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The switch has no power left in its budget to allocate</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="3" data-group-title="Proving It, Saving It, Knowing Where to Stop" data-num="529.3.7" data-title="Reading the verification commands">
+  <p class="crumb">Lesson 529.3 &middot; Section 3 Proving It, Saving It, Knowing Where to Stop</p>
+  <h2><span class="tnum">529.3.7</span> Reading the verification commands</h2>
+  <p class="lead-in">Typing a command without an error message proves that the switch accepted it. Five commands prove that it worked.</p>
+  <p>A configuration command that produces no error has been accepted, and that is all it has done. It does not tell you that the VLAN exists under the name you meant, that the port came up, that the device on the far end is drawing power, or that the cable between them is carrying anything.</p>
+  <p>The verification commands are all typed at <code>Switch#</code>. None of them changes anything, so none of them can make matters worse. <strong>Run all five and read what each one returns before you draw a conclusion.</strong> A single command answering the way you hoped is the fastest route to a wrong diagnosis.</p>
+
+  <h3>One &mdash; is the VLAN there, and is it named</h3>
+  <div class="cli">
+    <div class="cli-ttl">show vlan brief</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show vlan brief</span>
+
+<span class="out">VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+1    default                          active    Gi1/0/1, Gi1/0/2, Gi1/0/3
+20   DATA-20                          active    Gi1/0/12
+30   CAMERA-30                        active    Gi1/0/20, Gi1/0/21</span></pre></div>
+    <div class="cli-foot"><p>Three facts in one screen. VLAN 20 <b>exists</b>. It is named <b>DATA-20</b>. Port <b>Gi1/0/12</b> is listed against it, so the assignment took. A VLAN listed with no ports beside it was created and never used; a port still sitting in VLAN 1 was never moved. <b>Status</b> reads <code>active</code>, which is the normal state for a VLAN the switch is using.</p></div>
+  </div>
+
+  <h3>Two &mdash; is the port up, in the right VLAN, and at what speed</h3>
+  <div class="cli">
+    <div class="cli-ttl">show interfaces status</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show interfaces status</span>
+
+<span class="out">Port      Name          Status       Vlan    Duplex  Speed Type
+Gi1/0/11                notconnect   1         auto   auto 10/100/1000BaseTX
+Gi1/0/12                connected    20        a-full a-1000 10/100/1000BaseTX
+Gi1/0/13                disabled     1         auto   auto 10/100/1000BaseTX</span></pre></div>
+    <div class="cli-foot"><p><code>Gi1/0/12</code> reads <b>connected</b>, in <b>VLAN 20</b>, at <b>a-full</b> and <b>a-1000</b> &mdash; full duplex, meaning the link carries traffic both ways at the same time, and 1000 Mbps. The <code>a-</code> on each means both were negotiated between the two ends rather than forced by a setting. Compare the two neighbors: <b>notconnect</b> means nothing is plugged in or the link is not coming up, and <b>disabled</b> means somebody shut the port down.</p></div>
+  </div>
+  <div class="note tip"><div class="nt">Three status words that mean different things</div>
+    <ul>
+      <li><b>connected</b> &mdash; a device is on the far end and a link has formed. That rules out an open or a dead run, but not a marginal one. Read the <b>Speed</b> column before you clear the cabling.</li>
+      <li><b>notconnect</b> &mdash; the port is enabled but no link is forming. Nothing plugged in, a cord not seated, a fault in the run, or a device that is off.</li>
+      <li><b>disabled</b> &mdash; the port is shut down in the configuration. Nothing on the far end will ever make it link. <code>no shutdown</code> is the fix.</li>
+    </ul>
+    <p>That is what the <b>Speed</b> column is for. A gigabit-capable device on a gigabit-capable port that negotiates <code>a-100</code> is reporting a real problem &mdash; commonly a run with a fault on a pair that only the higher speed uses. The link works, so nobody reports it, and it stays that way for years.</p></div>
+
+  <h3>Three &mdash; is the device drawing power</h3>
+  <div class="cli">
+    <div class="cli-ttl">show power inline</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show power inline</span>
+
+<span class="out">Available:370.0(w)  Used:19.4(w)  Remaining:350.6(w)
+
+Interface Admin  Oper       Power   Device              Class Max
+                            (Watts)
+--------- ------ ---------- ------- ------------------- ----- ----
+Gi1/0/11  auto   off        0.0     n/a                 n/a   30.0
+Gi1/0/12  auto   on         15.4    Ieee PD             3     30.0
+Gi1/0/13  never  off        0.0     n/a                 n/a   30.0</span></pre></div>
+    <div class="cli-foot"><p>The header line is the switch budget: <b>370 W available, 19.4 W in use, 350.6 W remaining</b> &mdash; the whole switch, so it counts powered ports beyond the three shown here. On <code>Gi1/0/12</code>: <b>Admin auto</b> &mdash; power is permitted. <b>Oper on</b> &mdash; it is flowing. <b>15.4 W</b> &mdash; what the switch has set aside, not a measurement of what the device is pulling. <b>Class 3</b> &mdash; what the device asked for, which is where that figure comes from. <b>Max 30.0</b> &mdash; the ceiling of the port, not of the device. <b>Device</b> reads <code>Ieee PD</code>, meaning the switch identified a standards-compliant powered device and nothing more about it; where a device announces itself over a discovery protocol, its name appears here instead. Note <code>Gi1/0/13</code>: <b>Admin never</b>, so that port will not power anything regardless of what is connected to it.</p></div>
+  </div>
+  <div class="note note"><div class="nt">Admin and Oper are two different answers</div>
+    <p><b>Admin</b> is what the configuration permits. <b>Oper</b> is what is actually happening. Reading them together separates two faults that look identical from the far end.</p>
+    <p><b>Admin never, Oper off</b> is a configuration fault, and one command fixes it. <b>Admin auto, Oper off</b> means power is permitted and the switch is still not supplying it &mdash; so either nothing is detected on the far end, or there is no budget left to allocate. Those are different problems and the header line tells you which.</p></div>
+
+  <h3>Four &mdash; is the device actually on your port</h3>
+  <div class="cli">
+    <div class="cli-ttl">show mac address-table interface</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show mac address-table interface gigabitethernet 1/0/12</span>
+
+<span class="out">          Mac Address Table
+-------------------------------------------
+
+Vlan    Mac Address       Type        Ports
+----    -----------       --------    -----
+  20    7483.c21a.9f04    DYNAMIC     Gi1/0/12</span></pre></div>
+    <div class="cli-foot"><p>The switch has heard from a device with the Media Access Control (MAC) address <code>7483.c21a.9f04</code>, on port <b>Gi1/0/12</b>, in <b>VLAN 20</b>. That is the device on the far end of the run, its port, and its VLAN, all confirmed from the switch rather than assumed. <b>Type</b> reads <code>DYNAMIC</code> because the switch learned that MAC address from a frame rather than being told it.</p></div>
+  </div>
+  <p>A MAC address in that table was put there by the device at the far end &mdash; not by you, and not by the switch&rsquo;s own settings. A MAC address appearing here is proof that a real device on the far end sent a real frame, that the frame crossed every element of the cabling in between, and that the switch placed it in the VLAN you configured. One line of output confirms the physical path and the VLAN assignment together.</p>
+  <div class="note tip"><div class="nt">An empty result is also an answer</div>
+    <p>No entry means the switch has heard nothing on that port recently &mdash; a MAC address is dropped from the table after a few minutes of silence. The device is off, nothing is connected, or the run is not carrying frames. All three of those sit below the configuration you just made.</p>
+    <p>That makes it the command that decides where to look next. A MAC address present sends you upward, toward IP addressing and reachability. A MAC address absent sends you back down, to the cord, the run, and the device itself &mdash; or, where the port is already up and supplying power, to the device alone.</p></div>
+
+  <h3>Five &mdash; does the port configuration match the work order</h3>
+  <div class="cli">
+    <div class="cli-ttl">show running-config interface</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show running-config interface gigabitethernet 1/0/12</span>
+
+<span class="out">Building configuration...
+
+Current configuration : 90 bytes
+!
+interface GigabitEthernet1/0/12
+ switchport access vlan 20
+ switchport mode access
+end</span></pre></div>
+    <div class="cli-foot"><p>Everything the switch holds for this one port, and nothing else. The first two lines are the switch reporting that it is assembling the answer and how long the answer is; the closing <code>end</code> is where the configuration for that port stops, printed here rather than typed. A configuration records what has been changed from the default, not every option available. Note what is <b>not</b> printed: there is no <code>shutdown</code> line, and its absence is how you confirm the port is enabled. There is no <code>power inline</code> line either, because <code>auto</code> is the default &mdash; power is confirmed with <code>show power inline</code> instead.</p></div>
+  </div>
+  <p>Read this one last and read it against the work order rather than against your memory of what you typed. It is the check that catches the port configured correctly at the wrong number.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The five verification commands and the question each one answers.</caption>
+      <thead><tr>
+        <th scope="col">Command</th><th scope="col">Answers</th><th scope="col">What a failure looks like</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row"><code>show vlan brief</code></th><td>Does the VLAN exist, is it named, is the port in it</td><td>VLAN missing, unnamed, or the port still listed under VLAN 1</td></tr>
+        <tr><th scope="row"><code>show interfaces status</code></th><td>Is the port up, in the VLAN, at full speed and duplex</td><td><code>notconnect</code>, <code>disabled</code>, or a speed below what the link should reach</td></tr>
+        <tr><th scope="row"><code>show power inline</code></th><td>Is power permitted, is it flowing, how much is reserved, what class</td><td><code>Admin never</code>, <code>Oper off</code>, or a budget with nothing left</td></tr>
+        <tr><th scope="row"><code>show mac address-table interface</code></th><td>Has a real device been heard on this port, in this VLAN</td><td>No entry at all, or an entry in an unexpected VLAN</td></tr>
+        <tr><th scope="row"><code>show running-config interface</code></th><td>Does the port configuration in effect match the work order</td><td>A setting missing, or the right settings on the wrong port</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note note"><div class="nt">Five readings make a usable hand-off</div>
+    <p>Taken together the five give you a sentence somebody else can act on: <em>port Gi1/0/12 is up at 1 Gbps full duplex, in VLAN 20 named DATA-20, class 3 with 15.4 W set aside, with the device MAC address learned on the port.</em></p>
+    <p>Compare that with <em>I configured it and it seems fine.</em> The first can be checked, argued with, and built on by whoever picks the work up next. The second cannot.</p></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="Power is being supplied and the port is up, so the physical path and the power side are both working. What is missing is the switch ever having heard a frame from the device &mdash; and a device that is powered but silent has a problem of its own rather than a problem with your port. Nothing here points at the VLAN, which would still show the port assigned, and nothing points at the run, which is carrying power and forming a link. The next question is about the device, not the cable.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A port reads <code>connected</code> in VLAN 20 and <code>show power inline</code> reports <code>Oper on</code> with 15.4 W set aside. <code>show mac address-table interface</code> for that port returns no entry. What does that combination indicate?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The port is in the wrong VLAN</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The horizontal run has failed and needs re-terminating</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The device is powered but has not yet sent a frame the switch could learn from</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The switch has run out of power budget</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="3" data-group-title="Proving It, Saving It, Knowing Where to Stop" data-num="529.3.8" data-title="Two configurations, and why the difference matters">
+  <p class="crumb">Lesson 529.3 &middot; Section 3 Proving It, Saving It, Knowing Where to Stop</p>
+  <h2><span class="tnum">529.3.8</span> Two configurations, and why the difference matters</h2>
+  <p class="lead-in">The configuration you typed is already in effect, and it is not saved. Both are true at the same time.</p>
+  <p>A switch holds two copies of its configuration, in two different kinds of memory, and they can differ from each other.</p>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The two configurations a switch holds.</caption>
+      <thead><tr>
+        <th scope="col"></th><th scope="col">Running configuration</th><th scope="col">Startup configuration</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Where it lives</th><td>Working memory</td><td>Non-volatile memory</td></tr>
+        <tr><th scope="row">What it is</th><td>What the switch is doing right now</td><td>What the switch will do after it next restarts</td></tr>
+        <tr><th scope="row">When it changes</th><td>The instant you press <kbd>Enter</kbd> on a configuration line</td><td>Only when you deliberately save</td></tr>
+        <tr><th scope="row">On loss of power</th><td>Gone</td><td>Kept</td></tr>
+        <tr><th scope="row">How to read it</th><td><code>show running-config</code></td><td><code>show startup-config</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Every configuration command you typed went into the running configuration and took effect immediately. None of them went into the startup configuration. A switch that loses power at this point comes back with the port in VLAN 1. The VLAN you created normally survives, for the reason the note below gives, but nothing on the port says it was ever meant to be in it.</p>
+  <div class="note tip"><div class="nt">The VLAN usually survives; the port configuration does not</div>
+    <p>On this equipment the list of VLANs is held in its own file in flash, separate from the configuration. VLAN 20 and its name are normally still there after a restart. The port assignment is not.</p>
+    <p>That is the confusing part of the failure. <code>show vlan brief</code> looks half right &mdash; the VLAN exists &mdash; but the port is sitting in VLAN 1, so nothing works and the obvious check does not show why.</p></div>
+  <div class="warn note"><div class="nt">The failure this produces is the confusing kind</div>
+    <p>Unsaved work does not fail while you are standing there. It fails weeks later, at a power cut or a scheduled restart, and it fails on a port that has been working since the day it was installed.</p>
+    <p>Nothing connects the symptom to the cause. The paperwork says the port was configured. The port map says VLAN 20. The switch says VLAN 1, and the last person to touch it left no trace because the trace was never written down. Somebody will spend an afternoon on it.</p></div>
+
+  <h3>Saving</h3>
+  <div class="cli">
+    <div class="cli-ttl">Copying the running configuration into the startup configuration</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">copy running-config startup-config</span>
+<span class="out">Destination filename [startup-config]?</span>
+<span class="out">Building configuration...
+[OK]</span></pre></div>
+    <div class="cli-foot"><p>The switch asks for the destination and offers the answer in square brackets. Pressing <kbd>Enter</kbd> accepts it. <code>[OK]</code> is the confirmation that the save completed &mdash; wait for it rather than assuming it.</p></div>
+  </div>
+  <p>Read the command as a sentence and it is hard to get backward: copy the running configuration into the startup configuration. Reversing it pulls the saved configuration back into the running one and merges the two. It is rarely what anybody wants, and it is not an undo. <code>write memory</code>, often typed as <code>wr</code>, does the same job as the forward version and appears in plenty of documentation; either is correct.</p>
+  <div class="note tip"><div class="nt">Where the save belongs in your sequence</div>
+    <p>Save after verifying, not before. Verification can send you back to change something, and saving a configuration you have not yet confirmed just preserves whatever is wrong with it.</p>
+    <p>The order is: configure, verify all five, correct anything the verification found, then save. The save is the last thing you do at the switch.</p></div>
+  <div class="note note"><div class="nt">Checking that a save actually happened</div>
+    <p>To confirm your own settings survived the save, read <code>show startup-config</code> and look for them. Where they appear, the save took.</p>
+    <p>Some switches also warn you, when somebody types <code>reload</code> to restart them, that the configuration has been modified, and offer to save it first. Treat that prompt as a reminder rather than a safety net. It appears only when somebody is restarting the switch on purpose, and a power cut does not ask.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Configuration lines take effect the moment they are entered, so the port worked all afternoon on the running configuration. Nothing was ever written to the startup configuration, so the restart brought the switch back with the port in its default state. The cabling is unchanged and was never involved, and no failure occurred at the port. The VLAN was created correctly and is still there; what was lost is the port configuration that put the port into it.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A port is configured, verified, and works for the rest of the afternoon. The switch is restarted overnight and the port comes back in VLAN 1. What happened?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The port failed overnight and needs replacing</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The configuration was never copied to the startup configuration</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The horizontal run was disturbed during the restart</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The VLAN was created with the wrong number</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="3" data-group-title="Proving It, Saving It, Knowing Where to Stop" data-num="529.3.9" data-title="Where your scope ends">
+  <p class="crumb">Lesson 529.3 &middot; Section 3 Proving It, Saving It, Knowing Where to Stop</p>
+  <h2><span class="tnum">529.3.9</span> Where your scope ends</h2>
+  <p class="lead-in">The configuration sequence is a complete job. The list below is what sits immediately beyond it, written down so you can recognize it rather than wander into it.</p>
+  <p>A managed switch accepts far more commands than the sequence you have just learned. Some of them change how the whole building behaves, and some do so without producing an error message at the time.</p>
+  <p>The boundary is not about capability, and it is not a comment on what you are able to learn. It is about who carries the consequence. A port assignment affects one desk. A change to how switches talk to each other affects everybody, and the person who has to answer for that is the person whose job it is.</p>
+  <p><strong>Recognizing a task as being outside your scope and handing it over with evidence is a correct outcome, not a failure to complete the work.</strong> It also takes more knowledge than it looks, because it means knowing the names of things you are never going to configure.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Configuration tasks that sit outside a low-voltage technician&rsquo;s scope on this equipment.</caption>
+      <thead><tr>
+        <th scope="col">Not yours</th><th scope="col">What it is, in one line</th><th scope="col">Why it sits elsewhere</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Subnet calculation</th><td>Working out IP address ranges and masks, and dividing a network into smaller ones</td><td>An IP addressing plan is a design decision made for the whole site. Reading and reporting an IP address is yours; calculating the scheme is not</td></tr>
+        <tr><th scope="row">Trunk ports and VLAN tagging</th><td>Carrying several VLANs over one link between switches, with tags identifying each</td><td>A trunk carries traffic for the whole switch. Configuring one wrongly can isolate everything downstream of it</td></tr>
+        <tr><th scope="row">Spanning Tree, port security, storm control</th><td>Protections that decide which links stay active, which devices may connect, and how much flooding is tolerated</td><td>These operate across the network rather than at one port, and changing one can shut down links that are currently carrying traffic</td></tr>
+        <tr><th scope="row">Inter-VLAN routing and gateways</th><td>Allowing traffic between VLANs, and setting where a group sends traffic destined elsewhere</td><td>This is the decision about which groups may reach each other &mdash; a security decision, not a wiring one</td></tr>
+        <tr><th scope="row">Dynamic Host Configuration Protocol (DHCP)</th><td>Setting which IP addresses devices are given automatically when they connect, and which devices get them</td><td>IP address allocation belongs with the IP addressing plan</td></tr>
+        <tr><th scope="row">Stacking and inter-switch protocols</th><td>Joining switches so they are managed as one, sharing VLAN databases, bonding links together</td><td>Building-wide in effect and difficult to reverse from a single console session</td></tr>
+        <tr><th scope="row">Wireless controller configuration</th><td>Deciding which wireless network maps to which VLAN, and how the access point behaves</td><td>Connecting and powering an access point is yours. What it broadcasts once it is up is a wireless design decision</td></tr>
+        <tr><th scope="row">Software upgrade, password recovery, bare-metal setup</th><td>Replacing the switch software, regaining access to a locked switch, configuring one from nothing</td><td>These carry a real risk of leaving the switch unusable, and they are usually governed by a change process</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note note"><div class="nt">Why the list is written down rather than left implied</div>
+    <p>An unwritten boundary gets crossed by accident, usually by somebody helpful. Somebody at the site will eventually ask you to do one of these, and they will ask reasonably, because you are the person standing next to the switch with a console cable in your hand.</p>
+    <p>Having the list means you can answer specifically instead of vaguely: <em>configuring a trunk is not something I do &mdash; I can raise it with the network team today and give them the port and the switch.</em> That is a better answer than declining, and a far better answer than trying.</p></div>
+
+  <h3>The one IP addressing rule you do need</h3>
+  <p>IP address arithmetic sits outside your scope. One rule about IP addressing sits inside it, because without that rule you cannot tell whether a device that reaches nothing is your problem or the network team&rsquo;s.</p>
+  <div class="note tip"><div class="nt">The rule, in three sentences</div>
+    <p>In a correctly built network, one VLAN carries one IP address range. Two devices in the same VLAN, with addresses in that range, reach each other directly. Two devices in different VLANs do not, and connecting them takes a router &mdash; whether that is permitted is somebody else&rsquo;s decision.</p>
+    <p>If you find the same IP address range in use in two different VLANs, that is a design error rather than something a router will resolve. Report it.</p></div>
+  <p>That rule is also a diagnostic tool, and it sorts a large number of complaints. A device that cannot reach anything at all, on a port you have verified as up and in the right VLAN, is a device with an IP addressing problem &mdash; observe it, report it, and hand it on. A device that reaches everything on its own group but nothing beyond it is describing the boundary between VLANs working as designed. Neither is repaired by touching the cabling, and knowing that saves the afternoon that would otherwise be spent proving the cable is fine.</p>
+
+  <h3>What makes an escalation useful</h3>
+  <p>An escalation is only useful if the next person can act on it. <em>The network is broken</em> tells them nothing they did not already know, so they go back to the desk and repeat every check you have already made. Give them your readings instead and they can skip all of that and begin where you stopped.</p>
+  <ul>
+    <li><strong>What you verified, with the readings.</strong> Port state, VLAN, negotiated speed and duplex, the class and the power reserved, whether the device MAC address was learned. Facts from the switch, not impressions.</li>
+    <li><strong>What you found that you could not resolve.</strong> Stated as an observation rather than a theory.</li>
+    <li><strong>Where you stopped, and why.</strong> Naming the boundary tells the reader what has been ruled out.</li>
+    <li><strong>What you did not change.</strong> As useful as what you did. It tells them the state they are inheriting.</li>
+  </ul>
+  <div class="note note"><div class="nt">The same finding, twice</div>
+    <p><em>&ldquo;It still does not work, must be a network problem.&rdquo;</em></p>
+    <p><em>&ldquo;Port Gi1/0/12 is up at 1 Gbps full duplex, in VLAN 20, class 3 with 15.4 W set aside, and the device MAC is learned on the port. The device holds an IP address and does not answer a ping from a laptop in the same group. Nothing changed on the switch beyond the port configuration on the work order. Handing over at IP addressing and above.&rdquo;</em></p>
+    <p>The second version does three things the first does not: it rules out the physical path with evidence, it names where the boundary was reached, and it leaves the next person a starting point rather than a starting over.</p></div>
+
+  <div class="cyu gate" data-answer="0" data-fb="Two VLANs are two separate broadcast domains by design, and traffic between them passes through a router. Whether that is permitted is a security decision belonging to the network team, so the correct action is to report it with what you have verified. Adding a trunk port or routing between the two changes how the site behaves. Moving the camera into the data VLAN changes one port and still undoes a separation somebody put there deliberately. All three are the network team&rsquo;s call, not yours.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A site contact asks why a laptop in the data VLAN cannot reach a camera in the camera VLAN, and asks you to fix it. Both ports verify correctly. What is the right action?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Report it with your verification results &mdash; traffic between VLANs is a network-team decision</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Configure a trunk port so the two VLANs can exchange traffic</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Move the camera port into the data VLAN so both devices are together</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Set up routing between the two VLANs on the switch</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.3" data-lesson-title="Managed Switch VLAN and PoE Configuration" data-group-num="4" data-group-title="Wrapping Up" data-num="529.3.10" data-title="What you covered">
+  <p class="crumb">Lesson 529.3 &middot; Section 4 Wrapping Up</p>
+  <h2><span class="tnum">529.3.10</span> What you covered</h2>
+  <p class="lead-in">Configure the port, prove it from the switch, save it, and know where to stop.</p>
+  <p>Until its ports are assigned to VLANs, a switch keeps them all in one group, so a broadcast arriving anywhere goes everywhere. A <strong>VLAN</strong> divides those ports into groups that behave like separate switches: ports in one group exchange frames and hear each other&rsquo;s broadcasts, ports in another group do the same among themselves, and nothing passes between the two groups. It is a setting rather than a piece of wiring, which means it is invisible from the jack, the cord, and the panel. To find out which VLAN a port is in, ask the switch or read the port map.</p>
+  <p>The <strong>console port</strong> is how you reach the switch&rsquo;s command line. It carries no network traffic and needs no IP addressing, so it keeps working on a switch whose network settings are wrong or whose ports are all shut down, and it is the only way to watch the switch start up. Terminal settings are <strong>9600 8-N-1 with flow control off</strong>; unreadable characters mean the two ends disagree on how to frame them, usually the speed, and no characters mean the cable, the port choice, or the driver.</p>
+  <p>The command line is a set of <strong>modes</strong>, and the prompt states which one you are in. <code>Switch&gt;</code> is look-only, <code>Switch#</code> reads and saves, <code>Switch(config)#</code> changes the whole switch, and <code>Switch(config-if)#</code> changes the one port you named. <code>exit</code> steps back one level; <code>end</code> returns to <code>Switch#</code> from anywhere.</p>
+  <p>An <strong>interface name</strong> carries the port type, the stack member, the module, and the port number. The type is set by the hardware and varies between switches in the same rack, so it is confirmed with <code>show interfaces status</code> on the switch in front of you rather than assumed from the last one.</p>
+
+  <div class="cli">
+    <div class="cli-ttl">Configure</div>
+    <div class="cli-body"><pre><span class="cmd">enable</span>
+<span class="cmd">configure terminal</span>
+ <span class="cmd">vlan 20</span>
+  <span class="cmd">name DATA-20</span>
+  <span class="cmd">exit</span>
+ <span class="cmd">interface gigabitethernet 1/0/12</span>   <span class="cmt">! or fastethernet, per the switch</span>
+  <span class="cmd">switchport mode access</span>
+  <span class="cmd">switchport access vlan 20</span>
+  <span class="cmd">power inline auto</span>
+  <span class="cmd">no shutdown</span>
+  <span class="cmd">end</span></pre></div>
+    <div class="cli-foot"><p>Port number and VLAN number come from the work order. The interface type comes from the switch.</p></div>
+  </div>
+  <div class="cli">
+    <div class="cli-ttl">Verify &mdash; run all five before concluding anything</div>
+    <div class="cli-body"><pre><span class="cmd">show vlan brief</span>                        <span class="cmt">! is the VLAN there, named, with the port in it</span>
+<span class="cmd">show interfaces status</span>                   <span class="cmt">! is the port up, in the VLAN, at speed and duplex</span>
+<span class="cmd">show power inline</span>                        <span class="cmt">! is power permitted, flowing, what class, how much reserved</span>
+<span class="cmd">show mac address-table interface &lt;port&gt;</span>  <span class="cmt">! has a device actually been heard on this port</span>
+<span class="cmd">show running-config interface &lt;port&gt;</span>     <span class="cmt">! does the port match the work order</span></pre></div>
+  </div>
+  <div class="cli">
+    <div class="cli-ttl">Save &mdash; last, and only after verifying</div>
+    <div class="cli-body"><pre><span class="cmd">copy running-config startup-config</span></pre></div>
+    <div class="cli-foot"><p>Configuration commands take effect immediately and are not kept. Until this is typed and <code>[OK]</code> comes back, the next power cut returns the port to VLAN 1.</p></div>
+  </div>
+
+  <p>On <strong>Power over Ethernet</strong>, the switch detects a powered device, classifies how much it needs, reserves that from a shared budget, and supplies it. <code>power inline auto</code> permits all of that; <code>never</code> forbids it, and a device on such a port looks dead from the far end. Read <strong>Admin</strong> and <strong>Oper</strong> together: <code>never</code> and <code>off</code> is a configuration fault, while <code>auto</code> and <code>off</code> means nothing was detected or the budget is exhausted.</p>
+  <p>The switch&rsquo;s <strong>MAC address table</strong> is what decides which direction to look next. A MAC address learned on your port proves a real device sent a real frame across every element of the path and landed in the VLAN you configured.</p>
+  <div class="note note"><div class="nt">Where this stops</div>
+    <p>Subnet calculation, trunks and tagging, Spanning Tree and port security, inter-VLAN routing and gateways, DHCP, stacking and inter-switch protocols, wireless controller configuration, and software or password recovery all sit outside a low-voltage technician&rsquo;s scope on this equipment.</p>
+    <p>One rule about IP addressing sits inside it: <b>one VLAN carries one IP address range; same VLAN and same range, they talk; different VLANs need a router.</b> That sentence is the escalation rule.</p></div>
+  <p>Each of the five verification commands produces a reading, and a reading is what turns a hand-off from an opinion into a starting point. Configuring a port is the short part. Being able to say what the port is doing, in numbers somebody else can check, is the part that makes the work worth inheriting.</p>
+
+  <button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button>
+</section>
+</div>
+
+    <nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">&lsaquo; Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next &rsaquo;</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true"
+     aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>

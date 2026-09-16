@@ -1,0 +1,2286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 529 (M07) - Network Fundamentals for Low Voltage Technicians
+  Lesson 529.5 - Layered Connectivity Troubleshooting (Async Reading)
+  VERSION: v0.2.0  (2026-09-04)  DRAFT - for review
+
+  CHANGES IN v0.2.0
+  Version bump only, 2026-09-04. No content changed at the bump. The number was
+  raised because the file had already absorbed the cold-read corrections while
+  still reading v0.1.0, so the version no longer described the content.
+
+  Corrections applied 2026-09-02, recorded in
+  _FINDINGS_529.5-cold-read_2026-09-02.md. Fifty-five findings raised, 51
+  applied; both auditors and the extractor report clean.
+
+  Deliberately not applied, Eldad 2026-09-02:
+  - 44, the second trace transcript stopping at hop 3 unexplained.
+  - 45, card 1 stating the reply conclusion unqualified.
+  - 55, knowledge-check distractor A - the stem says the camera answers, so
+    there is nothing to hedge.
+  - The summary's two-cause list for "Destination host unreachable". The third
+    cause, no route from the laptop, was added to 529.5.2 but not to 529.5.11.
+
+  Note from that round: the confirmation pass found two claims still open after
+  they had been declared closed, both in the summary. The summary is where stale
+  claims survive - check it last and check it again.
+
+  Also 2026-09-04: the WCAG conformance sentence removed from the overview.
+
+  Engine (CSS, JS, header, sidebar, navigation, lightbox) reused verbatim from
+  the Lesson 529.1 async reading page. Two component stylesheets are appended
+  after the engine stylesheet - the console transcript block from build_529_3.py
+  and the port map panel from build_529_2.py; the engine itself is untouched.
+
+  OBJECTIVES, one verb each, taken from the D08 7.5 subtask wording verbatim.
+  All six subtasks are single-verb as written, so nothing is split and nothing
+  is added beyond the subtask list.
+
+    Use         ping and traceroute to isolate reachability      7.5 subtask 1
+    Read        link and PoE indicators and switch port status   7.5 subtask 2
+    Confirm     physical-layer integrity with a cable tester     7.5 subtask 3
+    Distinguish a cabling fault from a configuration fault       7.5 subtask 4
+    Determine   what to fix and what to escalate                 7.5 subtask 5
+    Document    root cause and remediation                       7.5 subtask 6
+
+  NO WORD CHANGED. All six read on the page as they read in the subtask list.
+  The only edit of any kind is the standing acronym rule applied to subtask 2:
+  on the page it reads "Read link and Power over Ethernet (PoE) indicators and
+  switch port status", because this is the first use of PoE in the topic stream.
+  The same treatment was applied to the 7.4 objectives on the Lesson 529.4 page.
+
+  Subtask 1 carries an infinitive of purpose - "to isolate reachability" - not a
+  second objective verb, so it is not split. The verb is Use.
+
+  ONE NAMING NOTE. The subtask says "traceroute". The command on a Windows laptop
+  is tracert, and the page says so at first use and shows tracert in both
+  transcripts. The objective keeps the subtask word.
+
+  TOPIC OUTLINE, with the subtask each topic delivers.
+    Section 1  Starting From a Fault Report
+      529.5.1   Turning a report into something you can test        entry point
+      529.5.2   Ping, and the trace command                         subtask 1
+      529.5.3   Indicators, and what the switch says instead        subtask 2
+    Section 2  Cabling Fault or Configuration Fault
+      529.5.4   What a cable tester answers, and what it does not   subtask 3
+      529.5.5   Isolating by substitution                           subtasks 3, 4
+      529.5.6   Two families of cause, and the readings that
+                separate them                                      subtask 4
+      529.5.7   Faults that look like each other                    subtask 4
+    Section 3  Fix, Escalate, Record
+      529.5.8   What you fix, and what you hand over                subtask 5
+      529.5.9   Writing the root cause and the remediation          subtask 6
+      529.5.10  Two faults, worked through                          integrative
+    Section 4  Wrapping Up
+      529.5.11  What you covered                                    summary
+
+  Four sections. The summary sits alone in Wrapping Up, and no content section
+  holds fewer than three topics.
+
+  529.5.1 delivers no subtask of its own. It is the entry point that makes the
+  rest usable - a fault report is the input to every one of the six subtasks and
+  none of them says what to do with it. It carries no objective on the page.
+
+  ACTIVITY GATES: 14 - ten knowledge checks, one matching, two reveal-card sets,
+  one acknowledgement. Topics 529.5.2, 529.5.6 and 529.5.7 carry two each, because
+  a card set and a matching only require completion rather than a judgement. The
+  acknowledgement on the last topic counts as an activity, as it does in the
+  other readings in this module.
+
+  NO ordering activity. The four-question ladder has an enforced order, but it is
+  taught in another lesson and testing it here would assess recall of that lesson
+  rather than this one. Substitution order is not enforced - any of the four
+  substitutions can be taken first and every order works - so an ordering exercise
+  on it would have more than one correct answer.
+
+  ONE matching only, in 529.5.6, reading to what it names. A second matching in
+  one lesson reads as repetition. Both left-hand and right-hand values are unique,
+  and all five are answerable from the two tables above the activity.
+
+  DIAGRAMS: 2 original SVG, each with a full text description. No tspan.
+    529.5.5  the seven elements of the path, with the four substitution points
+    529.5.6  one report, four causes, and the reading that names each
+
+  The three ping results were a third SVG and are now a reveal-card set, on
+  Eldad's instruction 2026-08-27. The card form carries the round-trip time
+  explanation, which would not fit a diagram card, and it makes the topic's
+  second gate. Diagram count 3 -> 2 and gate count 13 -> 14 in the banner and
+  the overview.
+
+  WHAT THIS LESSON DOES NOT RE-TEACH. Referenced in a line where needed and
+  nowhere explained again: the four-question ladder and the ownership boundary
+  (529.1), the seven-element path and permanent link and channel limits (529.2),
+  the configuration commands and the five verification commands (529.3), and the
+  four readings, the class table, speed and duplex (529.4). The transcripts on
+  this page use only commands those lessons teach.
+
+  TRIMMED FOR DUPLICATION 2026-08-27, after an overlap review against the four
+  earlier readings. The claim above was true of the ladder, the path and the
+  command set, and NOT true of ping or of the indicator readings, both of which
+  this page had been teaching a second time. ~540 words came out and the lesson
+  is deliberately shorter for it; the hands-on work carries the practice.
+  - 529.5.2 lost the same-VLAN framing, the reply transcript and the timeout
+    transcript, all of which 529.4.7 already teaches with the same worked output.
+    What remains is what is new: three results rather than one, the destination
+    host unreachable case in full, and the trace command.
+  - 529.5.3 lost its five-row indicator table, which restated the 529.4.4 card set
+    (no light, amber for about 30 seconds under Spanning Tree, the light-then-dark
+    cycle), and lost the paragraph re-explaining the power columns taught in 529.3.7
+    and 529.4.5. What remains is what is new: conventions differ by model and by
+    front-panel mode so read the legend, the two indications that point elsewhere,
+    and reading five faulted ports side by side.
+  - 529.5.8 no longer teaches the three parts of a usable hand-over, which 529.1.15
+    already gives. It references them and teaches the fourth, which is the one a
+    fault adds: what you ruled out, and by what reading.
+  - 529.5.11 mirrors all three trims.
+
+  STILL OVERLAPPING, DELIBERATELY. 529.5.6 and 529.5.7 are built from readings
+  taught in 529.3 and 529.4. That is the objective's verb - Distinguish - and the
+  synthesis is the new work, not the readings. The escalation-is-a-pass claim in
+  529.5.8 restates 529.1.15 on purpose, because it is the point of this objective
+  rather than an aside.
+
+  FORWARD COLLISION, NOT RESOLVED HERE. 529.5.9 teaches a five-field fault record.
+  529.4.8 teaches the port map row and the readings-not-opinions principle, and
+  529.6 is the documentation lesson. Settle who owns documentation before 529.6 is
+  built, or the principle gets taught three times.
+
+  BUILD NOTES - what is asserted about equipment, and what is not
+  - CORD-LEVEL, NOT IN-WALL, per the recorded fault decision. Every physical fault
+    on the page is a cord fault or a patching fault. Where a fault survives every
+    cord and port substitution, 529.5.5 and 529.5.4 both say the permanent link is
+    what remains and that testing it is a separate task with the drop out of
+    service. Nothing on the page has a technician locating a fault inside a
+    permanent horizontal run.
+  - NO HIGH-LOSS OR OVER-LENGTH SPECIMEN, per the same decision. Length is taught
+    through the tester's length function in 529.5.4: the reading is compared against
+    the 90 m permanent link and 100 m channel limits, and the page states plainly
+    that no symptom announces an over-length run and no indicator reports it. There
+    is no fault specimen behind it and the page does not imply one.
+  - ESCALATION IS A PASS. Carried as a named claim in 529.5.8, worked as the second
+    case in 529.5.10, and repeated in the summary. It is not a footnote anywhere.
+  - CABLE TESTER FIGURES VERIFIED against the Fluke Networks MicroScanner series
+    specification, which is the tester on the resource register. Wire map detects
+    single-wire faults, shorts, miswires, split pairs and up to seven far-end
+    identifiers. Length range 460 m (1500 ft), resolution 0.3 m (1 ft), accuracy
+    4 % plus 0.3 m. Ethernet port detection reports the advertised speed at 10,
+    100 and 1000 Mbps. PoE detection on the MicroScanner2 is 802.3af only, and
+    reporting the PoE class is a feature of the later MicroScanner PoE model, not
+    of this one - which is why the page says the tester reports that power is
+    present and on which conductors, and that the class comes from the switch.
+  - VERIFIER, NOT CERTIFIER. The page states that the tester does not measure
+    insertion loss or crosstalk and cannot certify a run against a performance
+    standard. This follows the manufacturer's own product line, which separates a
+    wiremap tester, a verifier, a qualification tester and a certifier, and it is
+    also what the published specification list contains and omits.
+  - WINDOWS OUTPUT. The three ping results and the two traces are Windows output.
+    The unreachable transcript deliberately omits the statistics block, because how
+    an unreachable reply is counted in that block varies and the point being taught
+    is the source IP address on the reply line, not the count.
+  - INTERFACE TYPE IS NOT HARD-CODED. The read-back strip under the first
+    show interfaces status transcript says that a switch naming its ports Fa1/0/12
+    reads the same columns. The note sits in the strip rather than in the
+    transcript, as it does on the Lesson 529.4 page.
+  - PoE FIGURES follow the corrected reading: the Power column is what the switch
+    has SET ASIDE, not a measurement of draw, and Max is a property of the port.
+    The sample rows use the same switch persona as the 529.3 and 529.4 pages -
+    a gigabit PoE-capable switch with a 370 W pool and a 30.0 W port ceiling.
+  - SPANNING TREE TIMING follows the corrected reading already in 529.4: about 30
+    seconds amber, 15 listening plus 15 learning, and the page says amber past that
+    is a state to report rather than a fault to name.
+  - INDICATOR CONVENTIONS ARE HEDGED, not asserted. The page says they differ by
+    manufacturer, by model and by front-panel mode, and tells the learner to read
+    the legend on the chassis. No indicator colour is given a fixed meaning, and no
+    knowledge check turns on one.
+
+  OPEN, AND NOT RESOLVED HERE
+  - Which switch models the MIR actually holds is still unconfirmed, so whether
+    sample output should read Fa or Gi is still open. This page follows 529.3 and
+    529.4 and shows Gi, with the interface-form note in the read-back strip.
+  - Whether the campus tester is the base unit or the kit with remote identifiers
+    2 to 7 is unconfirmed. The page never names a remote identifier number and
+    refers only to "its remote unit", so either holding is consistent with it.
+  - Whether the MIR switches will log a duplex mismatch depends on discovery
+    protocols running at both ends, which cannot be confirmed without the hardware
+    and the devices. The page does not claim they will; duplex is taught here only
+    as a column that is read.
+  - The fault key for the harvested specimens is not written yet, so whether the
+    521 cable library actually contains a split pair is unknown. The split pair is
+    taught from the wire map rather than from a promised specimen, so the page
+    stands either way.
+
+  AI-ASSISTED WORKFLOW. The 45 AI-integration minutes recorded against this
+  objective are in-class work - generating the diagnostic log and the escalation
+  package from the learner's own observations and command outputs. The reading
+  carries no AI content and does not mention it; what it supplies is the five-field
+  record structure and the ruled-out list that the in-class work is assembled from.
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 529.5 &mdash; Layered Connectivity Troubleshooting &middot; Async Reading &middot; UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+<style>
+  /* Console transcript block. Light card, navy title bar, monospace body that
+     scrolls sideways on a narrow screen rather than wrapping a command line.
+     Appended after the engine stylesheet so the engine stays untouched. */
+  .cli{background:#fbfcfd;border:1.6px solid #c8d4de;border-radius:8px;
+    margin:18px 0;box-shadow:var(--shadow);overflow:hidden}
+  .cli .cli-ttl{background:#09507C;color:#fff;font-weight:700;font-size:.95rem;
+    padding:9px 14px;letter-spacing:.01em}
+  .cli .cli-body{overflow-x:auto;padding:12px 14px}
+  .cli pre{margin:0;min-width:520px;color:#1b2a3a;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.94rem;line-height:1.8}
+  .cli .pr{color:#5a6772}
+  .cli .cmd{color:#09507C;font-weight:700}
+  .cli .cmt{color:#5a6772;font-style:italic}
+  .cli .out{color:#3c4956}
+  .cli .cli-foot{border-top:1px solid #dbe4ec;padding:10px 14px;
+    color:#3c4956;font-size:.95rem;background:#f4f7fa}
+  .cli .cli-foot p{margin:0}
+  /* Read-back strips that list one line per port rather than running as prose. */
+  .cli .cli-foot ul{margin:0 0 9px;padding-left:20px}
+  .cli .cli-foot li{margin:4px 0}
+  /* Inline command names in running prose and in table cells. */
+  .topic code, .overview code, .longdesc code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.92em;color:#09507C;background:#eef4f9;border:1px solid #dbe4ec;
+    border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .tbl th code, .tbl td code{background:#f4f7fa}
+  kbd{font-family:inherit;font-size:.9em;color:#1b2a3a;background:#f4f7fa;
+    border:1px solid #c8d4de;border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+</style>
+<style>
+  /* Port map panel - white card, blue rule, navy title, plain gray column labels. */
+  .portmap-panel{background:#fff;border:1.6px solid var(--green);border-radius:8px;
+    padding:14px 16px 6px;margin:18px 0;box-shadow:var(--shadow)}
+  .portmap-panel .tbl-scroll{overflow-x:auto}
+  .portmap-panel table.tbl{border:none;border-radius:0;margin:0;background:transparent}
+  .portmap-panel table.tbl caption{color:var(--green-d);font-weight:700;font-size:1.05rem;
+    text-align:left;padding:0 0 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="col"]{background:transparent;color:var(--muted);font-weight:400;
+    padding:10px 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="row"]{background:transparent;color:var(--ink);font-weight:400;
+    padding:10px 10px;border-top:none}
+  .portmap-panel .tbl td{padding:10px 10px;border-top:none;color:var(--ink)}
+  .portmap-panel .tbl tr:nth-child(even) td{background:transparent}
+  .portmap-panel .tbl tbody tr + tr th,
+  .portmap-panel .tbl tbody tr + tr td{border-top:1px solid var(--line)}
+</style>
+
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false"
+          aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div class="head-title"><b>Module 529</b> &middot; Lesson 529.5 &mdash; Layered Connectivity Troubleshooting</div>
+  </div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.2.0</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel"
+              aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList"
+              aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel"
+             aria-labelledby="tab-overview" hidden>
+      <p class="crumb"><b>UCI 2107.1 &middot; Low Voltage Fiber Technician</b>
+         &middot; Module 529 &mdash; Network Fundamentals</p>
+      <h2 id="ovh" tabindex="-1">Lesson 529.5 &mdash; Layered Connectivity Troubleshooting</h2>
+      <p class="lead-in">The written half of this lesson.</p>
+
+      <p>This lesson prepares you for finding out why a drop that should be working is not,
+         and for deciding whether the repair is yours to make.</p>
+
+      <p>You turn a complaint into questions you can answer, take the readings in an order that
+         saves a walk, and use a cable tester to settle whether the cabling is sound.
+         You then tell the two apart &mdash; a path
+         that cannot carry traffic, and a switch that has been told to do something other than
+         what the work order asked for.</p>
+
+      <p>The last part is knowing where your share of the job ends. Some faults you correct on the spot. Some belong to
+         whoever owns the addressing, the routing and the equipment beyond your Virtual Local
+         Area Network (VLAN). Handing one of those over, with the readings that show where the
+         fault sits, is a completed job rather than an unfinished one.</p>
+
+      <h3>How the lesson is organized</h3>
+      <ul>
+        <li><b>Starting From a Fault Report.</b> Five questions that turn a complaint into something
+            testable. What a ping tells you and what it does not, why where you run it from
+            changes the answer, and the one case the trace command is for. Then the indicators
+            at each end, and what the switch says instead.</li>
+        <li><b>Cabling Fault or Configuration Fault.</b> The three readings a cable tester
+            gives you, and the four things it cannot answer. Locating a fault by substituting one
+            element at a time. The readings that separate a broken path from a switch setting,
+            and five pairs of causes that arrive as the same complaint.</li>
+        <li><b>Fix, Escalate, Record.</b> Where the boundary of the job falls, what makes a
+            hand-over usable to the person who gets it, and the five fields of a fault record.
+            Two faults worked through end to end, one ending in a repair and one in a hand-over.</li>
+        <li><b>Wrapping Up.</b> The whole lesson in one place.</li>
+      </ul>
+
+      <div class="ov-grid">
+        <div class="ov-stat"><b>4</b><span>Sections</span></div>
+        <div class="ov-stat"><b>11</b><span>Topics</span></div>
+        <div class="ov-stat"><b>14</b><span>Activities</span></div>
+        <div class="ov-stat"><b>2</b><span>Diagrams</span></div>
+      </div>
+
+      <h3>A note on the equipment</h3>
+      <p>Switches differ in ways that affect what you see on the equipment in front of you. Port
+         names differ, so a command shown here may take a different form on your switch; the
+         columns read the same. Indicator conventions differ by manufacturer and by model, so
+         read the legend printed on the chassis before you read the lights. The cable
+         tester described here is a verifier: it reports how the cabling is built and how long it
+         is, and it does not certify a run against a performance standard. Power over Ethernet
+         (PoE) figures, including the class and the watts a port has set aside, are read from the
+         switch rather than from the tester.</p>
+
+      <h3>How this page works</h3>
+      <p>Work through the topics in order using the <strong>Next</strong> button, or jump
+         about using the <strong>Curriculum</strong> tab in the sidebar. Some topics contain
+         an activity you need to complete before <strong>Next</strong> unlocks &mdash; a
+         knowledge check, a set of cards to open, or a matching exercise. Getting a knowledge
+         check wrong never blocks you: the answer is shown
+         and you can try again. Your progress through the lesson is shown in the header and
+         in the contents list.</p>
+
+      <h3>Working without a mouse, or with a screen reader</h3>
+      <p>Everything here is operable from the keyboard. <kbd>Tab</kbd> moves between
+         controls and <kbd>Enter</kbd> or <kbd>Space</kbd> activates them; the arrow keys
+         move between the sidebar tabs. In the matching activity every item is
+         a button, and your selections are announced as you make them. Right and wrong answers
+         are always labeled in words as well as by color. Each diagram carries a full text
+         description, console output is plain text rather than an image, and tables have
+         headings and captions that read correctly aloud.</p>
+
+      <button class="btn" id="ovBegin" type="button">Begin Lesson 529.5</button>
+    </section>
+
+    <div id="topicWrap">
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="1" data-group-title="Starting From a Fault Report" data-num="529.5.1" data-title="Turning a report into something you can test">
+  <p class="crumb">Lesson 529.5 &middot; Section 1 Starting From a Fault Report</p>
+  <h2><span class="tnum">529.5.1</span> Turning a report into something you can test</h2>
+  <div class="les-banner">
+    <span class="lb-k">Lesson 529.5</span>
+    <h3>Layered Connectivity Troubleshooting</h3>
+    <p>A fault report tells you that somebody is unhappy. It does not tell you where to look. This lesson takes you from a complaint to knowing what is wrong and where: what to ask before you touch anything, and which readings separate a cabling fault from a configuration fault. It then covers what you correct yourself, what you hand to somebody else, and how to write the result so that it holds up after you have left the building.</p>
+    <p class="lb-meta"><b>4</b> sections &nbsp;&middot;&nbsp;
+       <b>11</b> topics &nbsp;&middot;&nbsp;
+       <b>14</b> activities</p>
+  </div>
+  <div class="note note"><div class="nt">By the end of Lesson 529.5 you will be able to</div>
+    <ul>
+      <li><b>Use</b> ping and traceroute to isolate reachability.</li>
+      <li><b>Read</b> link and Power over Ethernet (PoE) indicators and switch port status.</li>
+      <li><b>Confirm</b> physical-layer integrity with a cable tester.</li>
+      <li><b>Distinguish</b> a cabling fault from a configuration fault.</li>
+      <li><b>Determine</b> what to fix and what to escalate.</li>
+      <li><b>Document</b> root cause and remediation.</li>
+    </ul></div>
+  <p class="lead-in">The first decision on any fault is where to start looking, and you make it from the report.</p>
+  <p>A report arrives as a sentence. <em>The camera in the loading bay is down.</em> That sentence is a symptom, described by somebody who was not looking at the equipment, and it contains no reading.</p>
+  <p>Five questions turn it into something you can test.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Five questions to ask before the first reading.</caption>
+      <thead><tr>
+        <th scope="col">Ask</th><th scope="col">Why</th><th scope="col">What the answer changes</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Which drop?</th><td>A room names an area. An outlet identifier names a position</td><td>Without one you are searching a building. With one you are reading the row for that outlet in the cabling records and walking to a known position</td></tr>
+        <tr><th scope="row">What does &ldquo;down&rdquo; mean?</th><td>No lights, lights but no picture, or working and then stopping are three different reports</td><td>Separates a device with no power from a device that is running and cannot be reached. The first sends you to the power and the cabling; the second sends you to the switch</td></tr>
+        <tr><th scope="row">When did it last work?</th><td>A drop that has never worked and a drop that stopped yesterday have different sets of causes</td><td>Never worked points at the installation. Stopped yesterday points at whatever changed yesterday</td></tr>
+        <tr><th scope="row">What changed?</th><td>Somebody moved furniture, worked in the rack, replaced a device, or lost power to the building</td><td>Whatever changed is the first thing to suspect</td></tr>
+        <tr><th scope="row">Is anything else affected?</th><td>One drop, or every drop served by the same room</td><td>If only that one drop is affected, the fault is on it. If several fail together, the fault is in something they share &mdash; the switch, or its link to the rest of the network &mdash; and that answer moves the search before you pick up a tool</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The five answers tell you where the search is likely to end.</p>
+  <p>The search itself runs bottom&ndash;up through three questions. Is it connected, and is the medium good? Is the port up, in the right Virtual Local Area Network (VLAN), and supplying power? Does the device hold an Internet Protocol (IP) address, and can it reach anything? Anything above those is the network team&rsquo;s.</p>
+  <p>You stop at the first question that answers no. What the five questions above change is your expectation of where that no will fall, not the order in which you ask.</p>
+
+  <div class="warn note"><div class="nt">A report usually arrives with a diagnosis attached</div>
+    <p><em>The network is down. The cable is bad. The switch has failed.</em> Those are guesses made by somebody with no readings, and they are offered in good faith.</p>
+    <p>Treat the diagnosis as one more symptom rather than as a starting point. A report that names the cable sends you to the cable, and the search then begins one step above where the evidence would have put it.</p></div>
+
+  <div class="note tip"><div class="nt">A fault you cannot make happen</div>
+    <p>Some reports describe something that is not happening while you are there. Ask when it happens and what else is going on at the time &mdash; the answer often describes the cause. A drop that fails every afternoon, or whenever a door is closed, or only when the room fills up, is telling you where to look.</p>
+    <p>Where you cannot reproduce it, take the readings anyway and record them with the time. A good reading taken during a quiet period is what the next person compares against.</p></div>
+
+  <div class="cyu gate" data-answer="0" data-fb="One device with a problem points at that drop. Several devices in one area failing at the same time point at something they share rather than at any one drop, and that answer moves the search before you have walked anywhere. The manufacturer matters once you are reading a specification sheet, the number of people affected sets the priority rather than the location, and who sent the report changes nothing about where the fault is.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A report reads: the access point in room 2A stopped working this morning. Which follow-up question does the most to narrow where you start?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Whether anything else served by the same telecommunications room stopped at the same time</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Which manufacturer made the access point</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>How many people rely on the access point</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Whether the report came from the user or from their supervisor</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="1" data-group-title="Starting From a Fault Report" data-num="529.5.2" data-title="Ping, and the trace command">
+  <p class="crumb">Lesson 529.5 &middot; Section 1 Starting From a Fault Report</p>
+  <h2><span class="tnum">529.5.2</span> Ping, and the trace command</h2>
+  <p class="lead-in">A ping checks whether a machine at a given IP address is reachable from where you run it. Three different results come back.</p>
+  <p>A ping to an IP address on your own subnet does not cross a router. A ping to an IP address on a different subnet does. That decides how much a failure tells you: on your own subnet it points at the cabling, the ports and the two devices; across a router it could be anything on the way.</p>
+  <p><strong>A reply</strong> means the device is reachable. <strong>Request timed out</strong> is a reading rather than a diagnosis: the ping was sent and nothing came back, and that has several causes the ping cannot tell apart.</p>
+  <p><strong>Destination host unreachable</strong> is the third, and it gets misread because it arrives looking like a reply. In the run below, the laptop typing the command holds 10.20.0.10.</p>
+
+  <div class="cli">
+    <div class="cli-ttl">ping &mdash; run from a laptop at 10.20.0.10</div>
+    <div class="cli-body"><pre><span class="pr">C:\&gt;</span> <span class="cmd">ping 10.20.0.51</span>
+
+<span class="out">Pinging 10.20.0.51 with 32 bytes of data:
+Reply from 10.20.0.10: Destination host unreachable.
+Reply from 10.20.0.10: Destination host unreachable.
+Reply from 10.20.0.10: Destination host unreachable.
+Reply from 10.20.0.10: Destination host unreachable.</span></pre></div>
+    <div class="cli-foot"><p>Read the IP address the reply came from. 10.20.0.10 is the laptop, not the device, so the laptop is reporting its own failure: it asked the subnet who holds 10.20.0.51 and nothing answered.</p><p>Three things produce that, and they are not equally expensive to check. <b>The IP address you are pinging may be wrong</b> &mdash; mistyped, or taken from a record that is out of date. Check that first; it costs seconds. <b>Nothing may have answered at that IP address</b>: the device may be off, may never have been installed, may hold a different IP address, or may be unable to answer, and the ping cannot say which. <b>Or the laptop has no route to that subnet</b> &mdash; no default gateway, or the wrong mask &mdash; and nothing ever left it. The second separates at the switch; the third is on the laptop in front of you.</p><p>A reply carrying a router&rsquo;s IP address rather than the laptop&rsquo;s means the router could not deliver the ping. That is a different fault and not yours: record the router&rsquo;s IP address from the reply and hand it over, because it names where delivery stopped.</p></div>
+  </div>
+
+  <p>Open each card. The three results send you to three different places.</p>
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Reply</span><span class="rcard-sub">Reply from 10.20.0.51</span><span class="rcard-detail" hidden><p>The device is reachable. The path carried the message out and the reply back, so the cabling, the two ports and the two devices are all working well enough to pass traffic.</p><p><b>The time figure is the round trip.</b> A ping sends four probes and prints a line for each, so four figures come back. <code>time=1ms</code> is how long one message took to go out and the answer to come back, measured in milliseconds. On a wired local network the answer normally comes back within a few milliseconds, and on the same switch often under one, which prints as <code>time&lt;1ms</code>.</p><p>Read the four figures together rather than one of them. Four results in the same low range are what a healthy drop looks like; a few milliseconds on a wired link is normal, and a camera or controller answering in five is not a fault. Tens of milliseconds, or four figures that differ widely from each other, point at a busy path or a busy device, and many devices answer a ping at low priority, so the device is as likely as the network.</p><p><b>What a reply does not prove.</b> It says nothing about the speed the link came up at. A drop running at 100 Mbps where it should run at 1000 answers a ping perfectly.</p><p><b>Read next:</b> nothing, on reachability &mdash; that question is answered. Where the work order specifies a speed, that is a separate reading at the switch.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Request timed out</span><span class="rcard-sub">nothing answered</span><span class="rcard-detail" hidden><p>On its own this rules out nothing. The ping got as far as sending and nothing came back &mdash; the device may be off, may be set never to answer, may be dropping or filtering the request, or may be replying into a path losing the replies. On your own subnet a dead cord more often prints <code>Destination host unreachable</code>, because the laptop never finds anything holding that IP address.</p><p><b>Read next:</b> what the switch shows for the port, and whether the device is set to answer a ping at all. Cameras and building controllers are sometimes set not to.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">Destination host unreachable</span><span class="rcard-sub">the reply carries your own IP address</span><span class="rcard-detail" hidden><p>Nothing past the laptop has been tested, so this result says nothing about the device or the drop.</p><p><b>Read next:</b> the IP address you typed, then whether anything is linked on the port, and whether the device is powered.</p></span></button>
+  </div></div>
+
+  <h3>The trace command</h3>
+  <p>A trace reports each router the traffic passes through on the way to an IP address, one line per hop, and how long the round trip to each one took. On Windows the command is <code>tracert</code>; on Linux and macOS it is <code>traceroute</code>.</p>
+  <p>Windows looks up a name for every hop unless you stop it, which slows the trace down and prints names where you wanted IP addresses. <code>-d</code> turns the lookup off. On Linux and macOS the same option is <code>-n</code>.</p>
+  <p>Inside your own subnet there are no routers to report, so a trace to an IP address there adds nothing to the ping. It is useful where a ping crossed a router and failed: it shows the route the traffic takes, router by router, and how far it got. Some routers along the way will not answer, and the trace still shows the rest.</p>
+
+  <div class="cli">
+    <div class="cli-ttl">tracert &mdash; a trace that completes</div>
+    <div class="cli-body"><pre><span class="pr">C:\&gt;</span> <span class="cmd">tracert -d 10.60.0.20</span>
+
+<span class="out">Tracing route to 10.60.0.20 over a maximum of 30 hops
+
+  1     1 ms     1 ms     1 ms  10.20.0.1
+  2     2 ms     1 ms     2 ms  10.0.0.1
+  3     *        *        *     Request timed out.
+  4     3 ms     2 ms     3 ms  10.60.0.20
+
+Trace complete.</span></pre></div>
+    <div class="cli-foot"><p>Four hops, and the last one is the IP address you asked for, so the path works end to end. Hop 1 is the router the laptop uses to reach other networks. <b>Hop 3 answered nothing and forwarded the traffic anyway</b> &mdash; commonly a router set not to reply, or one limiting how often it answers; either way it is not a fault. The last line, reading <code>Trace complete.</code>, is what tells you so. Each hop is probed three times, which is why there are three figures on a line.</p></div>
+  </div>
+
+  <div class="cli">
+    <div class="cli-ttl">tracert &mdash; a trace that stops at the first router</div>
+    <div class="cli-body"><pre><span class="pr">C:\&gt;</span> <span class="cmd">tracert -d 10.60.0.20</span>
+
+<span class="out">Tracing route to 10.60.0.20 over a maximum of 30 hops
+
+  1     1 ms     1 ms     1 ms  10.20.0.1
+  2     *        *        *     Request timed out.
+  3     *        *        *     Request timed out.</span></pre></div>
+    <div class="cli-foot"><p>The first router answered and nothing past it did. The command keeps trying up to thirty hops unless you stop it with <kbd>Ctrl</kbd>+<kbd>C</kbd>. Record that the first router answered and nothing beyond it did: evidence for whoever owns the routers, and not a fault you can act on.</p></div>
+  </div>
+
+  <div class="warn note"><div class="nt">A row of stars is not a fault</div>
+    <p>Hop 3 in the first trace is a router that does not answer and forwards normally. Stars in the middle of a trace that completes have found nothing wrong.</p>
+    <p>The useful reading is the point where a trace stops and does not resume, taken together with a ping to the same IP address.</p></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="A reply proves the camera is reachable, and that covers the IP address it holds, the path carrying traffic in both directions, and the power it needs to answer at all. Speed is the one thing it does not cover. A link that settled at 100 Mbps where 1000 was specified answers a ping as well as a link that settled at 1000. The ping cannot show the difference; the switch can.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A camera answers a ping with four replies, all under a millisecond. The work order specifies a gigabit device on a gigabit port. What has the ping not told you?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Whether the camera holds an IP address</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Whether the path carries traffic in both directions</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The speed the link came up at</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Whether the camera is powered</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="1" data-group-title="Starting From a Fault Report" data-num="529.5.3" data-title="Indicators, and what the switch says instead">
+  <p class="crumb">Lesson 529.5 &middot; Section 1 Starting From a Fault Report</p>
+  <h2><span class="tnum">529.5.3</span> Indicators, and what the switch says instead</h2>
+  <p class="lead-in">An indicator is the fastest reading on the job and the least specific. It tells you that something is happening. The switch tells you what.</p>
+  <p>Two things limit what an indicator is worth: what its colors mean is not standardized, and a light at one end says little about the other.</p>
+
+  <div class="warn note"><div class="nt">Indicator conventions are not standard</div>
+    <p>What green, amber and flashing mean varies by manufacturer, by model, and on many switches by which mode the front panel is switched to &mdash; the same indicator shows link state in one mode and power delivery in another.</p>
+    <p>Read the legend printed on the chassis before you read the lights, and record what the legend says rather than what you assumed. On the device end, the startup sequence is in the device documentation; read it once for the device you install most often.</p></div>
+
+  <p>Two indications in particular point somewhere other than where they seem to.</p>
+  <ul>
+    <li><strong>Lit at the switch, nothing at the device.</strong> The link is up at the switch end, so the fault is past it: the path, the device, or the possibility that the lit port is not the one serving this drop. A lit port several floors away from a dark device does not tell you which.</li>
+    <li><strong>Steady at both ends, and the user still reporting a fault.</strong> The path carries a link, and nothing above a link has been checked: the speed it settled at, the VLAN the port is in, the IP address the device holds, and whether anything can reach it.</li>
+  </ul>
+
+  <div class="note note"><div class="nt">A power indicator reports the port, not the device</div>
+    <p>A device that is receiving power and cannot run properly on it produces the same indication at the switch as one that is running normally. The device&rsquo;s own behavior is the reading for that, and on a new install it is often the only one available.</p></div>
+
+  <h3>What the switch says</h3>
+  <p>The switch answers the same questions in words, in the same few seconds, and without ambiguity. Here the columns are read across five ports, four of which have something wrong.</p>
+
+  <div class="cli">
+    <div class="cli-ttl">show interfaces status &mdash; five ports, four problems</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show interfaces status</span>
+
+<span class="out">Port      Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/11                     notconnect   20           auto   auto 10/100/1000BaseTX
+Gi1/0/12                     connected    20         a-full a-1000 10/100/1000BaseTX
+Gi1/0/13                     disabled     20           auto   auto 10/100/1000BaseTX
+Gi1/0/14                     connected    1          a-full a-1000 10/100/1000BaseTX
+Gi1/0/15                     connected    20         a-full  a-100 10/100/1000BaseTX</span></pre></div>
+    <div class="cli-foot">
+      <ul>
+        <li><b>Gi1/0/11</b> &mdash; enabled, and no link is forming. Nothing plugged in, a cord not seated, a broken path, or a device that is off.</li>
+        <li><b>Gi1/0/12</b> &mdash; the one that is right.</li>
+        <li><b>Gi1/0/13</b> &mdash; shut down in the configuration. Nothing on the far end will change that.</li>
+        <li><b>Gi1/0/14</b> &mdash; a sound link, sitting in VLAN 1. The port was never moved into the group the work order named, so the device will start normally and reach nothing it expects.</li>
+        <li><b>Gi1/0/15</b> &mdash; a sound link at 100 Mbps, where a gigabit device on a gigabit port should give 1000.</li>
+      </ul>
+      <p>Port names differ between switches; where a switch names its ports <code>Fa1/0/12</code> rather than <code>Gi1/0/12</code>, the columns read the same.</p></div>
+  </div>
+
+  <p>Power is reported by <code>show power inline</code>, read for the same port.</p>
+
+  <div class="note tip"><div class="nt">Which reading to take first</div>
+    <p>A managed switch is usually reachable over the network, so both readings can be taken from wherever you are sitting. The indicators cannot: they are at the two ends of the drop, and those may be on different floors.</p>
+    <p>Take the switch readings first. They name the port rather than describing a light.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Connected at full duplex and 1000 Mbps says the path is carrying what is asked of it, so the cabling is not the question here. The Vlan column reads 1, which is where every port sits until somebody moves it &mdash; the device will come up and reach nothing it was meant to. A fault on the pairs that only the higher speed uses would show in the Speed column, a port shut down in the configuration reads disabled rather than connected, and power delivery is reported by a different command altogether.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">In <code>show interfaces status</code>, a drop reads <code>connected</code> in the Status column, <code>1</code> in the Vlan column, and <code>a-full a-1000</code>. The work order puts the device in VLAN 20. What is the state of that drop?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The path has a fault on the pairs only 1000 Mbps uses</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The path is sound and the port was never moved out of the default group</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The port is shut down and needs re-enabling</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The port is supplying no power to the device</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="2" data-group-title="Cabling Fault or Configuration Fault" data-num="529.5.4" data-title="What a cable tester answers, and what it does not">
+  <p class="crumb">Lesson 529.5 &middot; Section 2 Cabling Fault or Configuration Fault</p>
+  <h2><span class="tnum">529.5.4</span> What a cable tester answers, and what it does not</h2>
+  <p class="lead-in">A cable tester tells you three things about a length of cable.</p>
+  <ul>
+    <li><strong>The wire map.</strong> Whether every conductor reaches the right pin at the far end. It names opens, shorts, single-wire faults, reversed and crossed pairs, and split pairs. It also reports which of the tester&rsquo;s far-end adapters is plugged in at the other end. Where a set of numbered adapters is available, that is how one cable is told from another in a bundle.</li>
+    <li><strong>The length.</strong> The length of each pair, and the distance to a fault where there is one.</li>
+    <li><strong>What is at the far end.</strong> Whether the cable is plugged into an Ethernet port and what speed that port advertises &mdash; 10, 100 or 1000 Mbps &mdash; whether telephone voltage is present, and whether Power over Ethernet is present and on which pairs.</li>
+  </ul>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The faults a wire map names, and how each one behaves in service.</caption>
+      <thead><tr>
+        <th scope="col">Named as</th><th scope="col">What is wrong</th><th scope="col">How it behaves in service</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Open</th><td>A conductor does not reach the far end &mdash; a broken wire, a pin not seated in the plug, a conductor not punched down</td><td>Commonly no link at all. An open on the 4/5 or 7/8 pairs can leave a 100 Mbps link working, and can stop the power where the port sends its current on those pairs rather than on 1/2 and 3/6</td></tr>
+        <tr><th scope="row">Short</th><td>Two conductors touching, usually a plug crimped over stripped copper or a crushed cable</td><td>No link. A powered port may refuse to supply power rather than energize a short, so the device stays dark and the port reports nothing flowing</td></tr>
+        <tr><th scope="row">Reversed pair</th><td>The two conductors of one pair swapped at one end</td><td>Frequently carries traffic without complaint. The wire map names it and service does not, which is why it survives in installed cabling for years</td></tr>
+        <tr><th scope="row">Crossed pairs</th><td>A whole pair terminated in the wrong position at one end</td><td>Depends which pairs moved. Commonly no link, and where a link does form it is unreliable</td></tr>
+        <tr><th scope="row">Split pair</th><td>Every conductor reaches the right pin, but two wires from different twisted pairs have been used together as a pair</td><td>The one that hides. Continuity is correct end to end, so a simple continuity tester passes it. It commonly links at 100 Mbps and fails or produces errors at 1000</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>The split pair</h3>
+  <p>A split pair is wired to the right pins and twisted into the wrong pairs. Every conductor goes where the diagram says, so anything that tests continuity conductor by conductor reports it as good. What has gone is the twisting that cancels interference between the two wires of a pair, and that shows only once the link is asked to run faster. The tester finds it by checking the pairing itself rather than the conductors one at a time; a plain continuity tester cannot.</p>
+  <p>100 Mbps uses the 1/2 and 3/6 pairs and leaves the other two alone. 1000 Mbps uses all four. So a split on the pairs the lower speed does not touch can sit in a drop for years, carrying traffic, until somebody fits a faster device. The wire map names it directly, and that separates a damaged path from a device that was only ever going to run at 100 Mbps.</p>
+
+  <h3>The length reading</h3>
+  <p>A permanent link is limited to 90 meters and a channel to 100 meters. A run past those limits may work, may work slowly, and may work until something else on the path changes. Nothing about the drop announces it and no indicator reports it &mdash; the only way to know is to read the length.</p>
+  <p>A tester reporting 118 meters on a channel has found a design fault rather than a break, and the remedy is a different route or equipment closer to the room. Neither of those is a cord swap, which is why the number goes in the record and the job goes to whoever decides where the cabling runs.</p>
+  <p>Where the length reads much shorter than the run should be, or differs sharply between pairs, the tester is reporting the distance to a fault rather than the length of the cable. The distance it reports tells you whether to look at the plug in your hand or at something between the two ends.</p>
+
+  <div class="warn note"><div class="nt">Two test modes</div>
+    <p><b>The wire map test needs both ends of the cable free</b>, with the tester on one end and its far-end adapter on the other. Nothing else can be plugged in.</p>
+    <p><b>The service test needs the far end plugged into a live port.</b> That is how the tester reports the port speed and whether power is present.</p>
+    <p>You cannot take both readings at once. Take the one your evidence points at first, and take the other only if the first comes back clean.</p></div>
+
+  <h3>Four things it does not answer</h3>
+  <ul>
+    <li><strong>It does not measure insertion loss or crosstalk</strong>, so it cannot say a run meets a category. A cable tester confirms that the cabling is built correctly; certifying a link against a performance standard is a different instrument and a different job.</li>
+    <li><strong>It does not report the Power over Ethernet class.</strong> It reports that power is present and which pairs carry it. The class and the watts set aside come from the switch.</li>
+    <li><strong>It knows nothing about the switch configuration.</strong> A port shut down, a port in the wrong VLAN, and a port set never to supply power all test perfectly on a cable tester, because none of them is a fault in the cabling.</li>
+    <li><strong>It reports only on what you plugged it into.</strong> A clean test on a cord says nothing about the rest of the path.</li>
+  </ul>
+
+  <div class="note tip"><div class="nt">Testing a cord, and testing the run</div>
+    <p>The two patch cords are the parts you can lift out and test on a bench with both ends free. Each takes under a minute, and between them they either clear the two elements most likely to have failed or find the fault.</p>
+    <p>The run between the outlet and the patch panel cannot be tested that way, and testing it is a separate task. Where the evidence points at that run, say so and schedule the test, rather than recording a cord problem that the cord swap did not fix.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="A tester reports on what it was plugged into. A clean wire map on a 3 meter cord clears that cord and says nothing about the second cord, the outlet, the run inside the wall, or the panel termination &mdash; a split pair further along would still hold the link at 100 Mbps. It certainly says nothing about the switch, because no cable tester reads a configuration.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A drop links at 100 Mbps with a gigabit device on a gigabit port. The cord between the outlet and the device tests clean on the wire map at a length of 3 meters. What has that reading established?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The whole cabling path is sound, since the cord is the part that moves</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>That one cord is sound, and nothing about the rest of the path</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>That there is no split pair anywhere between the device and the switch</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>That the switch port is configured as the work order specifies</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="2" data-group-title="Cabling Fault or Configuration Fault" data-num="529.5.5" data-title="Isolating by substitution">
+  <p class="crumb">Lesson 529.5 &middot; Section 2 Cabling Fault or Configuration Fault</p>
+  <h2><span class="tnum">529.5.5</span> Isolating by substitution</h2>
+  <p class="lead-in">Swapping one element for a known-good one locates a fault in a path you cannot see into. It works on one condition: you change one thing at a time.</p>
+  <p>The path from a device to a switch port has seven elements and two of them are cords. Those two are the parts a person handles, so they are the ones that fail most, and they are also the only two that can be exchanged in seconds without tools.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:980px" viewBox="0 0 980 372" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram of the seven elements of the path from device to switch port, with four substitution points marked and a list of what each substitution clears. A full text description follows.">
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">SUBSTITUTIONS ON THIS DROP, AND WHAT EACH ONE CLEARS</text>
+
+    <rect x="27" y="52" width="122" height="72" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="88" y="84" font-size="14" font-weight="700" fill="#09507C" text-anchor="middle">Device</text>
+    <rect x="161" y="52" width="122" height="72" rx="6" fill="#eef4f9" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="222" y="84" font-size="14" font-weight="700" fill="#09507C" text-anchor="middle">Cord</text>
+    <text x="222" y="104" font-size="13" fill="#5a6772" text-anchor="middle">device to outlet</text>
+    <rect x="295" y="52" width="122" height="72" rx="6" fill="#fff" stroke="#7f8b95" stroke-width="1.5"/>
+    <text x="356" y="84" font-size="14" font-weight="700" fill="#3c4956" text-anchor="middle">Outlet</text>
+    <rect x="429" y="52" width="122" height="72" rx="6" fill="#fff" stroke="#7f8b95" stroke-width="1.5"/>
+    <text x="490" y="80" font-size="14" font-weight="700" fill="#3c4956" text-anchor="middle">Horizontal</text>
+    <text x="490" y="100" font-size="14" font-weight="700" fill="#3c4956" text-anchor="middle">cable</text>
+    <rect x="563" y="52" width="122" height="72" rx="6" fill="#fff" stroke="#7f8b95" stroke-width="1.5"/>
+    <text x="624" y="84" font-size="14" font-weight="700" fill="#3c4956" text-anchor="middle">Panel</text>
+    <rect x="697" y="52" width="122" height="72" rx="6" fill="#eef4f9" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="758" y="84" font-size="14" font-weight="700" fill="#09507C" text-anchor="middle">Cord</text>
+    <text x="758" y="104" font-size="13" fill="#5a6772" text-anchor="middle">panel to switch</text>
+    <rect x="831" y="52" width="122" height="72" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="892" y="84" font-size="14" font-weight="700" fill="#09507C" text-anchor="middle">Switch port</text>
+
+    <rect x="161" y="132" width="122" height="7" rx="3" fill="#B45309"/>
+    <circle cx="222" cy="158" r="13" fill="#fff" stroke="#B45309" stroke-width="1.8"/>
+    <text x="222" y="163" font-size="14" font-weight="700" fill="#8a4a06" text-anchor="middle">1</text>
+    <rect x="697" y="132" width="122" height="7" rx="3" fill="#B45309"/>
+    <circle cx="758" cy="158" r="13" fill="#fff" stroke="#B45309" stroke-width="1.8"/>
+    <text x="758" y="163" font-size="14" font-weight="700" fill="#8a4a06" text-anchor="middle">2</text>
+    <rect x="831" y="132" width="122" height="7" rx="3" fill="#B45309"/>
+    <circle cx="892" cy="158" r="13" fill="#fff" stroke="#B45309" stroke-width="1.8"/>
+    <text x="892" y="163" font-size="14" font-weight="700" fill="#8a4a06" text-anchor="middle">3</text>
+    <rect x="27" y="132" width="122" height="7" rx="3" fill="#B45309"/>
+    <circle cx="88" cy="158" r="13" fill="#fff" stroke="#B45309" stroke-width="1.8"/>
+    <text x="88" y="163" font-size="14" font-weight="700" fill="#8a4a06" text-anchor="middle">4</text>
+
+    <text x="27" y="204" font-size="14" font-weight="700" fill="#B45309">One change at a time, and put back what was not the fault.</text>
+
+    <text x="27" y="238" font-size="14" font-weight="700" fill="#8a4a06">1</text>
+    <text x="48" y="238" font-size="14" fill="#3c4956">Known-good cord at the device end &mdash; clears that cord</text>
+    <text x="27" y="268" font-size="14" font-weight="700" fill="#8a4a06">2</text>
+    <text x="48" y="268" font-size="14" fill="#3c4956">Known-good cord at the panel end &mdash; clears that cord</text>
+    <text x="27" y="298" font-size="14" font-weight="700" fill="#8a4a06">3</text>
+    <text x="48" y="298" font-size="14" fill="#3c4956">A second switch port configured the same way &mdash; clears the port, its settings and its power</text>
+    <text x="27" y="328" font-size="14" font-weight="700" fill="#8a4a06">4</text>
+    <text x="48" y="328" font-size="14" fill="#3c4956">A laptop in place of the device &mdash; clears the device, and proves the path as far as the switch</text>
+    <text x="27" y="358" font-size="14" fill="#5a6772">The three unmarked elements &mdash; outlet, horizontal cable, panel termination &mdash; cannot be substituted. They are what remains.</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram is headed Substitutions on this drop, and what each one clears. Along the top, seven boxes run left to right showing the elements of the path: Device, Cord (device to outlet), Outlet, Horizontal cable, Panel, Cord (panel to switch), and Switch port. The two cords, the device and the switch port are drawn in blue; the outlet, horizontal cable and panel are drawn in gray.</p>
+    <p>Four of the boxes carry a marker bar underneath with a number. Marker 1 sits under the cord from the device to the outlet, marker 2 under the cord from the panel to the switch, marker 3 under the switch port, and marker 4 under the device. A line beneath reads: one change at a time, and put back what was not the fault.</p>
+    <p>The list below gives each substitution. One, a known-good cord at the device end, clears that cord. Two, a known-good cord at the panel end, clears that cord. Three, a second switch port configured the same way, clears the port, its settings and its power. Four, a laptop in place of the device, clears the device and proves the path as far as the switch. A closing line reads: the three unmarked elements &mdash; outlet, horizontal cable, panel termination &mdash; cannot be substituted; they are what remains.</p>
+  </details>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>What each substitution settles, and what it leaves untouched.</caption>
+      <thead><tr>
+        <th scope="col">Substitution</th><th scope="col">A good result clears</th><th scope="col">It does not clear</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Known-good cord, device to outlet</th><td>That cord, including the plug at each end and the latch</td><td>Anything beyond the outlet</td></tr>
+        <tr><th scope="row">Known-good cord, panel to switch</th><td>That cord</td><td>Anything beyond the panel, and the switch port itself</td></tr>
+        <tr><th scope="row">A second switch port configured the same way</th><td>The original port, its configuration, and its ability to supply power</td><td>All of the cabling. The same cords and the same run serve the new port</td></tr>
+        <tr><th scope="row">A laptop on the outlet, in place of the device</th><td>The device. A link forming and the switch learning the laptop&rsquo;s Media Access Control (MAC) address proves the path carries traffic</td><td>Power, because a laptop does not ask the port for any</td></tr>
+        <tr><th scope="row">The device on a drop known to be working</th><td>The device. If it runs there, the device is not the fault</td><td>Everything about the original drop</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Four rules</h3>
+  <ul>
+    <li><strong>One change at a time.</strong> Change two things, get a working drop, and you know the fault was in one of two places without knowing which. Undo one of them and retest.</li>
+    <li><strong>Put back what was not the fault.</strong> A trail of substituted cords left in a rack becomes somebody else&rsquo;s fault report next month, and nothing will connect it back to this visit.</li>
+    <li><strong>Keep and label the part that failed.</strong> A cord that fails a wire map is evidence while the job is open and rubbish afterward. Unmarked, it goes back in the bag and reaches another drop.</li>
+    <li><strong>Write down each swap as you make it.</strong> The record needs the sequence, and the sequence is the first thing memory loses.</li>
+  </ul>
+
+  <div class="note note"><div class="nt">A substitution locates a fault; it does not explain one</div>
+    <p>&ldquo;The cord was bad&rdquo; is a location. What was wrong with it &mdash; a latch snapped off, a section crushed under a chair leg, a plug that was never fully crimped &mdash; is what stops the same fault appearing on the same desk in three months.</p>
+    <p>The tester answers that in seconds on a cord already in your hand, and the record needs that answer.</p></div>
+
+  <div class="warn note"><div class="nt">Known-good means tested, not new</div>
+    <p>A cord out of a bag is unverified. A cord that has been in a toolkit for a year and has been stood on is unverified. Known-good means it has passed a wire map on the tester and has been marked as the one kept for this purpose.</p>
+    <p>Substituting a faulty cord for a faulty cord produces a reading that says the fault is somewhere else, and sends the rest of the job in the wrong direction.</p></div>
+
+  <div class="note tip"><div class="nt">When the substitutions run out</div>
+    <p>Where every cord and every switch port has been substituted and the fault stays with the drop, what is left is the permanent link: the outlet, the horizontal cable, and the panel termination.</p>
+    <p>Testing that is its own task, with both ends unpatched and the drop out of service while it runs. Record that the cords and the port were cleared, and by what reading.</p></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="Two things changed and one result came back, so the reading cannot say which change mattered. Putting one of the two back and retesting settles it in under a minute, and the record needs the answer &mdash; a switch port that will not supply power is a different report, and a different repair, from a cord with a broken conductor.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A device is dark. You replace the cord between the device and the outlet, and at the same time repatch the panel position to a different switch port. The device comes up. What have you established?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The original cord was faulty</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The original switch port was faulty</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The fault was in one of two places, and the reading cannot say which</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Both the cord and the switch port were faulty</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="2" data-group-title="Cabling Fault or Configuration Fault" data-num="529.5.6" data-title="Telling a broken path from a wrong setting">
+  <p class="crumb">Lesson 529.5 &middot; Section 2 Cabling Fault or Configuration Fault</p>
+  <h2><span class="tnum">529.5.6</span> Telling a broken path from a wrong setting</h2>
+  <p class="lead-in">Almost every fault on a drop is one of two things: a path that cannot carry the traffic, or a switch told to do the wrong thing. One reading usually tells you which.</p>
+  <p>A <strong>cabling fault</strong> is a path that cannot carry the traffic asked of it: a conductor that does not reach, a split pair, a plug not seated, a run past its length limit.</p>
+  <p>A <strong>configuration fault</strong> is different: the path carries traffic, and the switch has been told to do something other than what the work order asked for. That covers a port shut down, a port left in the group it started in, a port set never to supply power, and a speed or duplex forced at one end.</p>
+  <p>A cord in the wrong panel position belongs to neither: the path carries traffic and delivers it to the wrong outlet.</p>
+  <p>From the desk the two look identical, so the report cannot separate them. They separate at the switch, and usually in one column.</p>
+
+  <div class="tbl-scroll">
+  <svg style="min-width:980px" viewBox="0 0 980 356" xmlns="http://www.w3.org/2000/svg" role="img"
+       aria-label="Diagram showing one reported symptom branching to four candidate causes, each labeled with the reading that names it and whether it is a cabling fault or a configuration fault. A full text description follows.">
+    <defs>
+      <marker id="a5295c" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" fill="#7f8b95"/>
+      </marker>
+    </defs>
+    <text x="24" y="28" font-size="16" font-weight="700" fill="#09507C">ONE REPORT, FOUR CAUSES, FOUR DIFFERENT READINGS</text>
+
+    <rect x="24" y="140" width="230" height="86" rx="7" fill="#eef4f9" stroke="#0079C0" stroke-width="1.6"/>
+    <text x="44" y="172" font-size="14" font-weight="700" fill="#09507C">REPORTED</text>
+    <text x="44" y="196" font-size="14" fill="#3c4956">&ldquo;The device does not</text>
+    <text x="44" y="214" font-size="14" fill="#3c4956">work.&rdquo;</text>
+
+    <line x1="258" y1="176" x2="452" y2="76" stroke="#7f8b95" stroke-width="1.8" marker-end="url(#a5295c)"/>
+    <line x1="258" y1="180" x2="452" y2="152" stroke="#7f8b95" stroke-width="1.8" marker-end="url(#a5295c)"/>
+    <line x1="258" y1="188" x2="452" y2="228" stroke="#7f8b95" stroke-width="1.8" marker-end="url(#a5295c)"/>
+    <line x1="258" y1="194" x2="452" y2="304" stroke="#7f8b95" stroke-width="1.8" marker-end="url(#a5295c)"/>
+
+    <rect x="460" y="46" width="496" height="60" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="478" y="70" font-size="14" font-weight="700" fill="#09507C">Cord not seated at the outlet</text>
+    <text x="478" y="92" font-size="13" fill="#5a6772">Status reads notconnect &middot; the wire map on that cord is clean</text>
+    <text x="938" y="70" font-size="13" font-weight="700" fill="#8a4a06" text-anchor="end">CABLING</text>
+
+    <rect x="460" y="122" width="496" height="60" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="478" y="146" font-size="14" font-weight="700" fill="#09507C">Port shut down in the configuration</text>
+    <text x="478" y="168" font-size="13" fill="#5a6772">Status reads disabled</text>
+    <text x="938" y="146" font-size="13" font-weight="700" fill="#09507C" text-anchor="end">CONFIGURATION</text>
+
+    <rect x="460" y="198" width="496" height="60" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="478" y="222" font-size="14" font-weight="700" fill="#09507C">Port set never to supply power</text>
+    <text x="478" y="244" font-size="13" fill="#5a6772">Admin reads never</text>
+    <text x="938" y="222" font-size="13" font-weight="700" fill="#09507C" text-anchor="end">CONFIGURATION</text>
+
+    <rect x="460" y="274" width="496" height="60" rx="6" fill="#fff" stroke="#0079C0" stroke-width="1.5"/>
+    <text x="478" y="298" font-size="14" font-weight="700" fill="#09507C">Split pair in the path</text>
+    <text x="478" y="320" font-size="13" fill="#5a6772">Speed reads a-100 &middot; the wire map names the split</text>
+    <text x="938" y="298" font-size="13" font-weight="700" fill="#8a4a06" text-anchor="end">CABLING</text>
+  </svg>
+  </div>
+  <details class="longdesc">
+    <summary>Text description of this diagram</summary>
+    <p>The diagram is headed One report, four causes, four different readings. On the left, a box headed REPORTED contains the sentence &ldquo;The device does not work.&rdquo; Four arrows run from it to four boxes on the right, each giving a candidate cause, the reading that names it, and which of the two it is.</p>
+    <p>First, cord not seated at the outlet: Status reads notconnect and the wire map on that cord is clean. Marked CABLING.</p>
+    <p>Second, port shut down in the configuration: Status reads disabled. Marked CONFIGURATION.</p>
+    <p>Third, port set never to supply power: Admin reads never. Marked CONFIGURATION.</p>
+    <p>Fourth, split pair in the path: Speed reads a-100 and the wire map names the split. Marked CABLING.</p>
+  </details>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Readings from the switch and the cable tester, and what each one points at.</caption>
+      <thead><tr>
+        <th scope="col">Reading</th><th scope="col">Points at cabling</th><th scope="col">Points at configuration</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Status column, <code>show interfaces status</code></th><td><code>notconnect</code> &mdash; the port is enabled and no link is forming</td><td><code>disabled</code> &mdash; the port has been shut down</td></tr>
+        <tr><th scope="row">Speed and Duplex columns, same output</th><td><code>a-100</code> on a gigabit device and a gigabit port</td><td>A value with no <code>a-</code> prefix, meaning this end has been forced rather than left to negotiate</td></tr>
+        <tr><th scope="row">Vlan column, same output</th><td>Unaffected. A VLAN assignment cannot break a path</td><td>A number other than the one the work order specifies</td></tr>
+        <tr><th scope="row">Admin column, <code>show power inline</code></th><td>Unaffected</td><td><code>never</code> &mdash; the port has been set not to supply power</td></tr>
+        <tr><th scope="row">Oper column, same output, where Admin is auto</th><td><code>off</code> &mdash; nothing was detected on the far end, which includes a path too broken to carry the detection signal</td><td><code>off</code> with the pool spent &mdash; not a setting but a switch out of power, which the header line of the same output confirms</td></tr>
+        <tr><th scope="row">MAC address table, <code>show mac address-table interface</code></th><td>Empty &mdash; nothing has been heard through the path</td><td>Populated, so the path works and the cause is somewhere above it</td></tr>
+        <tr><th scope="row">Wire map, from the cable tester</th><td>Names the fault and the distance to it</td><td>Clean &mdash; the cord or run tested is cleared, which does not by itself name a setting</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Two readings settle most cases. A clean wire map with a Status column reading <code>disabled</code> is a configuration fault. A wire map naming an open with a Status column reading <code>notconnect</code> is a cabling fault. The awkward cases are the ones where both readings look reasonable, and those are the next topic.</p>
+
+  <p>Match each reading to what it names.</p>
+  <div class="match gate" data-left="Reading" data-right="What it names"><div class="pair" data-left="In show interfaces status, the Status column reads disabled" data-right="A port shut down in the configuration"></div><div class="pair" data-left="In show power inline, the Admin column reads never" data-right="A port set not to supply power"></div><div class="pair" data-left="In show interfaces status, Speed and Duplex read a-full a-100 on a gigabit device and a gigabit port" data-right="A link that settled below the speed specified"></div><div class="pair" data-left="In show interfaces status, the Vlan column reads 1 where the work order says 20" data-right="A port that was never moved out of the VLAN it started in"></div><div class="pair" data-left="In show mac address-table interface, nothing is listed for the port" data-right="Nothing has been heard through that path"></div></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="A link at full duplex and 1000 Mbps, with the device&rsquo;s MAC address learned on that port, proves the path carries traffic in both directions. That takes the cabling out of it. What is left is the VLAN the port sits in, the IP address the device holds, and whether the device answers a ping at all &mdash; and the Vlan column is the reading you already have in front of you. A MAC address table entry does age out, but one that is present was learned from traffic that arrived.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">In <code>show interfaces status</code>, a drop reads <code>connected</code> and <code>a-full a-1000</code>, and <code>show mac address-table interface</code> lists the device on that port. A ping to the device times out. Is this cabling or configuration, and what do you read next?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Cabling &mdash; retest the cords, because a ping failure means the path is marginal</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Configuration or above &mdash; the path is proven, so read the Vlan column and then the device</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Cabling &mdash; the MAC address table entry is left over from an earlier device</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Neither &mdash; a ping failure on its own is never a fault</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="2" data-group-title="Cabling Fault or Configuration Fault" data-num="529.5.7" data-title="Faults that look like each other">
+  <p class="crumb">Lesson 529.5 &middot; Section 2 Cabling Fault or Configuration Fault</p>
+  <h2><span class="tnum">529.5.7</span> Faults that look like each other</h2>
+  <p class="lead-in">Five pairs of causes that arrive as the same complaint. Each pair separates on one reading.</p>
+  <p>Open each card. The two causes in each pair produce the same report and take different repairs.</p>
+
+  <div class="revealset gate"><div class="cards stack">
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">A port shut down, and a dead run</span><span class="rcard-sub">Separated by the Status column of <code>show interfaces status</code></span><span class="rcard-detail" hidden><p>Both produce a device with no link, and nothing at the desk tells them apart.</p><p>In <code>show interfaces status</code>, a port shut down in the configuration reads <code>disabled</code>, and nothing on the far end will change that until somebody re-enables it. A port that is enabled with no link forming reads <code>notconnect</code>, and the search moves to the cords and the run.</p><p>One repair is typed at a keyboard and the other needs a walk.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">A port set never to supply power, and a pool with nothing left</span><span class="rcard-sub">Separated by <code>show power inline</code> &mdash; the Admin column and the header line</span><span class="rcard-detail" hidden><p>Both produce a dark device on a port that is otherwise sound, and in <code>show power inline</code> both read <code>Oper off</code>.</p><p><code>Admin never</code> is a setting on that one port. <code>Admin auto</code> with <code>Oper off</code> means either that nothing was detected on the far end or that the switch has no power left to set aside, and the header line of the same output answers which &mdash; it prints what remains in the pool.</p><p>The two repairs are unrelated. One is a line typed on that port; the other is a switch carrying more powered devices than it can hold, which is a sizing problem and somebody&rsquo;s budget.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">A cord in the wrong panel position, and a dead switch port</span><span class="rcard-sub">Separated by <code>show interfaces status</code> and the MAC address table</span><span class="rcard-detail" hidden><p>Both leave your device unreachable.</p><p>A panel cord in the wrong position connects your switch port to a different drop. In <code>show interfaces status</code> the port then often reads <code>connected</code>, and <code>show mac address-table interface</code> returns a MAC address that is not your device&rsquo;s &mdash; a healthy-looking port serving the wrong outlet. Reading the panel label back against the work order finds it.</p><p>A dead switch port reads <code>notconnect</code> with nothing learned on it, and moving the same cord one position along the switch settles it in seconds.</p><p>A link where there should not be one is as much a reading as no link where there should be.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">A wrong VLAN, and a device with no working IP address</span><span class="rcard-sub">Separated by the Vlan column of <code>show interfaces status</code></span><span class="rcard-detail" hidden><p>Both produce a device that powers up, links, and cannot be reached.</p><p>The Vlan column of <code>show interfaces status</code> names the group the switch put the port in. Where it reads a number other than the one the work order specifies, the device is on a network it was never meant to be on, and a laptop in the intended VLAN will not reach it however the device itself is set.</p><p>Where the Vlan column is right and the ping still fails, the IP address the device holds is the next question, and that reading is taken at the device rather than at the switch.</p></span></button>
+    <button class="rcard" aria-expanded="false"><span class="rcard-ttl">A split pair, and a device that only does 100 Mbps</span><span class="rcard-sub">Separated by the wire map, not the switch</span><span class="rcard-detail" hidden><p>Both read <code>a-100</code> in <code>show interfaces status</code>. The switch reports the speed the two ends settled on and cannot say why they settled there.</p><p>A device specified at 100 Mbps has negotiated correctly and there is nothing to repair. A split pair in the path has settled at the best speed a damaged path supports, and it will keep working until somebody fits a faster device to that drop and reports a new fault.</p><p>The device&rsquo;s specification sheet settles the first of the two. The wire map settles the second.</p></span></button>
+  </div></div>
+
+  <div class="note note"><div class="nt">Take the reading that tells the pair apart before you make the repair</div>
+    <p>You can settle any of these pairs by trying the repair for one of them and seeing whether the fault goes away. That works, and it produces a record that says what was done and cannot say what was wrong.</p>
+    <p>One reading first, then one repair, gives you both.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Everything the switch can report has come back good: the link formed, the port is in the group the work order specifies, and the device has been heard on the port. The two unanswered questions are both at the device &mdash; what IP address it holds, and whether it answers a ping at all, since some devices are set not to. A path that carries a link and lets the switch learn a MAC address is carrying traffic, restarting a working port changes nothing, and two devices in one VLAN reach each other without a router.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">A device powers up and links. In <code>show interfaces status</code>, the Status column reads <code>connected</code> and the Vlan column reads 20, as the work order specifies. <code>show mac address-table interface</code> lists the device on that port. A ping from a laptop in VLAN 20 returns <code>Request timed out</code>. Where does the next reading come from?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The cable tester &mdash; a marginal path can carry a link and fail a ping</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The device &mdash; the IP address it holds, and whether it answers a ping at all</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>The switch &mdash; shutting the port and re-enabling it will clear the fault</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The router &mdash; traffic between two devices in one VLAN passes through it</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="3" data-group-title="Fix, Escalate, Record" data-num="529.5.8" data-title="What you fix, and what you hand over">
+  <p class="crumb">Lesson 529.5 &middot; Section 3 Fix, Escalate, Record</p>
+  <h2><span class="tnum">529.5.8</span> What you fix, and what you hand over</h2>
+  <p class="lead-in">Some faults stop being yours before they are fixed. That is not a failure, and what you hand over decides whether the next person can use it.</p>
+  <p>Two questions decide whether a fault is yours. Is it in the cabling or the port, and are you authorized to change it? The first is technical and the second is a site rule, and both have to answer yes.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Where the boundary falls on the faults you will meet most.</caption>
+      <thead><tr>
+        <th scope="col">The fault</th><th scope="col">Yours?</th><th scope="col">What you do</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">A cord with a wire map fault</th><td>Yes</td><td>Replace it, keep and label the faulty one, retest, record what the tester named</td></tr>
+        <tr><th scope="row">A cord not fully seated</th><td>Yes</td><td>Seat it, confirm the link came up, record it as found rather than quietly correcting it</td></tr>
+        <tr><th scope="row">A cord in the wrong panel position or the wrong switch port</th><td>Yes</td><td>Repatch to the position the work order gives, confirm at both ends, record the position it was found in</td></tr>
+        <tr><th scope="row">A port shut down</th><td>Where you are authorized</td><td>Re-enable it, confirm the link, record it. Where you are not, report it with the reading that names it</td></tr>
+        <tr><th scope="row">A port in a VLAN other than the one specified</th><td>Where you are authorized</td><td>The same. The reading is the Vlan column, and it goes in the record either way</td></tr>
+        <tr><th scope="row">A port set never to supply power</th><td>Where you are authorized</td><td>The same</td></tr>
+        <tr><th scope="row">A device that is powered, linked, in the right VLAN and heard by the switch, and still does not answer</th><td>No</td><td>Hand it over with every reading you took</td></tr>
+        <tr><th scope="row">Addressing, routing, a rule that blocks traffic, a server, a management system</th><td>No</td><td>Hand it over. None of it is readable from where you are standing</td></tr>
+        <tr><th scope="row">Anything on equipment you were not asked to work on</th><td>No</td><td>Report it. Do not touch it</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warn note"><div class="nt">Authority is a site question, not a technical one</div>
+    <p>On some sites a technician corrects a wrong VLAN during the same visit and notes it. On others every configuration change goes through a change process, and making the correction without one is treated more seriously than the fault was.</p>
+    <p>Settle which it is before you start, along with where the record lives and whether you may write to it. A correction you were not authorized to make is a second fault report, this one with your name on it.</p></div>
+
+  <div class="note note"><div class="nt">An escalation done properly is a completed job</div>
+    <p>A fault you have shown to be outside the cabling and the port, handed over with the readings that put it there, is finished work.</p>
+    <p>A technician who keeps going past their boundary spends the afternoon on a cause they cannot reach, and the fault arrives at the team that owns it hours later with nothing attached to it. In that situation the hand-over is the job, and it is finished at the point where the readings stop being yours to take.</p></div>
+
+  <h3>What makes a hand-over usable</h3>
+  <p>A hand-over carries three things: what you verified, what you found, and where you stopped. On a fault those are not enough. It needs a fourth.</p>
+  <p><strong>What you ruled out, and by what reading.</strong> The next person&rsquo;s first instinct is to suspect the cabling, because that is where most faults live. Give them the reading that makes checking it unnecessary, and they start where you finished instead of where you began.</p>
+
+  <div class="note tip"><div class="nt">A hand-over written from readings</div>
+    <p><em>Camera at outlet 2A-09 does not answer. Cord to the device replaced with a tested cord, no change. Panel position B/09 repatched to a second port configured the same way, no change. Wire map clean on both cords. Switch port reads connected, VLAN 20, a-full a-1000, class 3 with 15.4 W set aside, Oper on. The camera&rsquo;s MAC address is learned on the port. A ping from a laptop in VLAN 20 times out. Cabling, port and power are ruled out by the readings above. Handing over at the device and its addressing.</em></p>
+</div>
+
+  <div class="warn note"><div class="nt">Four things not to touch</div>
+    <ul>
+      <li>An uplink between switches, or between a switch and anything else you were not asked to work on.</li>
+      <li>A port serving somebody who has not reported a fault.</li>
+      <li>A configuration you were not asked to change, even where you can see it is wrong. Report it.</li>
+      <li>Equipment belonging to another trade.</li>
+    </ul></div>
+
+  <h3>When the pattern is bigger than the drop</h3>
+  <p>Where every drop served by one switch stops at the same time, the fault is not on any of the drops. Read one of them to prove the drop is sound, then report the pattern and the time it started.</p>
+  <p>A fault common to twenty ports belongs to whoever owns the switch and its links, and substituting cords on a drop that has already read good tests something proven.</p>
+
+  <div class="cyu gate" data-answer="0" data-fb="A fault common to every port on a switch is not a fault on any one drop, and your readings already show that drop is sound. Reporting the pattern early is the most useful action available. More cord swaps test something already proven good, an uplink belongs to whoever owns the link between switches, and restarting ports in turn disturbs twenty working configurations to chase a fault that is in none of them.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Every device on one switch stops answering at the same time. In <code>show interfaces status</code>, your own drop reads <code>connected</code> and sits in the VLAN the work order specifies, and <code>show mac address-table interface</code> lists the device on the port. What is the right next action?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Report the pattern with the readings from your drop, and stop there</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Substitute cords on your drop until one of them works</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Reseat the uplink cord between the switch and the rest of the network</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Shut and re-enable each port in turn until the fault clears</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="3" data-group-title="Fix, Escalate, Record" data-num="529.5.9" data-title="Writing the root cause and the remediation">
+  <p class="crumb">Lesson 529.5 &middot; Section 3 Fix, Escalate, Record</p>
+  <h2><span class="tnum">529.5.9</span> Writing the root cause and the remediation</h2>
+  <p class="lead-in">A fault record has five fields. Two of them are usually written as opinions, and both can be written as facts instead.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The five fields of a fault record.</caption>
+      <thead><tr>
+        <th scope="col">Field</th><th scope="col">What goes in it</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Symptom as reported</th><td>The words you were given, and the drop they were reported against. Not your interpretation of them</td></tr>
+        <tr><th scope="row">What you found</th><td>The readings, with their values, in the order you took them</td></tr>
+        <tr><th scope="row">Root cause</th><td>The thing that, once changed, made the symptom stop</td></tr>
+        <tr><th scope="row">Remediation</th><td>What you changed, and what you put back</td></tr>
+        <tr><th scope="row">Verification</th><td>The reading you took after the repair, with its value</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>A root cause is not a restated symptom</h3>
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The same four faults, written as an opinion and written as a cause.</caption>
+      <thead><tr>
+        <th scope="col">Written as an opinion</th><th scope="col">Written as a cause</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Cable problem</td><td>Open on conductor 6 in the cord between the outlet and the device, 1.2 m from the device end, named by the tester&rsquo;s wire map</td></tr>
+        <tr><td>Fixed the port</td><td>Port Gi1/0/13 was shut down in the configuration. The Status column read <code>disabled</code></td></tr>
+        <tr><td>It works now</td><td>Not a root cause at all. That sentence belongs in the verification field, with the reading beside it</td></tr>
+        <tr><td>User error</td><td>The panel cord was in position B/15 rather than B/14, so the switch port was serving a different outlet</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Read a root cause back and ask whether somebody could produce the same fault from it. If they could, it is a cause. If they could only recognize it once it happened again, it is a symptom in different words.</p>
+
+  <h3>Remediation</h3>
+  <p>Name what you changed and name what you returned. A record saying that a cord was replaced, without saying that the second cord was put back, leaves the next technician looking for a change that is no longer there.</p>
+  <p>Then re-take the reading that was bad and write the value down. A repair without an after-reading is a claim. Where the bad reading was a ping timing out, the after-reading is a ping replying. Where it was <code>Oper off</code>, the after-reading is <code>Oper on</code> with a class and a figure beside it.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>One fault, written up.</caption>
+      <thead><tr>
+        <th scope="col">Field</th><th scope="col">Entry</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Symptom as reported</th><td>Ceiling access point at outlet 2A-14 not working since Monday. No lights on the device</td></tr>
+        <tr><th scope="row">What you found</th><td>Switch port Gi1/0/12: Status <code>notconnect</code>, Admin <code>auto</code>, Oper <code>off</code>, 350.6 W remaining in the pool. Nothing in the MAC address table for the port. Wire map on the cord from the outlet to the device: open on conductor 6, 1.2 m from the device end. Wire map on the panel cord: clean</td></tr>
+        <tr><th scope="row">Root cause</th><td>Open conductor in the cord between the outlet and the access point, at the device-end plug. The plug latch was broken and the cord had been carrying the weight of the device</td></tr>
+        <tr><th scope="row">Remediation</th><td>Replaced the cord with a tested 3 m cord and supported the device on its mount with a service loop. The faulty cord is labeled 2A-14 and held with the job paperwork. The panel cord was not changed</td></tr>
+        <tr><th scope="row">Verification</th><td>Port reads <code>connected</code>, VLAN 20, <code>a-full a-1000</code>, class 3 with 15.4 W set aside, Oper <code>on</code>. MAC address of the access point learned on the port. Ping from a laptop in VLAN 20: 4 sent, 4 received, 0 lost. Tested 14:20, initials and date on the record</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Two records that are complete without a repair</h3>
+  <ul>
+    <li><strong>No fault found.</strong> Write what you tested and what each reading said, with the time. A drop that reads good is a result, and the report probably describes something real that was not happening while you were there.</li>
+    <li><strong>Outside scope, handed over.</strong> The readings, the list of what they rule out, where you stopped, who it went to and when.</li>
+  </ul>
+
+  <div class="warn note"><div class="nt">Write it at the rack</div>
+    <p>A record written at the end of the day is written from memory, and values are the first thing memory drops. A port number becomes &ldquo;port twelve or thirteen&rdquo; and a wattage disappears altogether.</p>
+    <p>A reading nobody wrote down cannot be quoted later.</p></div>
+
+  <div class="cyu gate" data-answer="2" data-fb="A root cause is the thing which, changed, makes the symptom stop, written so that somebody else could produce the same fault from the sentence. Only the split pair does that. The first entry is the verification, the second names a location and a kind of fault without naming a cause, and the fourth is the remediation &mdash; what was done about the cause rather than what the cause was.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Four entries were written in the root cause field of four different records. Which one is a root cause?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>The camera was not working and now it is</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>Cabling issue at outlet 2A-14</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Split pair on conductors 4 and 5 in the cord from the outlet to the camera, named by the tester&rsquo;s wire map</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>Replaced the patch cord</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="3" data-group-title="Fix, Escalate, Record" data-num="529.5.10" data-title="Two faults, worked through">
+  <p class="crumb">Lesson 529.5 &middot; Section 3 Fix, Escalate, Record</p>
+  <h2><span class="tnum">529.5.10</span> Two faults, worked through</h2>
+  <p class="lead-in">The same sequence, run twice. One ends in a repair and one ends in a hand-over.</p>
+
+  <h3>One &mdash; a desk phone that will not power up</h3>
+  <p><strong>The report.</strong> The phone at desk 3B-07 has no lights. It worked on Friday.</p>
+  <p><strong>The questions.</strong> One drop, not several. It worked three days ago. What changed is that the desk was moved over the weekend.</p>
+  <p><strong>The first reading, taken at the switch before walking anywhere.</strong></p>
+
+  <div class="cli">
+    <div class="cli-ttl">show interfaces status &mdash; the port for outlet 3B-07</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show interfaces status</span>
+
+<span class="out">Port      Name               Status       Vlan       Duplex  Speed Type
+Gi1/0/22                     notconnect   20           auto   auto 10/100/1000BaseTX</span></pre></div>
+    <div class="cli-foot"><p>Enabled, and no link forming. The Status column reads <code>notconnect</code> rather than <code>disabled</code>, so the port is not shut down; and a wrong VLAN would still let a link form, so that is not the cause of this report either. The search is now on the path and the device.</p></div>
+  </div>
+
+  <div class="cli">
+    <div class="cli-ttl">show power inline &mdash; the same port</div>
+    <div class="cli-body"><pre><span class="pr">Switch#</span> <span class="cmd">show power inline Gi1/0/22</span>
+
+<span class="out">Interface Admin  Oper       Power   Device              Class Max
+                            (Watts)
+--------- ------ ---------- ------- ------------------- ----- ----
+Gi1/0/22  auto   off        0.0     n/a                 n/a   30.0</span></pre></div>
+    <div class="cli-foot"><p>Power is permitted and nothing is flowing, so nothing was detected on the far end. Run without naming a port, the same command prints the pool on its header line, and there it showed room left. Between them the two readings rule out the power setting and the pool, and leave a broken path or a device that is not connected.</p></div>
+  </div>
+
+  <p><strong>The substitutions, one at a time.</strong> The cord from the desk to the outlet is replaced with a tested cord: no change. That cord is put back on the bench for a wire map rather than back on the desk. The panel cord is replaced with a tested cord: the phone lights up.</p>
+  <p><strong>The reading on the part that failed.</strong> The original panel cord is tested. The wire map names a short between two conductors, 0.4 m from one plug &mdash; the end that had been folded against the side of the rack.</p>
+  <p><strong>The verification.</strong> The port reads <code>connected</code>, VLAN 20, <code>a-full a-1000</code>, class 2 with 7.0 W set aside, Oper <code>on</code>. The phone&rsquo;s MAC address appears on the port. A ping from a laptop in VLAN 20 gets four replies.</p>
+  <p><strong>The record.</strong> Root cause: short between two conductors in the panel cord at the switch end, 0.4 m from the plug, named by the wire map. Remediation: cord replaced with a tested 1 m cord, routed clear of the rack edge; the faulty cord is labeled and held; the desk cord was replaced during testing and put back. Verification as above, with the time and initials.</p>
+
+  <div class="note note"><div class="nt">What the first two readings did</div>
+    <p>Neither of them found the fault. Together they took the switch configuration, the power settings and the power pool out of the job in under a minute, so the substitutions that followed were aimed at the two elements still in question rather than at everything on the path.</p></div>
+
+  <h3>Two &mdash; three drops that stop together</h3>
+  <p><strong>The report.</strong> Three access points on the second floor stopped this morning. All three are served by the same telecommunications room.</p>
+  <p><strong>The questions.</strong> Not one drop but three. All three worked yesterday. All three stopped within the same few minutes. Nothing was worked on in the ceiling.</p>
+  <p><strong>The readings, taken on one of the three.</strong> The port reads <code>connected</code>, VLAN 20, <code>a-full a-1000</code>. Power reads Admin <code>auto</code>, Oper <code>on</code>, class 3 with 15.4 W set aside. The access point&rsquo;s MAC address is learned on the port. A ping from a laptop patched into VLAN 20 on the same switch gets four replies from the access point.</p>
+  <p><strong>What that combination says.</strong> The drop is sound and the device is running and reachable from inside its own VLAN. Whatever has failed is not on this drop, and the same readings on the other two agree.</p>
+  <p><strong>The reading that names the boundary.</strong></p>
+
+  <div class="cli">
+    <div class="cli-ttl">tracert &mdash; from the laptop in VLAN 20, toward a system in another VLAN</div>
+    <div class="cli-body"><pre><span class="pr">C:\&gt;</span> <span class="cmd">tracert 10.60.0.20</span>
+
+<span class="out">Tracing route to 10.60.0.20 over a maximum of 30 hops
+
+  1     *        *        *     Request timed out.
+  2     *        *        *     Request timed out.</span></pre></div>
+    <div class="cli-foot"><p>Devices inside VLAN 20 reach each other, and nothing outside it answers &mdash; not even the first router. Stopped with <kbd>Ctrl</kbd>+<kbd>C</kbd> after two hops. The first hop failing to answer was the reading.</p></div>
+  </div>
+
+  <p><strong>The hand-over.</strong> Three drops, all reading sound at the port, all powered, all heard by the switch, all reachable from a laptop inside their own VLAN. Nothing outside the VLAN answers, from any of them, and all three stopped within the same few minutes. Cabling, ports and power are ruled out by the readings. Handing over at the switch&rsquo;s connection to the rest of the network.</p>
+  <p><strong>The record.</strong> Root cause: not established, and outside the cabling and the ports. What was ruled out, by which reading, and the time each was taken. Where it went, and to whom.</p>
+
+  <div class="note tip"><div class="nt">Two jobs, two records, both closed</div>
+    <p>One names a cause and a repair. The other names a boundary and the readings that put it there.</p></div>
+
+  <div class="cyu gate" data-answer="1" data-fb="Three sound drops failing together, at one time, is a reading about the switch&rsquo;s connection to the rest of the network rather than about any drop. That is what puts the cause outside the cabling and the ports. The number of people reporting it sets the priority rather than the cause, substitutions on a drop already proven sound add nothing to the evidence, and a trace shows the route the traffic takes rather than naming the device that failed.">
+    <p class="cyu-h">Check Your Understanding</p>
+    <p class="cyu-q">Three drops that read sound at the port stop answering at the same time, and the fault is handed over. What makes that hand-over defensible rather than a guess?</p>
+    <button class="opt"><span class="mk" aria-hidden="true">A</span>Three people reported it rather than one</button>
+    <button class="opt"><span class="mk" aria-hidden="true">B</span>The readings show three sound drops failing together at the same time</button>
+    <button class="opt"><span class="mk" aria-hidden="true">C</span>Every available substitution was tried before handing it over</button>
+    <button class="opt"><span class="mk" aria-hidden="true">D</span>The trace command named the device that had failed</button>
+    <div class="cyu-fb" role="status"></div>
+  </div>
+</section>
+
+<section class="topic" data-lesson-num="529.5" data-lesson-title="Layered Connectivity Troubleshooting" data-group-num="4" data-group-title="Wrapping Up" data-num="529.5.11" data-title="What you covered">
+  <p class="crumb">Lesson 529.5 &middot; Section 4 Wrapping Up</p>
+  <h2><span class="tnum">529.5.11</span> What you covered</h2>
+  <p class="lead-in">Turn the report into questions, take the readings in order, tell the two apart, repair what is yours, hand over the rest with evidence, and write it down while you are still at the rack.</p>
+
+  <p>A report is a symptom described by somebody who was not looking at the equipment. Five questions turn it into something testable: which drop, what &ldquo;down&rdquo; means, when it last worked, what changed, and whether anything else is affected. One drop affected puts the fault on that drop; several failing together put it in something they share. A diagnosis arriving with the report is one more symptom, not a starting point.</p>
+
+  <p>A <code>ping</code> checks whether a machine at a given IP address is reachable from where you run it, and three different results come back. A ping to an IP address on your own subnet does not cross a router and a ping to another subnet does, which decides how much a failure tells you. A reply proves the device is reachable. A timeout is a reading rather than a diagnosis. A reply carrying your own IP address and the words destination host unreachable means nothing on the subnet answered to that IP address. Either the IP address you are pinging is wrong, which is the cheaper thing to check, or nothing answered at it and the ping cannot say why. The trace command shows the route the traffic takes, router by router: <code>tracert -d</code> on Windows, <code>traceroute -n</code> on Linux and macOS, the option stopping it from looking up a name for every hop. It adds nothing inside your own subnet and is useful where a ping across a router has failed. Some routers will not answer, and a row of stars in a trace that completes is not a fault.</p>
+
+  <p>Indicators are the fastest reading and the least specific, and their conventions differ by manufacturer, by model and by front-panel mode, so read the legend on the chassis before you read the lights. A power indicator says the port is supplying power, not that the device is running properly on it. The switch answers the same questions in words. In <code>show interfaces status</code>, the Status column separates <code>notconnect</code> from <code>disabled</code>, the Vlan column names the group the port is in, and the Speed and Duplex columns say how the link settled.</p>
+
+  <p>A cable tester tells you three things about a length of cable. The <strong>wire map</strong> names opens, shorts, reversed and crossed pairs, and split pairs. The <strong>length</strong> reading gives the length of each pair and the distance to a fault, against a 90 meter permanent link and a 100 meter channel &mdash; a limit no symptom announces. The <strong>service reading</strong> reports the port speed advertised at the far end, telephone voltage, and whether PoE is present and on which pairs. It does not measure insertion loss or crosstalk, so it cannot certify a run against a performance standard; it does not report the PoE class, which comes from the switch; and it cannot see a configuration at all. The wire map needs both ends free, the service reading needs the far end live, and you cannot take both at once.</p>
+
+  <p>Substitution locates a fault in a path you cannot see into. Change one thing at a time, put back what was not the fault, keep and label the part that failed, and write down each swap as you make it. A known-good cord is one that has passed a wire map, not one out of a bag. A substitution locates a fault and does not explain it &mdash; the tester does that, on the part in your hand. Where every cord and every port has been cleared and the fault stays with the drop, the permanent link is what remains, and testing it is its own task with the drop out of service.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>Readings from the switch and the cable tester, and what each one points at.</caption>
+      <thead><tr>
+        <th scope="col">Reading</th><th scope="col">Points at cabling</th><th scope="col">Points at configuration</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Status column, <code>show interfaces status</code></th><td><code>notconnect</code></td><td><code>disabled</code></td></tr>
+        <tr><th scope="row">Speed and Duplex columns, same output</th><td><code>a-100</code> on a gigabit device and a gigabit port</td><td>A value with no <code>a-</code> prefix &mdash; forced at this end</td></tr>
+        <tr><th scope="row">Vlan column, same output</th><td>Unaffected</td><td>A number other than the one specified</td></tr>
+        <tr><th scope="row">Admin column, <code>show power inline</code></th><td>Unaffected</td><td><code>never</code></td></tr>
+        <tr><th scope="row">Oper column, same output, where Admin is auto</th><td><code>off</code> &mdash; nothing detected on the far end</td><td><code>off</code> with the pool spent &mdash; not a setting but a switch out of power, which the header line confirms</td></tr>
+        <tr><th scope="row">MAC address table, <code>show mac address-table interface</code></th><td>Empty</td><td>Populated, so the question sits above the path</td></tr>
+        <tr><th scope="row">Wire map, from the cable tester</th><td>Names the fault and its distance</td><td>Clean &mdash; the cord or run tested is cleared, which does not by itself name a setting</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Five pairs of causes arrive as the same complaint and separate on one reading each. A port shut down against a dead run, on the Status column of <code>show interfaces status</code>. A port set never to supply power against a pool with nothing left, on the Admin column and header line of <code>show power inline</code>. A cord in the wrong panel position against a dead switch port, on what the switch port reports &mdash; a link where there should not be one is as much a reading as no link where there should be. A wrong VLAN against a device with no working IP address, on the Vlan column of <code>show interfaces status</code>. A split pair against a device that only does 100 Mbps, on the wire map, because the switch reports the speed and cannot say why.</p>
+
+  <p>Two questions decide whether a fault is yours: is it in the cabling or the port, and are you authorized to change it. Cords, seating and patching are yours. A port shut down, a wrong VLAN and a port set never to supply power are yours where the site allows you to configure that switch, and a reading to report where it does not. Addressing, routing, blocking rules, servers and other people&rsquo;s equipment are not yours at all.</p>
+
+  <div class="note note"><div class="nt">Escalation is a pass, not a failure</div>
+    <p>A fault you have shown to be outside the cabling and the port, handed over with the readings that put it there, is a completed job. Four things make the hand-over usable: what you verified, what you found, where you stopped, and what you ruled out and by which reading. The fourth is what stops the next person starting at the cabling.</p></div>
+
+  <p>The record has five fields, and the shape of it is the same whether the job ended in a repair or a hand-over.</p>
+
+  <div class="tbl-scroll">
+    <table class="tbl">
+      <caption>The five fields of a fault record.</caption>
+      <thead><tr>
+        <th scope="col">Field</th><th scope="col">What goes in it</th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Symptom as reported</th><td>The words you were given, and the drop</td></tr>
+        <tr><th scope="row">What you found</th><td>The readings, with values, in the order taken</td></tr>
+        <tr><th scope="row">Root cause</th><td>The thing that, once changed, made the symptom stop</td></tr>
+        <tr><th scope="row">Remediation</th><td>What you changed, and what you put back</td></tr>
+        <tr><th scope="row">Verification</th><td>The reading taken after the repair, with its value</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Read a root cause back and ask whether somebody could produce the same fault from your sentence. If they could, it is a cause; if they could only recognize it, it is a symptom. <em>Cable problem</em> is a symptom. <em>Open on conductor 6 in the cord between the outlet and the device, 1.2 m from the device end</em> is a cause. Two records are complete with no repair in them at all: no fault found, with what you tested and when, and outside scope and handed over, with what the readings rule out and where you stopped.</p>
+
+  <button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button>
+</section>
+</div>
+
+    <nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">&lsaquo; Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next &rsaquo;</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true"
+     aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+         stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>
