@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 528 - Fiber Optics Systems
+  Lesson 528.1 - Fiber Safety, Fundamentals, Standards, and Component Identification (Async Reading)
+  VERSION: v0.3.2  (2026-09-15)  DRAFT - for review
+
+  CHANGES IN v0.3.2
+  Targeted revision of the approved three-lesson structure. Expanded beginner
+  instruction for loss budgets and workmanship targets; revised assessment items;
+  aligned learner objectives using one Bloom verb per objective; added JTA-required
+  detail; corrected image packaging; and removed ambiguous learner-facing references.
+
+  Engine stylesheet and script reused verbatim from
+  UCI-2107.1_M529_Lesson-529.6_Async-Reading_v0.2.0.html.
+
+  OBJECTIVES
+  Apply fiber tool and test-equipment accountability procedures.
+  Apply fiber work-area and hazard controls.
+  Explain optical information transmission through fiber.
+  Explain attenuation, insertion loss, return loss, and bend-related loss.
+  Describe multimode applications and operating wavelengths.
+  Explain connector-cleanliness effects on link performance.
+  Apply fiber standards to installation and test decisions.
+  Identify fiber types, cable constructions, markings, and connector families.
+  Apply the approved inspect-clean-inspect procedure.
+
+  TOPIC OUTLINE
+  528.1.1   Fiber purpose, signal path, media comparison, and safety - 6.1, 6.2
+  528.1.2   Tool accountability, PPE, fragments, and work area - 6.1
+  528.1.3   Chemical and consumable controls - 6.1
+  528.1.4   Optical safety and source control - 6.1
+  528.1.5   Fiber construction and dimensions - 6.2, 6.4
+  528.1.6   Fiber types, wavelengths, and applications - 6.2, 6.4
+  528.1.7   Attenuation, insertion loss, return loss, and bends - 6.2
+  528.1.8   Power, link-loss budget, and workmanship target - 6.2, 6.3
+  528.1.9   Standards and test-method selection - 6.3
+  528.1.10  Cable construction, markings, and environment - 6.4
+  528.1.11  Fiber count, color sequence, and cable opening - 6.4
+  528.1.12  Connector families, applications, polish, and polarity - 6.4
+  528.1.13  Evidence-based component identification - 6.4
+  528.1.14  End-face contamination and inspection criteria - 6.5
+  528.1.15  Inspect-clean-inspect workflow - 6.5
+  528.1.16  Summary and readiness boundary - summary
+
+  ACTIVITY GATES: 16 - thirteen knowledge or calculation checks, two ordering
+  activities, and one acknowledgement.
+  DIAGRAMS: 7 supplied inline SVG diagrams with full text descriptions.
+  PHOTOGRAPHS: 4 supplied JPG files in the sibling images folder.
+
+  OPEN, AND NOT RESOLVED HERE
+  Confirm licensed standards text and institution-approved editions. Update the JTA
+  standard reference from ANSI/TIA-568.3-D to the approved current edition. Resolve
+  the OM1/OM3 lab bill of materials and all model-specific procedures before laboratory
+  release.
+--><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 528.1 — Fiber Safety, Fundamentals, Standards, and Component Identification · Async Reading · UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+<style>
+  /* Console transcript block. Light card, navy title bar, monospace body that
+     scrolls sideways on a narrow screen rather than wrapping a command line.
+     Appended after the engine stylesheet so the engine stays untouched. */
+  .cli{background:#fbfcfd;border:1.6px solid #c8d4de;border-radius:8px;
+    margin:18px 0;box-shadow:var(--shadow);overflow:hidden}
+  .cli .cli-ttl{background:#09507C;color:#fff;font-weight:700;font-size:.95rem;
+    padding:9px 14px;letter-spacing:.01em}
+  .cli .cli-body{overflow-x:auto;padding:12px 14px}
+  .cli pre{margin:0;min-width:520px;color:#1b2a3a;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.94rem;line-height:1.8}
+  .cli .pr{color:#5a6772}
+  .cli .cmd{color:#09507C;font-weight:700}
+  .cli .cmt{color:#5a6772;font-style:italic}
+  .cli .out{color:#3c4956}
+  .cli .cli-foot{border-top:1px solid #dbe4ec;padding:10px 14px;
+    color:#3c4956;font-size:.95rem;background:#f4f7fa}
+  .cli .cli-foot p{margin:0}
+  /* Read-back strips that list one line per port rather than running as prose. */
+  .cli .cli-foot ul{margin:0 0 9px;padding-left:20px}
+  .cli .cli-foot li{margin:4px 0}
+  /* Inline command names in running prose and in table cells. */
+  .topic code, .overview code, .longdesc code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.92em;color:#09507C;background:#eef4f9;border:1px solid #dbe4ec;
+    border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .tbl th code, .tbl td code{background:#f4f7fa}
+  kbd{font-family:inherit;font-size:.9em;color:#1b2a3a;background:#f4f7fa;
+    border:1px solid #c8d4de;border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+  /* A .cli sitting inside a note keeps the note's margins from doubling. */
+  .note .cli{margin:14px 0 4px}
+</style>
+<style>
+  /* Port map panel - white card, blue rule, navy title, plain gray column labels. */
+  .portmap-panel{background:#fff;border:1.6px solid var(--green);border-radius:8px;
+    padding:14px 16px 6px;margin:18px 0;box-shadow:var(--shadow)}
+  .portmap-panel .tbl-scroll{overflow-x:auto}
+  .portmap-panel table.tbl{border:none;border-radius:0;margin:0;background:transparent}
+  .portmap-panel table.tbl caption{color:var(--green-d);font-weight:700;font-size:1.05rem;
+    text-align:left;padding:0 0 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="col"]{background:transparent;color:var(--muted);font-weight:400;
+    padding:10px 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="row"]{background:transparent;color:var(--ink);font-weight:400;
+    padding:10px 10px;border-top:none}
+  .portmap-panel .tbl td{padding:10px 10px;border-top:none;color:var(--ink)}
+  .portmap-panel .tbl tr:nth-child(even) td{background:transparent}
+  .portmap-panel .tbl tbody tr + tr th,
+  .portmap-panel .tbl tbody tr + tr td{border-top:1px solid var(--line)}
+</style>
+
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div><b>Module 528</b> · Lesson 528.1 — Fiber Safety, Fundamentals, Standards, and Component Identification</div></div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.3.2</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel" aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList" aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel" aria-labelledby="tab-overview" hidden="hidden"><p class="crumb"><b>UCI 2107.1 · Low Voltage Fiber Technician</b> · Module 528 — Fiber Optics Systems</p>
+<h2 id="ovh" tabindex="-1">Lesson 528.1 — Fiber Safety, Fundamentals, Standards, and Component Identification</h2>
+<p class="lead-in">Prepare to identify fiber components, control hazards, use standards correctly, and inspect connector end faces.</p>
+<p>Complete this lesson before the related supervised work. The lesson provides the decisions and vocabulary you need at the bench; equipment-specific steps come from the current manufacturer instructions and site procedure.</p>
+<p><b>Estimated completion time:</b> 60–75 minutes, including the formative activities. Your reading and technology needs may change the time required.</p>
+<h3>How the lesson is organized</h3><ul><li><b>Safe Fiber Work.</b> Control fragments, chemicals, tools, and optical energy.</li><li><b>Fiber Behavior and Selection.</b> Connect fiber construction and signal behavior to field choices.</li><li><b>Standards, Cables, and Connectors.</b> Identify the controlling document and compatible component.</li><li><b>Inspection and Cleaning.</b> Apply the current visual-inspection model and cleaning workflow.</li><li><b>Wrapping Up.</b> Review the decisions that carry into supervised work.</li></ul>
+<div class="ov-grid"><div class="ov-stat"><b>5</b><span>Sections</span></div><div class="ov-stat"><b>16</b><span>Topics</span></div><div class="ov-stat"><b>16</b><span>Activities</span></div><div class="ov-stat"><b>7</b><span>Diagrams</span></div></div>
+<h3>A note on the standards and the equipment</h3><p>The exact project specification, licensed current standard, manufacturer instructions, and Safety Data Sheet control the work. Stop and ask when the available document does not match the product or condition.</p>
+<h3>How this page works</h3><p>Use the contents list or the Previous and Next buttons. Complete the activity on the visible topic before moving forward. A wrong answer reveals feedback and does not prevent progress.</p>
+<h3>Working without a mouse, or with a screen reader</h3><p>Use the skip link to move to the lesson. All controls are keyboard operable, and status changes are announced.</p>
+<button class="btn" id="ovBegin" type="button">Begin Lesson 528.1</button></section><div id="topicWrap"><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="1" data-group-title="Safe Fiber Work" data-num="528.1.1" data-title="What fiber optics are and why safety comes first">
+<p class="crumb">Lesson 528.1 · Section 1 Safe Fiber Work</p>
+<h2><span class="tnum">528.1.1</span> What fiber optics are and why safety comes first</h2>
+<div class="les-banner"><span class="lb-k">Lesson 528.1</span><h3>Fiber Safety, Fundamentals, Standards, and Component Identification</h3><p>Control fiber hazards, identify compatible components, apply governing documents, and prepare connector interfaces for reliable service.</p><p class="lb-meta"><b>5</b> sections  ·  <b>16</b> topics  ·  <b>16</b> activities</p></div><div class="note note"><div class="nt">By the end of Lesson 528.1 you will be able to</div><ul><li><b>Apply</b> fiber tool and test-equipment accountability procedures.</li><li><b>Apply</b> fiber work-area and hazard controls.</li><li><b>Explain</b> optical information transmission through fiber.</li><li><b>Explain</b> attenuation, insertion loss, return loss, and bend-related loss.</li><li><b>Describe</b> multimode applications and operating wavelengths.</li><li><b>Explain</b> connector-cleanliness effects on link performance.</li><li><b>Apply</b> fiber standards to installation and test decisions.</li><li><b>Identify</b> fiber types, cable constructions, markings, and connector families.</li><li><b>Apply</b> the approved inspect-clean-inspect procedure.</li></ul></div><p class="lead-in">Fiber carries information as modulated light through very thin strands of glass or plastic.</p>
+
+<p>A transmitter converts an electrical data signal into modulated light. The fiber guides that light to a receiver, which converts it back into an electrical signal. The light may be visible or invisible, depending on the source and wavelength. Fiber systems carry voice, video, network data, and control signals; the glass does not carry electrical current between the endpoints.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Fiber compared with other transmission media.</caption><thead><tr><th scope="col">Medium</th><th scope="col">Advantages</th><th scope="col">Limitations and selection factors</th></tr></thead><tbody><tr><th scope="row">Optical fiber</th><td>High capacity, long reach, low attenuation, immunity to electromagnetic interference, and no conductive path between equipment</td><td>Requires specialized preparation, inspection, cleaning, testing, and careful bend and fragment control.</td></tr><tr><th scope="row">Copper cable</th><td>Can carry electrical signals and power; familiar termination and test methods</td><td>More susceptible to electromagnetic interference, distance and bandwidth limits, grounding concerns, and electrical hazards.</td></tr><tr><th scope="row">Radio or wireless</th><td>Supports mobility and avoids a continuous physical cable path</td><td>Uses shared spectrum and is affected by coverage, interference, security, capacity, and environmental conditions.</td></tr></tbody></table></div>
+<p>The correct medium depends on the application, distance, environment, required capacity, equipment, pathway, and budget. Fiber is not automatically best for every link, but it is often selected when capacity, reach, electrical isolation, or electromagnetic immunity matters.</p>
+<p>A cleaved fiber can pierce skin or an eye. A fragment can remain on a mat, tool, sleeve, or piece of clothing and injure someone after the cleaving task ends. Keep food and drinks away from the work area. Control every offcut at the point where you create it, handle fragments with tweezers, and place them in the designated fiber-shard container.</p>
+<p>Optical energy may be present even when a fiber looks dark. Never look into a fiber or connector end. Do not use an unfiltered magnifier, direct-view inspection scope, or eye loupe on a fiber that could be energized. Use the site de-energization procedure and approved indirect test equipment.</p>
+<p>Do not rub an affected eye or attempt to remove an embedded fragment. Follow the site exposure procedure and obtain medical evaluation for a suspected eye injury or embedded fragment.</p>
+<div class="note danger"><div class="nt">Stop-work conditions</div><p>Stop when the source state is unknown, a fragment enters an eye, a chemical exposure occurs, a tool guard is damaged, or required protective equipment is unavailable. Secure the area and follow the site escalation procedure.</p></div>
+
+<div class="cyu gate" data-answer="2" data-fb="Stop work and follow the site exposure and medical-evaluation procedure. Tweezers and connector inspection microscopes are not eye-treatment tools, and rubbing can worsen an injury."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A technician suspects that a small fiber fragment entered a coworker’s eye. What is the correct response?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Attempt to remove the fragment with fiber tweezers.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Rub the eye gently and return to work if the irritation stops.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Stop work and follow the site exposure and medical-evaluation procedure.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Use a connector inspection microscope to locate the fragment.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="1" data-group-title="Safe Fiber Work" data-num="528.1.2" data-title="Protective equipment, fragments, and the work area">
+<p class="crumb">Lesson 528.1 · Section 1 Safe Fiber Work</p>
+<h2><span class="tnum">528.1.2</span> Protective equipment, fragments, and the work area</h2>
+<p class="lead-in">A controlled bench prevents fragments and chemicals from traveling beyond the task.</p>
+
+<p>Wear safety eyewear that meets the site requirement and provides side protection. Ordinary prescription eyewear is not sufficient unless it is marked and configured as compliant safety eyewear. Acceptable choices may include compliant prescription safety glasses with side shields, over-glasses, or goggles, as specified by the site policy.</p>
+<p>Use a dark, smooth work mat that makes fragments visible. Keep the shard container within reach before you strip or cleave fiber. Keep tools in assigned positions, route cords away from cutting areas, and cap open connectors and adapters. Wear task-appropriate gloves when handling sharp armor or chemicals, but do not use gloves where the tool manufacturer prohibits them.</p>
+<p>Before work begins, compare the tools, test equipment, consumables, and protective equipment with the task list. Check their condition and record any required calibration or maintenance status. At close-down, account for the same items so damaged or missing equipment is identified before the next task.</p>
+<p>Eye protection stays on until offcuts are contained and the work surface is cleared. Exposure can occur during cleanup as well as during cleaving.</p>
+<figure class="figure source-diagram" data-source-diagram="1"><div class="cap">Controlled fiber work area</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Controlled fiber work area — scrollable diagram">
+<svg style="min-width:845px" viewbox="0 0 780 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Plan view of a fiber work area. A full text description follows." aria-describedby="m528-528-1-2-diagram-1-desc"><rect width="780" height="300" fill="#f5f8fb"></rect><rect x="60" y="40" width="660" height="220" rx="10" fill="#1b2a3a"></rect><rect x="52" y="32" width="676" height="236" rx="14" fill="none" stroke="#0079C0" stroke-width="3" stroke-dasharray="9 7"></rect><text x="390" y="22" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#09507C">Fragment control boundary — fragments leave only through the shard container</text><rect x="300" y="58" width="180" height="44" rx="7" fill="#FEC14F"></rect><text x="390" y="86" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#4a3600">SHARD CONTAINER</text><rect x="560" y="120" width="140" height="120" rx="7" fill="#0079C0"></rect><text x="630" y="172" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#fff">TOOLS</text><text x="630" y="194" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fafdfe">strip · cleave</text><rect x="80" y="120" width="140" height="120" rx="7" fill="#4FA3D4"></rect><text x="150" y="172" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#08283f">CONSUMABLES</text><text x="150" y="194" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#08283f">wipes · alcohol</text><rect x="250" y="130" width="280" height="100" rx="7" fill="none" stroke="#FEC14F" stroke-width="2.5" stroke-dasharray="6 5"></rect><text x="390" y="176" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#FEC14F">WORK ZONE</text><text x="390" y="200" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#CFEBFC">keep clear — do not reach across</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> Use the site-approved layout and shard container; the drawing illustrates separation and fragment control.</p><details class="longdesc" id="m528-528-1-2-diagram-1-desc"><summary>Text description of this diagram</summary><p>A plan view separates the work zone, tools, consumables, and shard container. A boundary surrounds the controlled area. Arrows show that fragments stay inside the boundary and go only into the shard container.</p></details></figure>
+<div class="note warn"><div class="nt">Keep the controls in place</div><p>Maintain fragment, chemical, tool, and eye-protection controls from setup through cleanup during supervised practice.</p></div>
+
+<div class="cyu gate" data-answer="0" data-fb="Remove protective eyewear after the offcuts are contained and the work surface is cleared. Closing the cleaver or chemical containers does not remove loose fragments, and removing eyewear before cleanup leaves the eyes unprotected during a known exposure period."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">When may a technician remove protective eyewear after cleaving fiber?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>After the offcuts are contained and the work surface is cleared.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>As soon as the cleaver is closed, even if fragments remain on the mat.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>After chemical containers are closed, even if the work surface has not been cleared.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Before cleanup so the eyewear does not become contaminated.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="1" data-group-title="Safe Fiber Work" data-num="528.1.3" data-title="Solvents, adhesives, and product controls">
+<p class="crumb">Lesson 528.1 · Section 1 Safe Fiber Work</p>
+<h2><span class="tnum">528.1.3</span> Solvents, adhesives, and product controls</h2>
+<p class="lead-in">The label, Safety Data Sheet, and manufacturer instructions control each chemical product.</p>
+
+<p>Isopropyl alcohol, cleaners, adhesives, primers, and activators vary by formulation. Before use, identify the exact product and read its current Safety Data Sheet (SDS). Follow the manufacturer’s instructions for ventilation, protective equipment, storage, first aid, spill response, and disposal. Those instructions override generic course guidance.</p>
+<p>Keep flammable liquids and vapors away from ignition sources. A fusion-splicer arc is an ignition source. Close dispensers when they are not in use, and use only the amount required for the task. Do not place a chemical in an unlabeled container.</p>
+<p>For connector cleaning, use the cleaning product and method approved for the connector and equipment. If a wet method is authorized, remove remaining liquid with the specified dry step before inspection or mating. Do not assume that a product is suitable because its label contains the word <em>alcohol</em>.</p>
+
+<div class="cyu gate" data-answer="3" data-fb="The current SDS and manufacturer instructions control the specific product. A generic checklist cannot account for formulation differences. Cable color and polishing film do not establish chemical controls."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Which source controls the protective equipment and first-aid requirements for a specific adhesive?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>A generic fiber-installation checklist</button><button class="opt"><span class="mk" aria-hidden="true">B</span>The connector polishing film</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The cable jacket color</button><button class="opt"><span class="mk" aria-hidden="true">D</span>The current SDS and manufacturer instructions for that product</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="1" data-group-title="Safe Fiber Work" data-num="528.1.4" data-title="Optical safety and controlled de-energization">
+<p class="crumb">Lesson 528.1 · Section 1 Safe Fiber Work</p>
+<h2><span class="tnum">528.1.4</span> Optical safety and controlled de-energization</h2>
+<p class="lead-in">A meter reading supports verification only after the source and possible wavelengths are controlled.</p>
+
+<p>Invisible optical radiation can injure the eye. The same work rule applies across common fiber wavelengths: never view a fiber end directly. Prefer a video inspection probe that presents an electronic image instead of a direct optical path.</p>
+<p>Begin by identifying the circuit and every possible source. Disconnect or disable the source where the work plan permits. Prevent another person or automated process from re-energizing it. Then verify the fiber with an approved indirect detector or power meter known to respond to the possible wavelengths and expected power range.</p>
+<p>Tell affected personnel when the approved procedure requires a live-fiber or laser-safety announcement. An announcement supports coordination, but it does not replace source control, verification, protective measures, or the stop-work decision.</p>
+<p>A single meter reading is not universal proof that any fiber is dark. A meter can miss an unsupported wavelength, an out-of-range condition, an intermittent source, or later re-energization. If the source cannot be controlled or the test equipment cannot cover the possible signal, stop and escalate.</p>
+<div class="note danger"><div class="nt">Direct-view instruments</div><p>Do not place a direct-view scope or magnifier on an uncontrolled fiber. Follow the equipment manufacturer’s optical-safety instructions and the site procedure.</p></div>
+<p>Place the controlled verification steps in order.</p>
+
+<div class="order gate"><div class="step" data-pos="1">Identify the fiber, circuit, and every possible optical source.</div><div class="step" data-pos="2">Disconnect or disable the source where the work plan permits.</div><div class="step" data-pos="3">Prevent re-energization under the site procedure.</div><div class="step" data-pos="4">Verify with approved indirect equipment that covers the possible wavelengths and power range.</div><div class="step" data-pos="5">Proceed only while the controlled condition remains in effect.</div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="2" data-group-title="Fiber Behavior and Selection" data-num="528.1.5" data-title="Fiber construction and dimensions">
+<p class="crumb">Lesson 528.1 · Section 2 Fiber Behavior and Selection</p>
+<h2><span class="tnum">528.1.5</span> Fiber construction and dimensions</h2>
+<p class="lead-in">Each layer protects or guides the glass, and each diameter describes a different part of the assembly.</p>
+
+<p>The core carries most of the guided light. The cladding surrounds the core and has a lower refractive index, which supports guidance within the core. A protective coating is applied to the glass during manufacture. Buffer material and the cable jacket add mechanical and environmental protection but do not guide the signal.</p>
+<p>When light reaches the core-cladding boundary at a supported angle, the difference in refractive index keeps the light guided along the core. This behavior is commonly introduced as total internal reflection. Installed bends, damage, and mismatched components can disturb the guided path and increase loss.</p>
+<p>Optical Single-mode (OS) and Optical Multimode (OM) designations identify standardized fiber categories. The number following the letters identifies a specific category; it is not a performance ranking.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Common fiber dimensions and what they describe.</caption><thead><tr><th scope="col">Dimension</th><th scope="col">Meaning</th><th scope="col">Field use</th></tr></thead><tbody><tr><th scope="row">9/125 micrometers</th><td>Typical single-mode core and cladding diameters</td><td>Match fiber, connectors, splices, and test cords.</td></tr><tr><th scope="row">50/125 micrometers</th><td>Common multimode core and cladding diameters for OM2 through OM5</td><td>Do not mix with 62.5/125 micrometer test paths.</td></tr><tr><th scope="row">62.5/125 micrometers</th><td>OM1 multimode core and cladding diameters</td><td>Use compatible 62.5/125 micrometer cords and components.</td></tr><tr><th scope="row">250 micrometers</th><td>Typical coated-fiber diameter</td><td>Select the correct stripper and holder setting.</td></tr><tr><th scope="row">900 micrometers</th><td>Common tight-buffered-fiber diameter</td><td>Confirm tool and connector-kit compatibility.</td></tr></tbody></table></div>
+<p>Read the cable legend and product datasheet before selecting tools or components. Color can support identification, but it does not prove fiber type, listing, or performance.</p>
+<figure class="figure source-diagram" data-source-diagram="4"><div class="cap">Fiber core-size comparison</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Fiber core-size comparison — scrollable diagram">
+<svg style="min-width:882px" viewbox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Scale comparison of fiber core sizes. A full text description follows." aria-describedby="m528-528-1-5-diagram-4-desc"><rect width="780" height="420" fill="#f5f8fb"></rect><circle cx="150" cy="180" r="80" fill="#CFEBFC" stroke="#09507C" stroke-width="2"></circle><circle cx="150" cy="180" r="5.8" fill="#FF8000" stroke="#8a3a00" stroke-width="1"></circle><text x="150" y="290" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#09507C">9 / 125</text><text x="150" y="310" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334">single-mode — OS1, OS2</text><text x="150" y="328" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334">core area 0.5% of the glass</text><circle cx="390" cy="180" r="80" fill="#CFEBFC" stroke="#09507C" stroke-width="2"></circle><circle cx="390" cy="180" r="32" fill="#FF8000" stroke="#8a3a00" stroke-width="1"></circle><text x="390" y="290" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#09507C">50 / 125</text><text x="390" y="310" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334">multimode — OM2 to OM5</text><text x="390" y="328" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334">core area 16% of the glass</text><circle cx="630" cy="180" r="80" fill="#CFEBFC" stroke="#09507C" stroke-width="2"></circle><circle cx="630" cy="180" r="40" fill="#FF8000" stroke="#8a3a00" stroke-width="1"></circle><text x="630" y="290" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#09507C">62.5 / 125</text><text x="630" y="310" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334">multimode — OM1, legacy</text><text x="630" y="328" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334">core area 25% of the glass</text><circle cx="630" cy="180" r="44.8" fill="none" stroke="#071E39" stroke-width="1.6" stroke-dasharray="5 4"></circle><line x1="674" y1="150" x2="740" y2="112" stroke="#071E39" stroke-width="1.2"></line><text x="700" y="104" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#071E39">human hair, ~70 µm</text><line x1="60" y1="60" x2="111" y2="60" stroke="#071E39" stroke-width="3"></line><line x1="60" y1="52" x2="60" y2="68" stroke="#071E39" stroke-width="3"></line><line x1="111" y1="52" x2="111" y2="68" stroke="#071E39" stroke-width="3"></line><text x="120" y="65" font-family="sans-serif" font-size="13" font-weight="700" fill="#071E39">50 µm — all three circles are drawn to this same scale</text><text x="40" y="378" font-family="sans-serif" font-size="13" font-weight="700" fill="#09507C">A one micron lateral offset at a splice is 11% of a 9 µm core and 1.6% of a 62.5 µm core.</text><text x="390.0" y="400" font-family="sans-serif" font-size="13" fill="#4a5a6a" text-anchor="middle"><tspan x="390.0">The same lateral offset affects a smaller core more, so single-mode work requires tighter alignment from</tspan><tspan x="390.0" dy="16.0">the cleaver and fusion splicer.</tspan></text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> The circles compare nominal core sizes at one scale; they do not identify a cable or prove compatibility.</p><details class="longdesc" id="m528-528-1-5-diagram-4-desc"><summary>Text description of this diagram</summary><p>Three fiber cross-sections share one scale. They compare nominal 9, 50, and 62.5 micrometer core diameters inside 125 micrometer cladding. A separate line represents the approximate width of a human hair.</p></details></figure>
+
+<div class="cyu gate" data-answer="1" data-fb="The core carries most of the guided light. The jacket, buffer, and strength member protect or support the cable but do not serve as the optical signal path."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Which layer primarily guides the optical signal?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>The jacket</button><button class="opt"><span class="mk" aria-hidden="true">B</span>The core</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The buffer</button><button class="opt"><span class="mk" aria-hidden="true">D</span>The strength member</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="2" data-group-title="Fiber Behavior and Selection" data-num="528.1.6" data-title="Single-mode, multimode, and fiber grades">
+<p class="crumb">Lesson 528.1 · Section 2 Fiber Behavior and Selection</p>
+<h2><span class="tnum">528.1.6</span> Single-mode, multimode, and fiber grades</h2>
+<p class="lead-in">Choose fiber from the required interface, reach, environment, and existing plant—not from jacket color alone.</p>
+
+<p>Single-mode fiber has a small core and supports long reaches and high-capacity applications. Multimode fiber has a larger core and is common in shorter building and data-center links. The active equipment specification determines which fiber types and wavelengths are supported.</p>
+<p>Common multimode systems operate near 850 nanometers (nm), and some applications use the 1300 nm region. Common single-mode systems operate near 1310 nm or 1550 nm, with other wavelengths used by specific systems. These are common operating regions—not permission to substitute a source. Match the transmitter, receiver, fiber, test equipment, and test wavelength to the specified interface.</p>
+<p>The Optical Single-mode (OS) and Optical Multimode (OM) category must match the interface and complete link. Do not substitute one category for another merely because its number is higher.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Fiber designations required for component identification.</caption><thead><tr><th scope="col">Designation</th><th scope="col">Nominal core/cladding</th><th scope="col">Selection point</th></tr></thead><tbody><tr><th scope="row">OS2</th><td>9/125 micrometers</td><td>Single-mode category; confirm cable construction, wavelength, reach, and environment.</td></tr><tr><th scope="row">OM1</th><td>62.5/125 micrometers</td><td>Legacy multimode; keep the complete link and test path core-size compatible.</td></tr><tr><th scope="row">OM2</th><td>50/125 micrometers</td><td>Multimode; confirm the interface, supported distance, and existing plant.</td></tr><tr><th scope="row">OM3</th><td>50/125 micrometers</td><td>Laser-optimized multimode; verify that every link and test component is compatible.</td></tr><tr><th scope="row">OM4</th><td>50/125 micrometers</td><td>Laser-optimized multimode with higher category bandwidth than OM3; use the interface specification for reach.</td></tr></tbody></table></div>
+<p>Do not infer performance from connector shape. The same connector family can terminate different fiber types. Read the cable marking, connector identification, transceiver label, and datasheets at both ends.</p>
+<div class="note warn"><div class="nt">Core-size mismatch</div><p>Do not combine 62.5/125 micrometer OM1 cable with 50/125 micrometer OM3 patch or test cords. Use a compatible fiber type throughout the specified link and acceptance-test path.</p></div>
+
+<div class="cyu gate" data-answer="0" data-fb="Use compatible 62.5/125 micrometer cords approved for the test method and equipment. Connector shape does not establish core size. OM3 and single-mode cords change the launch condition and can distort the result."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A lab link uses 62.5/125 micrometer OM1 cable. Which test cords belong in its acceptance-test path?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>62.5/125 micrometer cords approved for the method and equipment</button><button class="opt"><span class="mk" aria-hidden="true">B</span>50/125 micrometer OM3 cords because both are multimode</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Any cord with the correct connector shape</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Single-mode cords because they have a smaller core</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="2" data-group-title="Fiber Behavior and Selection" data-num="528.1.7" data-title="Attenuation, wavelength, dispersion, and bend loss">
+<p class="crumb">Lesson 528.1 · Section 2 Fiber Behavior and Selection</p>
+<h2><span class="tnum">528.1.7</span> Attenuation, wavelength, dispersion, and bend loss</h2>
+<p class="lead-in">Loss reduces optical power; dispersion spreads the signal in time.</p>
+
+<p>Attenuation is the reduction in optical power as light travels through fiber and components. Absorption, scattering, connector loss, splice loss, and bending can contribute. Macrobends are visible curves that exceed the permitted bend radius. Microbends are small local distortions caused by pressure, ties, tray routing, or cable damage.</p>
+<p><strong>Insertion loss</strong> is the decrease in forward optical power caused when a component or link is inserted into the path; it is normally reported as a positive loss in decibels (dB). <strong>Return loss</strong> compares launched power with the power reflected back toward the source. A higher positive return-loss value means less power is returning toward the source. Do not confuse return loss with insertion loss: one describes reflected power and the other describes forward power lost through the path.</p>
+<p>Use the manufacturer’s minimum bend radius and maximum pulling tension. Values such as 20 times the cable diameter during pulling and 10 times after installation are course defaults only when the product datasheet and project specification permit them.</p>
+<p>Dispersion spreads an optical pulse. Modal dispersion applies to multimode transmission because different modes can arrive at different times. Chromatic dispersion occurs because a source contains a range of wavelengths that propagate differently. The applicable interface standard and fiber datasheet establish the supported distance.</p>
+<p>Legacy single-mode fiber can show increased attenuation near the historical water peak around 1383 nanometers (nm). Modern low-water-peak fiber may be specified for useful performance through that region. Check the fiber designation and manufacturer specification instead of treating 1383 nm as categorically unusable.</p>
+
+<div class="cyu gate" data-answer="2" data-fb="Localized tray pressure can create microbends and increased loss. Labels do not create chromatic dispersion, a tray does not create receiver overload, and the jacket does not change the connector family."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A cable develops higher loss after it is tightly secured inside a tray. Which condition should be checked first?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Receiver overload caused by the tray</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Chromatic dispersion caused by the label</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Microbend loss caused by localized pressure</button><button class="opt"><span class="mk" aria-hidden="true">D</span>A connector-family change caused by the jacket</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="2" data-group-title="Fiber Behavior and Selection" data-num="528.1.8" data-title="Decibels, optical power, and a loss budget">
+<p class="crumb">Lesson 528.1 · Section 2 Fiber Behavior and Selection</p>
+<h2><span class="tnum">528.1.8</span> Decibels, optical power, and a loss budget</h2>
+<p class="lead-in">Use decibels (dB) for gain or loss and decibels referenced to one milliwatt (dBm) for an absolute optical power level.</p>
+
+<p>A dB value expresses a ratio, including link loss. A dBm value expresses optical power relative to one milliwatt. Do not add a dBm power value to another dBm value. Subtract path loss in dB from transmitted power in dBm to predict received power.</p>
+<div class="figure"><div class="cap">Power and margin equations</div><p><strong>Predicted received power (dBm)</strong> = transmit power (dBm) − total path loss (dB).</p><p><strong>Lower-limit margin (dB)</strong> = predicted received power (dBm) − receiver minimum (dBm).</p><p style="margin-bottom:0"><strong>Overload margin (dB)</strong> = receiver maximum (dBm) − predicted received power (dBm).</p></div>
+<p>A <strong>link-loss budget</strong> is the maximum total loss permitted for a link by the controlling design or acceptance document. The calculation adds the approved allowances for installed fiber, mated connector pairs, splices, and any other included components. A <strong>design allowance</strong> is the amount reserved in that calculation for a component or condition. It is a planning and acceptance value—not a prediction that every installed component will lose that much light.</p>
+<p>A <strong>workmanship target</strong> is a project or organization goal used to produce consistently good field work. It may be more demanding than the maximum allowance. A connector can meet the maximum link budget and still miss a tighter workmanship target. Keep the two decisions separate: compare the completed link with the approved link-loss budget, and compare individual work with any documented workmanship criteria.</p>
+<div class="figure"><div class="cap">Worked loss-budget example</div><p>Assume a training link contains 200 meters of fiber, two mated connector pairs, and one splice. The approved exercise allowances are 3.0 dB per kilometer for fiber, 0.50 dB per mated connector pair, and 0.20 dB per splice.</p><p><strong>Fiber allowance:</strong> 0.200 kilometers × 3.0 dB per kilometer = 0.60 dB</p><p><strong>Connector allowance:</strong> 2 × 0.50 dB = 1.00 dB</p><p><strong>Splice allowance:</strong> 1 × 0.20 dB = 0.20 dB</p><p style="margin-bottom:0"><strong>Maximum calculated link loss:</strong> 0.60 + 1.00 + 0.20 = 1.80 dB</p></div>
+<p>The 1.80 dB result is the maximum calculated allowance for this example, not the desired loss for every completed link. Actual projects may use different components, methods, allowances, and acceptance limits. Use the values in the approved project documents rather than treating the example values as universal limits.</p>
+<p>Power budget is a related but different calculation. Example: a transmitter provides −4.0 dBm and the documented path loss is 2.5 dB. The predicted received power is −6.5 dBm. Compare that value with both the receiver minimum and receiver maximum in the actual transceiver datasheet.</p>
+
+<div class="cyu gate" data-answer="1" data-fb="Subtract 2.0 dB of path loss from −3.0 dBm to obtain −5.0 dBm. Adding the loss produces −1.0 dBm and reverses its effect. The other choices use the wrong quantity or unit."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A transmitter provides −3.0 dBm and the documented path loss is 2.0 dB. What is the predicted received power?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>−1.0 dBm</button><button class="opt"><span class="mk" aria-hidden="true">B</span>−5.0 dBm</button><button class="opt"><span class="mk" aria-hidden="true">C</span>2.0 dBm</button><button class="opt"><span class="mk" aria-hidden="true">D</span>5.0 dB</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="3" data-group-title="Standards, Cables, and Connectors" data-num="528.1.9" data-title="Standards, specifications, and project requirements">
+<p class="crumb">Lesson 528.1 · Section 3 Standards, Cables, and Connectors</p>
+<h2><span class="tnum">528.1.9</span> Standards, specifications, and project requirements</h2>
+<p class="lead-in">A standard provides a common baseline; the project and product documents determine the applicable installation.</p>
+
+<p>The American National Standards Institute (ANSI) coordinates U.S. voluntary standards. The Telecommunications Industry Association (TIA) publishes telecommunications-cabling standards. The International Electrotechnical Commission (IEC) publishes international electrotechnical standards, and the Institute of Electrical and Electronics Engineers (IEEE) develops standards that include Ethernet interfaces.</p>
+<p>Use the exact designation and revision when citing a standard. ANSI/TIA-568.3-E, released in 2022, revised ANSI/TIA-568.3-D. Do not carry a requirement from the D revision into current course content without checking the licensed E text and applicable addenda. A designation identifies a document; the exact edition and applicable project requirement determine what controls the work.</p>
+<p>The TIA-455 series contains Fiber Optic Test Procedures (FOTPs). TIA-455-171, also called FOTP-171, covers attenuation measurement for short cable assemblies. TIA-455-107, also called FOTP-107, addresses return-loss measurement. Use the licensed approved edition and the method named by the controlling document.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Documents and the decisions they support.</caption><thead><tr><th scope="col">Document</th><th scope="col">Primary role</th><th scope="col">Technician action</th></tr></thead><tbody><tr><th scope="row">ANSI/TIA-568.3-E</th><td>Optical-fiber cabling components and related requirements</td><td>Use the licensed current text for revision-specific claims.</td></tr><tr><th scope="row">ANSI/TIA-526-14-C</th><td>Installed multimode attenuation measurement</td><td>Follow the approved reference method, interfaces, and launch conditions.</td></tr><tr><th scope="row">ANSI/TIA-526-7-A or approved successor</th><td>Installed single-mode attenuation measurement</td><td>Confirm the institution-approved edition before use.</td></tr><tr><th scope="row">TIA-455-171 and TIA-455-107</th><td>Cable-assembly attenuation and return-loss procedures</td><td>Use the procedure cited by the approved requirement.</td></tr><tr><th scope="row">IEC 61300-3-35:2022</th><td>Visual inspection of connector and transceiver-stub end faces</td><td>Apply the current contamination and defect model.</td></tr><tr><th scope="row">IEEE 802.3-2022 and applicable amendments</th><td>Ethernet physical-layer interfaces</td><td>Use the exact interface specification for fiber, wavelength, reach, and power.</td></tr><tr><th scope="row">Project specification and manufacturer documents</th><td>Job-specific materials, limits, and procedures</td><td>Apply the controlling requirement and document the source.</td></tr></tbody></table></div>
+<p>A local procedure or project choice is not automatically a standards requirement. Identify the controlling source for each limit and record the exact approved edition.</p>
+
+<div class="cyu gate" data-answer="3" data-fb="Confirm the requirement through approved project documents and an authorized standards source. Memory and unofficial summaries do not establish the controlling requirement, and deleting the citation removes the traceability needed to validate the number."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A project specification references a fiber-cabling limit, but the technician cannot confirm the cited standard or edition. What should the technician do before applying the limit?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Delete the citation and treat the number as a local requirement.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Apply the remembered value and note that the source was unavailable.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Apply a value from an unofficial summary and record its web address.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Confirm the requirement in approved project documents and an authorized standards source.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="3" data-group-title="Standards, Cables, and Connectors" data-num="528.1.10" data-title="Cable construction and installation listings">
+<p class="crumb">Lesson 528.1 · Section 3 Standards, Cables, and Connectors</p>
+<h2><span class="tnum">528.1.10</span> Cable construction and installation listings</h2>
+<p class="lead-in">Construction, environmental suitability, and code listing answer different questions.</p>
+
+<p>Tight-buffered cable protects individual fibers with a thicker buffer and is common in premises applications. Loose-tube cable places fibers in tubes that allow movement and can support outdoor designs. Distribution cable groups fibers under one jacket. Breakout cable adds subunits around individual fibers. Ribbon cable arranges fibers in a flat matrix for mass handling. Inside Plant (ISP) cable is selected for building environments; Outside Plant (OSP) cable is selected for conditions outside buildings. Some routes require an approved transition between OSP and ISP cable.</p>
+<p>Read the complete cable marking. Determine fiber count and type, listing, manufacturer, and product designation. Then confirm the datasheet for the installation environment. Jacket color is only an identification clue.</p>
+<figure class="photo"><img src="images/528.1.10_jacket-marking-mmf.jpg" loading="lazy" alt="Hands hold an orange multimode cable so its printed jacket legend can be read."><figcaption>Read the complete jacket legend; color alone does not establish fiber type, listing, or suitability.</figcaption></figure>
+<p>Armor provides mechanical protection but does not by itself establish suitability for direct burial, wet locations, risers, or plenums. Verify the complete listing and manufacturer marking. Bond and ground metallic members when required by the applicable code and design.</p>
+<div class="note warn"><div class="nt">Installation decision</div><p>Do not select a cable for a pathway from one feature such as armor or jacket color. Confirm the environment, pathway, fire-rating requirement, water exposure, mechanical risk, and transition rules.</p></div>
+<figure class="figure source-diagram" data-source-diagram="16"><div class="cap">Tight-buffered and loose-tube construction</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Tight-buffered and loose-tube construction — scrollable diagram">
+  <svg style="min-width:922px" viewbox="0 0 780 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two cable cross-sections compared side by side. A full text description follows." aria-describedby="m528-528-1-10-diagram-16-desc"><rect width="780" height="340" fill="#f5f8fb"></rect><text x="195" y="28" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#09507C">Tight-buffered</text><text x="585" y="28" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#09507C">Loose-tube</text><circle cx="195" cy="150" r="104" fill="#1b2a3a"></circle><circle cx="195" cy="150" r="86" fill="#FEC14F"></circle><circle cx="195" cy="150" r="60" fill="#0079C0"></circle><circle cx="195" cy="150" r="34" fill="#7DC5D7"></circle><circle cx="195" cy="150" r="14" fill="#ffffff"></circle><text x="195" y="156" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#09507C">125 µm cladding</text><line x1="299" y1="150" x2="345" y2="120" stroke="#09507C" stroke-width="1.5"></line><text x="350" y="118" font-family="sans-serif" font-size="13" fill="#09507C">jacket</text><line x1="281" y1="150" x2="345" y2="142" stroke="#09507C" stroke-width="1.5"></line><text x="350" y="146" font-family="sans-serif" font-size="13" fill="#09507C">aramid yarn</text><line x1="255" y1="150" x2="345" y2="168" stroke="#09507C" stroke-width="1.5"></line><text x="350" y="172" font-family="sans-serif" font-size="13" fill="#09507C">900 µm buffer</text><line x1="229" y1="150" x2="345" y2="194" stroke="#09507C" stroke-width="1.5"></line><text x="350" y="198" font-family="sans-serif" font-size="13" fill="#09507C">250 µm coating</text><text x="195" y="286" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">The 900 µm buffer supports direct connectorization</text><text x="195" y="304" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">in many premises designs.</text><circle cx="585" cy="150" r="104" fill="#1b2a3a"></circle><circle cx="585" cy="150" r="86" fill="#EAE7DF"></circle><circle cx="585" cy="150" r="78" fill="#c8e6f6"></circle><circle cx="551" cy="122" r="13" fill="#0072CE"></circle><circle cx="585" cy="112" r="13" fill="#FF8000"></circle><circle cx="619" cy="126" r="13" fill="#009639"></circle><circle cx="628" cy="162" r="13" fill="#7B4B2A"></circle><circle cx="600" cy="188" r="13" fill="#8C949E"></circle><circle cx="562" cy="184" r="13" fill="#ffffff" stroke="#8C949E" stroke-width="1"></circle><circle cx="541" cy="156" r="13" fill="#D22630"></circle><line x1="689" y1="150" x2="712" y2="112" stroke="#09507C" stroke-width="1.5"></line><text x="672" y="104" font-family="sans-serif" font-size="13" fill="#09507c" stroke="#ffffff" stroke-width="3.36" stroke-linejoin="round" paint-order="stroke">jacket</text><line x1="663" y1="188" x2="700" y2="216" stroke="#09507C" stroke-width="1.5"></line><text x="640" y="232" font-family="sans-serif" font-size="13" fill="#09507c" stroke="#ffffff" stroke-width="3.36" stroke-linejoin="round" paint-order="stroke">tube wall</text><text x="585" y="286" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Fibers rest with clearance in a tube; designs may</text><text x="585" y="304" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">use gel or dry water blocking and may require splicing or fan-out.</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> These are representative constructions; use the actual cable datasheet for materials and environmental suitability.</p><details class="longdesc" id="m528-528-1-10-diagram-16-desc"><summary>Text description of this diagram</summary><p>Two representative cable cross-sections appear side by side. The tight-buffered example protects each fiber individually. The loose-tube example groups coated fibers in a tube. Labels identify strength and jacket features.</p></details></figure>
+
+<div class="cyu gate" data-answer="0" data-fb="The complete marking, listing, and manufacturer documentation establish environmental suitability. Armor, jacket color, and aramid yarn alone do not prove a direct-burial rating."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Which fact proves that an armored cable is suitable for direct burial?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>The complete manufacturer marking and listing identify it for that environment.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>The jacket is black.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The cable contains metal armor.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>The cable contains aramid yarn.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="3" data-group-title="Standards, Cables, and Connectors" data-num="528.1.11" data-title="Fiber counts, color sequence, and cable opening">
+<p class="crumb">Lesson 528.1 · Section 3 Standards, Cables, and Connectors</p>
+<h2><span class="tnum">528.1.11</span> Fiber counts, color sequence, and cable opening</h2>
+<p class="lead-in">Confirm the cable construction before opening it, then preserve identification and bend control.</p>
+
+<p>The common 12-position sequence is blue, orange, green, brown, slate, white, red, black, yellow, violet, rose, and aqua. Counts above 12 use tube, group, ribbon, or stripe identifiers defined by the cable design. Confirm the manufacturer’s scheme before assigning fiber numbers.</p>
+<p>Prepare the workspace and identify the planned opening length. Inspect the jacket and locate ripcords, armor, strength members, tubes, and subunits. Use the tool and depth setting approved for the cable. Score or ring the jacket without cutting into buffers or tubes. Remove the jacket in a controlled direction and inspect the exposed components for damage.</p>
+<p>Maintain the minimum bend radius and required slack. Preserve labels or transfer the identification before removing marked jacket material. If a fiber, tube, or subunit is nicked or the construction does not match the plan, stop and evaluate the affected cable.</p>
+<figure class="figure source-diagram" data-source-diagram="17"><div class="cap">Twelve-position fiber color sequence</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Twelve-position fiber color sequence — scrollable diagram">
+  <svg style="min-width:780px" viewbox="0 0 780 264.64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A chart of a common twelve-position fiber color sequence laid out in two rows of six. A full text description follows." aria-describedby="m528-528-1-11-diagram-17-desc"><rect width="780" height="250" fill="#f5f8fb"></rect><text x="390" y="26" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#09507C">Common fiber position sequence — positions 1 to 12</text><rect x="40" y="48" width="104" height="60" rx="8" fill="#0072CE" stroke="#09507C" stroke-width="1.6"></rect><text x="92" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#ffffff">1</text><text x="92" y="96" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#ffffff">Blue</text><rect x="158" y="48" width="104" height="60" rx="8" fill="#FF8000" stroke="#09507C" stroke-width="1.6"></rect><text x="210" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#20130a">2</text><text x="210" y="96" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#20130a">Orange</text><rect x="276" y="48" width="104" height="60" rx="8" fill="#009639" stroke="#09507C" stroke-width="1.6"></rect><text x="328" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#191919">3</text><text x="328" y="96" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#191919">Green</text><rect x="394" y="48" width="104" height="60" rx="8" fill="#7B4B2A" stroke="#09507C" stroke-width="1.6"></rect><text x="446" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#ffffff">4</text><text x="446" y="96" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#ffffff">Brown</text><rect x="512" y="48" width="104" height="60" rx="8" fill="#8C949E" stroke="#09507C" stroke-width="1.6"></rect><text x="564" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#16202b">5</text><text x="564" y="96" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#16202b">Slate</text><rect x="630" y="48" width="104" height="60" rx="8" fill="#FFFFFF" stroke="#09507C" stroke-width="1.6"></rect><text x="682" y="76" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#16202b">6</text><text x="682" y="96" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#16202b">White</text><rect x="40" y="144" width="104" height="60" rx="8" fill="#D22630" stroke="#09507C" stroke-width="1.6"></rect><text x="92" y="172" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#ffffff">7</text><text x="92" y="192" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#ffffff">Red</text><rect x="158" y="144" width="104" height="60" rx="8" fill="#1A1A1A" stroke="#09507C" stroke-width="1.6"></rect><text x="210" y="172" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#ffffff">8</text><text x="210" y="192" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#ffffff">Black</text><rect x="276" y="144" width="104" height="60" rx="8" fill="#FFD200" stroke="#09507C" stroke-width="1.6"></rect><text x="328" y="172" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#20130a">9</text><text x="328" y="192" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#20130a">Yellow</text><rect x="394" y="144" width="104" height="60" rx="8" fill="#7B4EA8" stroke="#09507C" stroke-width="1.6"></rect><text x="446" y="172" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#ffffff">10</text><text x="446" y="192" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#ffffff">Violet</text><rect x="512" y="144" width="104" height="60" rx="8" fill="#F4A6B8" stroke="#09507C" stroke-width="1.6"></rect><text x="564" y="172" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#20130a">11</text><text x="564" y="192" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#20130a">Rose</text><rect x="630" y="144" width="104" height="60" rx="8" fill="#4FD1C5" stroke="#09507C" stroke-width="1.6"></rect><text x="682" y="172" text-anchor="middle" font-family="sans-serif" font-size="20" font-weight="700" fill="#16202b">12</text><text x="682" y="192" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#16202b">Aqua</text><text x="390.0" y="238" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C"><tspan x="390.0">The sequence may also identify buffer tubes, ribbon units, or groups; verify the manufacturer’s</tspan><tspan x="390.0" dy="16.6">scheme before assigning positions.</tspan></text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> Use the cable manufacturer’s identification scheme for the actual product, especially when counts exceed 12.</p><details class="longdesc" id="m528-528-1-11-diagram-17-desc"><summary>Text description of this diagram</summary><p>Two rows of six color swatches show positions 1 through 12. The sequence is blue, orange, green, brown, slate, white, red, black, yellow, violet, rose, and aqua.</p></details></figure>
+
+<div class="cyu gate" data-answer="2" data-fb="Stop and evaluate the damage before continuing. Re-covering or relabeling the tube does not determine whether the fiber remains usable, and continuing can conceal damage that affects reliability or acceptance."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">After opening a cable, a technician finds a nick in an internal buffer tube. What should happen next?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Continue because the outer jacket will hide the nick.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Cover the nick with tape and record the cable as undamaged.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Stop and evaluate the damage under the approved procedure before continuing.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Assign a new color to the affected tube and continue the installation.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="3" data-group-title="Standards, Cables, and Connectors" data-num="528.1.12" data-title="Connector families, end-face geometry, and polarity">
+<p class="crumb">Lesson 528.1 · Section 3 Standards, Cables, and Connectors</p>
+<h2><span class="tnum">528.1.12</span> Connector families, end-face geometry, and polarity</h2>
+<p class="lead-in">Connector shape, fiber type, polish, and polarity must all be compatible.</p>
+
+<p>Subscriber Connector (SC) connectors use a push-pull body and a 2.5 millimeter (mm) ferrule. Straight Tip (ST) connectors use a bayonet coupling and a 2.5 mm ferrule. Lucent Connector (LC) connectors use a small latch body and a 1.25 mm ferrule. Multi-fiber Push On (MPO) connectors hold multiple fibers in a rectangular ferrule and may be pinned or unpinned.</p>
+<p>SC connectors are common on premises patch panels and equipment. ST connectors remain in some legacy premises, industrial, and training systems. LC connectors support high-density panels and many transceiver interfaces. MPO connectors support multifiber trunks and parallel-optics applications. These are common uses, not compatibility rules; verify the specified interface at both ends.</p>
+<div class="photo-row">
+<figure class="photo"><img src="images/528.1.12_sc-connectors.jpg" loading="lazy" alt="Several blue square-bodied SC fiber-optic connectors appear among colored fiber pigtails."><figcaption>Subscriber Connector (SC) examples with square push-pull bodies. Body color is an identification aid, not sufficient proof of fiber type or polish.</figcaption></figure>
+<figure class="photo"><img src="images/528.1.12_apc-upc-connectors.jpg" loading="lazy" alt="A green APC connector and a blue UPC connector are shown close together for comparison."><figcaption>Angled Physical Contact (APC) and Ultra Physical Contact (UPC) connector examples. Verify connector markings and end-face geometry; do not rely on body color alone.</figcaption></figure>
+</div>
+<figure class="photo"><img src="images/528.1.12_mpo-end-face.jpg" loading="lazy" alt="Close view of a rectangular MPO multifiber connector end face with multiple fiber positions and two guide-pin holes."><figcaption>Multi-fiber Push On (MPO) end face. Verify fiber count, key orientation, and the pinned or unpinned interface before connection.</figcaption></figure>
+<p>Ultra Physical Contact (UPC) and Angled Physical Contact (APC) describe polished physical-contact end-face geometries. In both designs, spring force brings the ferrule end faces into physical contact to reduce the air gap and reflection at the connection. A UPC end face uses a polished, slightly convex, non-angled contact surface. An APC end face adds an angled contact geometry, commonly about 8 degrees, that directs reflected light away from the transmitting core.</p>
+<p>Lower back-reflection can be important in systems that are sensitive to reflected optical energy. The actual insertion-loss and return-loss performance depends on the specified connector, manufacturing quality, cleanliness, mating adapter, and complete system. APC connectors are commonly identified by green bodies, while UPC connectors are commonly blue, but color is only an identification aid. Confirm the product marking and documentation.</p>
+<div class="note danger"><div class="nt">Do not mate APC and UPC</div><p>The end-face geometries do not align correctly. Mating them creates high insertion loss and poor return-loss performance, and repeated mating can damage the end faces.</p></div>
+<figure class="figure source-diagram" data-source-diagram="20"><div class="cap">UPC and APC end-face geometry</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="UPC and APC end-face geometry — scrollable diagram">
+  <svg style="min-width:1068px" viewbox="0 0 780 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A side-by-side comparison of UPC and APC end-face geometry showing what happens to reflected light. A full text description follows." aria-describedby="m528-528-1-12-diagram-20-desc"><rect width="780" height="380" fill="#f5f8fb"></rect><text x="195" y="28" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#09507C">UPC — non-angled contact</text><text x="585" y="28" text-anchor="middle" font-family="sans-serif" font-size="16" font-weight="700" fill="#09507C">APC — angled contact</text><rect x="40" y="110" width="150" height="76" fill="#EAE7DF" stroke="#09507C" stroke-width="2"></rect><rect x="200" y="110" width="150" height="76" fill="#EAE7DF" stroke="#09507C" stroke-width="2"></rect><rect x="40" y="140" width="150" height="16" fill="#7DC5D7"></rect><rect x="200" y="140" width="150" height="16" fill="#7DC5D7"></rect><line x1="195" y1="100" x2="195" y2="196" stroke="#FF8000" stroke-width="3"></line><line x1="60" y1="148" x2="160" y2="148" stroke="#0079C0" stroke-width="3"></line><polygon points="160,143 174,148 160,153" fill="#0079C0"></polygon><line x1="330" y1="148" x2="240" y2="148" stroke="#0079C0" stroke-width="3"></line><polygon points="240,143 226,148 240,153" fill="#0079C0"></polygon><line x1="188" y1="168" x2="70" y2="168" stroke="#D22630" stroke-width="3"></line><polygon points="70,163 56,168 70,173" fill="#D22630"></polygon><text x="130" y="188" font-family="sans-serif" font-size="13" font-weight="700" fill="#c9242e">reflection can return</text><text x="195" y="240" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Some reflected light can couple back into the core</text><text x="195" y="260" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">and travel toward the transmitter.</text><text x="195" y="284" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#09507C">Performance depends on the specified component</text><polygon points="430,110 570,110 588,186 430,186" fill="#EAE7DF" stroke="#09507C" stroke-width="2"></polygon><polygon points="596,110 740,110 740,186 578,186" fill="#EAE7DF" stroke="#09507C" stroke-width="2"></polygon><rect x="430" y="140" width="152" height="16" fill="#7DC5D7"></rect><rect x="588" y="140" width="152" height="16" fill="#7DC5D7"></rect><line x1="570" y1="100" x2="596" y2="196" stroke="#FF8000" stroke-width="3"></line><text x="606" y="106" font-family="sans-serif" font-size="13" font-weight="700" fill="#b25a00">8°</text><line x1="446" y1="148" x2="548" y2="148" stroke="#0079C0" stroke-width="3"></line><polygon points="548,143 562,148 548,153" fill="#0079C0"></polygon><line x1="722" y1="148" x2="630" y2="148" stroke="#0079C0" stroke-width="3"></line><polygon points="630,143 616,148 630,153" fill="#0079C0"></polygon><line x1="576" y1="152" x2="468" y2="106" stroke="#D22630" stroke-width="3"></line><polygon points="468,101 454,104 466,113" fill="#D22630"></polygon><text x="452" y="96" font-family="sans-serif" font-size="13" font-weight="700" fill="#D22630">reflection is directed away</text><text x="585" y="240" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">The angled geometry directs reflected light</text><text x="585" y="260" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">away from the transmitting core.</text><text x="585" y="284" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#09507C">Angle directs reflection away from the core</text><rect x="40" y="306" width="700" height="52" rx="8" fill="#fdece1" stroke="#FF8000" stroke-width="2"></rect><text x="390" y="330" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#8a3b00">Different geometries must not be mated.</text><text x="390" y="349" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#8a3b00">Repeated mismatched mating can damage the end faces.</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> The drawing is conceptual. Verify the connector specification and never use body color alone to establish polish type.</p><details class="longdesc" id="m528-528-1-12-diagram-20-desc"><summary>Text description of this diagram</summary><p>Two panels compare Ultra Physical Contact and Angled Physical Contact end faces. The Ultra Physical Contact face meets on a non-angled convex surface. The Angled Physical Contact face uses an angled geometry that directs reflected light away from the transmitting core. A final comparison shows why the two geometries must not be mated.</p></details></figure>
+<p>Simplex uses one fiber position. Duplex pairs two positions, normally for transmit and receive. MPO polarity depends on the complete system method, including trunks, adapters, cassettes, keys, and pinned or unpinned interfaces. “MPO polarity Method A, B, or C” is unrelated to historical Optical Loss Test Set (OLTS) reference-method lettering.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Connector checks before mating.</caption><thead><tr><th scope="col">Check</th><th scope="col">Question</th></tr></thead><tbody><tr><th scope="row">Family</th><td>Do the coupling mechanism and adapter match?</td></tr><tr><th scope="row">Ferrule and fiber</th><td>Are the connector and fiber types compatible?</td></tr><tr><th scope="row">End-face geometry</th><td>Are both sides UPC or both sides APC as required?</td></tr><tr><th scope="row">Polarity</th><td>Will transmit connect to receive through the complete path?</td></tr><tr><th scope="row">Condition</th><td>Are both end faces controlled, inspected, and ready to mate?</td></tr></tbody></table></div>
+
+<div class="cyu gate" data-answer="3" data-fb="SC/APC and SC/UPC use incompatible end-face geometries and must not be mated. The other choices can be valid when the complete interface and polarity requirements are confirmed."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Which pairing requires the technician to stop because the end-face geometries are incompatible?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>LC/UPC to a compatible LC/UPC adapter path</button><button class="opt"><span class="mk" aria-hidden="true">B</span>A pinned MPO interface to the correct unpinned mating interface</button><button class="opt"><span class="mk" aria-hidden="true">C</span>A compatible duplex pair with verified polarity</button><button class="opt"><span class="mk" aria-hidden="true">D</span>SC/APC to SC/UPC</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="3" data-group-title="Standards, Cables, and Connectors" data-num="528.1.13" data-title="Field identification sequence">
+<p class="crumb">Lesson 528.1 · Section 3 Standards, Cables, and Connectors</p>
+<h2><span class="tnum">528.1.13</span> Field identification sequence</h2>
+<p class="lead-in">Read markings and physical features before deciding what a component is.</p>
+
+<p>Begin with the cable jacket legend. Record the manufacturer, product designation, fiber count, fiber type, and listing. Examine the exposed construction to confirm tight-buffered, loose-tube, distribution, breakout, ribbon, armor, and strength-member features.</p>
+<p>For a connector, identify the coupling mechanism, ferrule size, simplex or duplex body, end-face geometry, and polarity features. For MPO, identify key orientation and pinned or unpinned status. Inspect the associated adapter, cassette, or panel rather than judging the plug alone.</p>
+<p>For a transceiver, read the complete label or datasheet. Form factor does not uniquely identify Ethernet type, wavelength, reach, lane count, connector, or fiber type. Two modules can share the same physical shape and support different links.</p>
+<p>Record uncertainty. If a marking is missing or contradictory, do not convert an assumption into documentation.</p>
+
+<div class="cyu gate" data-answer="1" data-fb="Record the unresolved condition and verify it against approved product and project documents. Jacket color, assumed performance, and connector shape do not prove the cable’s fiber type or listing."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A cable marking is missing or contradicts the observed construction. What should the technician record?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>The identity suggested by jacket color.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>The unresolved condition, followed by verification against approved product and project documents.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The highest-performance category that could fit the application.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>The connector family as proof of the cable’s fiber type.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="4" data-group-title="Inspection and Cleaning" data-num="528.1.14" data-title="Contamination and International Electrotechnical Commission (IEC) 61300-3-35:2022 inspection">
+<p class="crumb">Lesson 528.1 · Section 4 Inspection and Cleaning</p>
+<h2><span class="tnum">528.1.14</span> Contamination and International Electrotechnical Commission (IEC) 61300-3-35:2022 inspection</h2>
+<p class="lead-in">Inspection controls contamination and classifies visible features; optical tests establish performance.</p>
+
+<p>Contamination can transfer between mating end faces, increase insertion loss or reflectance, and reduce return loss. Inspect both sides of a connection before mating. Keep verified interfaces capped or mate them promptly.</p>
+<figure class="figure source-diagram" data-source-diagram="22"><div class="cap">Contamination transfer across a mated pair</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Contamination transfer across a mated pair — scrollable diagram">
+  <svg style="min-width:922px" viewbox="0 0 780 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A three-stage diagram showing contamination transferring between two mated connectors. A full text description follows." aria-describedby="m528-528-1-14-diagram-22-desc"><rect width="780" height="420" fill="#f5f8fb"></rect><text x="390" y="26" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#09507C">One particle can contaminate both end faces and the adapter</text><text x="130" y="62" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#09507C">1. Before mating</text><rect x="34" y="84" width="80" height="66" fill="#EAE7DF" stroke="#09507C" stroke-width="1.8"></rect><rect x="146" y="84" width="80" height="66" fill="#EAE7DF" stroke="#09507C" stroke-width="1.8"></rect><rect x="34" y="108" width="80" height="18" fill="#7DC5D7"></rect><rect x="146" y="108" width="80" height="18" fill="#7DC5D7"></rect><circle cx="151" cy="117" r="6" fill="#8a3b00"></circle><text x="130" y="176" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Left face clean.</text><text x="130" y="194" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Right face carries one particle.</text><text x="390" y="62" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#09507C">2. Mated under spring load</text><rect x="286" y="76" width="208" height="82" rx="6" fill="none" stroke="#8C949E" stroke-width="2" stroke-dasharray="6 4"></rect><text x="390" y="72" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#6a737e">split sleeve</text><rect x="296" y="84" width="86" height="66" fill="#EAE7DF" stroke="#09507C" stroke-width="1.8"></rect><rect x="398" y="84" width="86" height="66" fill="#EAE7DF" stroke="#09507C" stroke-width="1.8"></rect><rect x="296" y="108" width="86" height="18" fill="#7DC5D7"></rect><rect x="398" y="108" width="86" height="18" fill="#7DC5D7"></rect><rect x="382" y="100" width="16" height="34" fill="#fdece1" stroke="#FF8000" stroke-width="1.6"></rect><circle cx="386" cy="112" r="3" fill="#8a3b00"></circle><circle cx="393" cy="121" r="3" fill="#8a3b00"></circle><circle cx="387" cy="127" r="2.4" fill="#8a3b00"></circle><line x1="250" y1="117" x2="292" y2="117" stroke="#0079C0" stroke-width="3"></line><polygon points="292,111 304,117 292,123" fill="#0079C0"></polygon><line x1="530" y1="117" x2="488" y2="117" stroke="#0079C0" stroke-width="3"></line><polygon points="488,111 476,117 488,123" fill="#0079C0"></polygon><text x="390" y="176" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">The particle is trapped between the end faces.</text><text x="390" y="194" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Spring load acts through the debris.</text><text x="650" y="62" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#09507C">3. After separation</text><rect x="554" y="84" width="80" height="66" fill="#EAE7DF" stroke="#09507C" stroke-width="1.8"></rect><rect x="666" y="84" width="80" height="66" fill="#EAE7DF" stroke="#09507C" stroke-width="1.8"></rect><rect x="554" y="108" width="80" height="18" fill="#7DC5D7"></rect><rect x="666" y="108" width="80" height="18" fill="#7DC5D7"></rect><circle cx="629" cy="113" r="3.6" fill="#8a3b00"></circle><circle cx="629" cy="122" r="2.6" fill="#8a3b00"></circle><circle cx="671" cy="114" r="3.6" fill="#8a3b00"></circle><circle cx="671" cy="123" r="2.6" fill="#8a3b00"></circle><line x1="624" y1="106" x2="634" y2="106" stroke="#D22630" stroke-width="2.6"></line><line x1="668" y1="106" x2="678" y2="106" stroke="#D22630" stroke-width="2.6"></line><text x="650" y="176" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Both faces may carry debris or surface damage.</text><text x="650" y="194" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">The adapter path may also carry debris.</text><rect x="34" y="228" width="712" height="76" rx="8" fill="#fdece1" stroke="#FF8000" stroke-width="2"></rect><text x="390" y="256" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#8a3b00">Mating can transfer contamination to the other end face,</text><text x="390" y="277" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#8a3b00">press debris against polished surfaces, and leave material in the adapter path for the next</text><text x="390" y="298" text-anchor="middle" font-family="sans-serif" font-size="13.5" font-weight="700" fill="#8a3b00">connector. Cleaning removes contamination but does not repair surface damage.</text><text x="390" y="342" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">Inspect both sides before mating so one contaminated interface does not affect</text><text x="390" y="364" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#09507C">the mating connector or the adapter between them.</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> The drawing explains why both sides of a connection must be controlled; it is not an inspection acceptance image.</p><details class="longdesc" id="m528-528-1-14-diagram-22-desc"><summary>Text description of this diagram</summary><p>Three panels show possible contamination transfer. One connector begins with a particle. Mating traps the particle between the end faces. After separation, debris or surface damage may appear on both faces, and debris may also remain in the adapter path.</p></details></figure>
+<p>IEC 61300-3-35:2022 applies quantitative defect and scratch criteria to Zones A and B. It removed inspection requirements for Zones C and D. The whole physical-contact area must still be inspected for removable contamination—up to a 250 micrometer diameter area for cylindrical ferrules and the whole ferrule surface for rectangular ferrules.</p>
+<p>Visual inspection is additional to optical qualification. It does not replace attenuation, return-loss, or other required performance measurements. Under the 2022 edition, a connector is not rejected solely because it fails visual inspection; meeting the specified optical performance determines whether it can be used after removable contamination has been addressed.</p>
+<div class="note note"><div class="nt">Licensed criteria</div><p>Use the licensed current standard for the exact Zone A and Zone B dimensions and acceptance tables applicable to the connector type. Do not recreate a copyrighted criteria table from memory.</p></div>
+
+<div class="cyu gate" data-answer="0" data-fb="Visual inspection supports cleanliness classification, while required optical measurements establish performance. Visual inspection cannot replace optical qualification, optical measurements do not remove the need to inspect for contamination, and the 2022 edition removed inspection requirements for Zones C and D."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">What is the correct relationship between visual inspection and optical qualification?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Visual inspection supports cleanliness classification; required optical measurements establish performance.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Visual inspection alone qualifies attenuation and return-loss performance.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Optical measurements make end-face cleanliness inspection unnecessary.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Zones C and D provide the current defect pass-or-fail limits.</button><div class="cyu-fb" role="status"></div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="4" data-group-title="Inspection and Cleaning" data-num="528.1.15" data-title="Inspect, clean, inspect, and close">
+<p class="crumb">Lesson 528.1 · Section 4 Inspection and Cleaning</p>
+<h2><span class="tnum">528.1.15</span> Inspect, clean, inspect, and close</h2>
+<p class="lead-in">Control the source, inspect the correct interface, clean with an approved method, and verify again.</p>
+
+<p>Confirm the fiber is under the controlled optical-safety condition before using inspection equipment. Select the correct video-probe tip and verify that the scope and tip are clean. An incorrect or contaminated probe can produce a false image or transfer contamination.</p>
+<p>Prefer a video probe because it does not create a direct optical path to the eye. Use a handheld direct-view microscope only on a verified de-energized fiber and only when the site procedure and microscope instructions authorize it.</p>
+<p>Classify the end face as clean, contaminated, scratched, cracked, or otherwise damaged under the approved criteria. If removable contamination is present, use the approved dry method, such as the specified stick cleaner or dry wipe. Use a wet-then-dry method with the approved solvent only when the product and procedure authorize it. Never leave cleaning fluid on the end face. Inspect again after each cleaning cycle.</p>
+<p>After removing contamination, apply the required optical qualification and the approved disposition. A visible scratch or defect does not by itself determine whether the connector may be used under the 2022 inspection model. If contamination remains after the procedure’s allowed attempts, change the cleaning material or method and evaluate the tool. If the feature is damage rather than contamination, stop cleaning and follow the optical-test and disposition requirements.</p>
+<p>Adapters and equipment ports are part of the connection. Use the approved probe and cleaning method for those interfaces. Never insert an incompatible cleaning tool into a port.</p>
+<figure class="figure source-diagram" data-source-diagram="24"><div class="cap">Inspect–clean–inspect decision flow</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Inspect–clean–inspect decision flow — scrollable diagram">
+  <svg style="min-width:922px" viewbox="0 0 780 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A decision flow for the inspect-clean-inspect discipline. A full text description follows." aria-describedby="m528-528-1-15-diagram-24-desc"><rect width="780" height="460" fill="#f5f8fb"></rect><text x="390" y="26" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#09507C">Inspect — Clean — Inspect</text><rect x="250" y="42" width="280" height="42" rx="8" fill="#8a1f2b"></rect><text x="390" y="62" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">FIRST: control and verify optical sources</text><text x="390" y="77" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#ffd9de">Follow the approved optical-safety procedure</text><line x1="390" y1="84" x2="390" y2="104" stroke="#09507C" stroke-width="2"></line><polygon points="385,104 395,104 390,114" fill="#09507C"></polygon><rect x="270" y="114" width="240" height="44" rx="8" fill="#0079C0"></rect><text x="390" y="134" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">INSPECT</text><text x="390" y="150" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fafdfe">apply the approved inspection criteria</text><line x1="390" y1="158" x2="390" y2="176" stroke="#09507C" stroke-width="2"></line><polygon points="385,176 395,176 390,186" fill="#09507C"></polygon><polygon points="390,186 512,222 390,258 268,222" fill="#FEC14F" stroke="#09507C" stroke-width="1.6"></polygon><text x="390" y="219" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#4a3600">Does it meet the</text><text x="390" y="235" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#4a3600">applicable criteria?</text><line x1="512" y1="222" x2="596" y2="222" stroke="#09507C" stroke-width="2"></line><polygon points="596,217 606,222 596,227" fill="#09507C"></polygon><text x="548" y="214" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#09507C">yes</text><rect x="606" y="198" width="150" height="48" rx="8" fill="#1f7a3f"></rect><text x="681" y="218" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">Mate it now,</text><text x="681" y="234" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">or cap it now</text><line x1="390" y1="258" x2="390" y2="278" stroke="#09507C" stroke-width="2"></line><polygon points="385,278 395,278 390,288" fill="#09507C"></polygon><text x="402" y="274" font-family="sans-serif" font-size="13" font-weight="700" fill="#09507C">no</text><polygon points="390,288 512,322 390,356 268,322" fill="#FEC14F" stroke="#09507C" stroke-width="1.6"></polygon><text x="390" y="318" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#4a3600">Contamination,</text><text x="390" y="334" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#4a3600">or damage?</text><line x1="512" y1="322" x2="596" y2="322" stroke="#09507C" stroke-width="2"></line><polygon points="596,317 606,322 596,327" fill="#09507C"></polygon><text x="552" y="314" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#09507C">damage</text><rect x="606" y="298" width="150" height="48" rx="8" fill="#8a1f2b"></rect><text x="681" y="318" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">Apply optical qualification</text><text x="681" y="334" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">and the approved disposition</text><line x1="268" y1="322" x2="180" y2="322" stroke="#09507C" stroke-width="2"></line><polygon points="180,317 170,322 180,327" fill="#09507C"></polygon><text x="224" y="314" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#09507C">contamination</text><rect x="30" y="298" width="140" height="48" rx="8" fill="#0079C0"></rect><text x="100" y="318" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#fff">CLEAN</text><text x="100" y="334" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#fafdfe">use the approved method</text><path d="M100 298 L100 136 L270 136" fill="none" stroke="#0079C0" stroke-width="2" stroke-dasharray="7 5"></path><polygon points="270,131 280,136 270,141" fill="#0079C0"></polygon><text x="112" y="212" font-family="sans-serif" font-size="13" font-weight="700" fill="#0076bb">then inspect again</text><rect x="30" y="382" width="726" height="60" rx="8" fill="#fdece1" stroke="#FF8000" stroke-width="2"></rect><text x="393" y="404" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#8a3b00">If cleaning does not resolve the condition, follow the approved escalation criteria.</text><text x="393" y="426" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#8a3b00">The process ends with the interface mated, capped, or placed in an approved disposition.</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> The approved inspection criteria, cleaning product, allowed attempts, and repair disposition control the actual task.</p><details class="longdesc" id="m528-528-1-15-diagram-24-desc"><summary>Text description of this diagram</summary><p>A decision flow begins after the optical-safety condition is controlled. Inspect the interface using the approved criteria. If contamination is present, clean it with the approved method and inspect again. If damage is present or cleaning does not resolve the condition, apply the required optical qualification and approved disposition.</p></details></figure>
+<p>During supervised practice, use the equipment-specific manufacturer procedure and the instructor’s directions for the available tools and cleaning products.</p>
+<p>Place the inspection and cleaning workflow in order.</p>
+
+<div class="order gate"><div class="step" data-pos="1">Control and verify the optical-safety condition.</div><div class="step" data-pos="2">Confirm that the video probe and correct tip are clean.</div><div class="step" data-pos="3">Inspect the connector or port.</div><div class="step" data-pos="4">Clean with the approved method when removable contamination is present.</div><div class="step" data-pos="5">Inspect again, then mate, cap, repair, replace, or escalate according to the result.</div></div>
+</section><section class="topic" data-lesson-num="528.1" data-lesson-title="Fiber Safety, Fundamentals, Standards, and Component Identification" data-group-num="5" data-group-title="Wrapping Up" data-num="528.1.16" data-title="What you covered">
+<p class="crumb">Lesson 528.1 · Section 5 Wrapping Up</p>
+<h2><span class="tnum">528.1.16</span> What you covered</h2>
+<p class="lead-in">Use these decisions before you begin supervised fiber work.</p>
+
+<ul>
+<li>Control glass fragments, chemicals, tools, and possible optical energy.</li>
+<li>Use the site procedure, current Safety Data Sheet, and manufacturer instructions.</li>
+<li>Match fiber, cords, connectors, and equipment by specification—not by appearance alone.</li>
+<li>Distinguish relative optical loss from absolute optical power and document the acceptance source.</li>
+<li>Cite the exact standards revision used for a requirement.</li>
+<li>Inspect and clean end faces under the current connector-inspection model, then perform required optical qualification.</li>
+</ul>
+<div class="note warn"><div class="nt">What the online checks establish</div><p>These online checks measure recall and application of the material on this page. They do not establish hands-on competence or authorize unsupervised fiber work. Practical readiness is determined through supervised practice and approved assessments.</p></div>
+
+<button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button>
+</section></div><nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">‹ Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next ›</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewbox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>

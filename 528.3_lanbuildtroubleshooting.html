@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  UCI 2107.1 - Low Voltage Fiber Technician
+  Module 528 (M06) - Fiber Optics Systems
+  Lesson 528.3 - Fiber LAN Build, Troubleshooting, and Network Integration (Async Reading)
+  VERSION: v0.3.1  (2026-09-15)  DRAFT - for review
+
+  CHANGES IN v0.3.1
+  Rebuilt and consolidated from original lessons 528.10 and 528.11.
+  Corrected material compatibility, installation, polarity, acceptance,
+  transceiver, optical-power, troubleshooting, and handover claims.
+  Aligned to JTA M6 tasks 6.10 and 6.11. Cisco platform and mode-conditioning
+  boundaries checked against current official Cisco documentation; exact lab
+  models, manuals, settings, and acceptance sources remain implementation inputs.
+
+  Engine stylesheet and script reused verbatim from the approved 529.6 model.
+
+  OBJECTIVES
+  Derived from JTA M6 tasks 6.10 and 6.11; each learner-facing objective uses one action verb.
+  Plan a compatible 12-fiber multimode LAN run.
+  Construct the passive fiber path within approved requirements.
+  Inspect every fiber connection before mating.
+  Clean every fiber connection when required.
+  Test the completed passive link against the approved loss budget.
+  Troubleshoot injected faults using controlled evidence.
+  Select compatible optical transceivers.
+  Install selected transceivers and patch cords safely.
+  Verify interface state and end-to-end reachability.
+  Document the as-built installation and test evidence.
+
+  TOPIC OUTLINE
+  Section 1 Plan the Build - 528.3.1 through 528.3.3
+  Section 2 Install and Terminate - 528.3.4 through 528.3.7
+  Section 3 Test and Troubleshoot - 528.3.8 through 528.3.10
+  Section 4 Integrate Active Equipment - 528.3.11 through 528.3.13
+  Section 5 Verify and Handover - 528.3.14 through 528.3.17
+  Section 6 Wrapping Up - 528.3.18
+
+  ACTIVITY GATES: 18. DIAGRAMS: 3. PHOTOS: 7.
+
+  OPEN, AND NOT RESOLVED HERE
+  Resolve the OM1/OM3 design, approve the task-level BOM, exact equipment and manuals/SDS, lab specification,
+  rubrics, acceptance limits, transceivers, and institution-approved standards.
+--><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 528.3 — Fiber LAN Build, Troubleshooting, and Network Integration · Async Reading · UCI 2107.1</title>
+<style>
+  :root{
+    /* Per Scholas brand palette (extracted from the lesson deck) */
+    --green:#0079C0; --green-d:#09507C; --green-l:#4FA3D4; --green-bg:#EAF4FB;
+    --navy:#0A1B33; --gold:#FEC14F; --gold-d:#D99B2B; --brand-light:#CFEBFC;
+    --ink:#1b2a3a; --muted:#5a6772; --line:#d9e3ec; --band:#eef4f9; --card:#fff;
+    --bg:#f5f8fb; --amber:#B8860B; --amber-bg:#fdf6e3; --blue:#09507C; --blue-bg:#e6f1fa;
+    --ok:#0079C0; --ok-bg:#e3f0fa; --bad:#c0392b; --bad-bg:#fbeae8;
+    --shadow:0 2px 10px rgba(9,45,80,.08); --radius:10px;
+    --nav-w:340px; --head-h:60px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *{transition:none!important;animation:none!important}
+  }
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.65;font-size:16px}
+  h1,h2,h3,h4{line-height:1.25;margin:0 0 .5em;color:var(--ink)}
+  p{margin:0 0 1em}
+  a{color:var(--green-d)}
+  :focus-visible{outline:3px solid var(--green-l);outline-offset:2px;border-radius:3px}
+  .skip{position:absolute;left:-999px;top:0;background:var(--green);color:#fff;padding:10px 16px;
+    z-index:1000;border-radius:0 0 8px 0}
+  .skip:focus{left:0}
+
+  /* ---------- HEADER ---------- */
+  header.site{position:sticky;top:0;z-index:60;background:#fff;border-bottom:3px solid var(--green);
+    height:var(--head-h);display:flex;align-items:center;gap:16px;padding:0 18px;box-shadow:0 1px 6px rgba(9,45,80,.06)}
+  .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:0 0 auto}
+  .ps-logo{height:34px;width:auto;display:block}
+  .head-mid{flex:1;min-width:0;border-left:1px solid var(--line);padding-left:16px}
+  .head-title{font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+  .head-title b{color:var(--green)}
+  .progress-wrap{display:flex;align-items:center;gap:10px;font-size:1rem;color:var(--muted);white-space:nowrap}
+  .pbar{width:150px;height:8px;background:#e6ecf1;border-radius:20px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));transition:width .35s}
+  .menu-btn{display:none;background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 12px;
+    font-weight:700;cursor:pointer;font-size:1rem}
+  @media(max-width:900px){.menu-btn{display:inline-block}.progress-wrap .lbl{display:none}}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{display:grid;grid-template-columns:var(--nav-w) 1fr;align-items:start}
+  nav.toc{position:sticky;top:var(--head-h);height:calc(100vh - var(--head-h));overflow-y:auto;
+    background:#fff;border-right:1px solid var(--line);padding:0 0 40px}
+  .toc-tabs{display:flex;gap:18px;padding:14px 20px 0;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+  .toc-tabs button{padding:8px 2px 12px;font-weight:700;color:var(--muted);font-size:1rem;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit}
+  .toc-tabs button:hover{color:var(--ink)}
+  .toc-tabs button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green);margin-bottom:-1px}
+  /* overview landing panel */
+  .overview{max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  .overview .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .overview h2{font-size:1.9rem}
+  .overview .lead-in{font-size:1.12rem;color:var(--muted)}
+  .ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0}
+  .ov-stat{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:center}
+  .ov-stat b{display:block;font-size:1.55rem;color:var(--green-d);line-height:1}
+  .ov-stat span{font-size:1rem;color:var(--muted);display:block;margin-top:6px}
+  .ov-obj{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0 4px}
+  @media(max-width:640px){.ov-obj{grid-template-columns:1fr}}
+  .ov-obj .o{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+  .ov-obj .o .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}
+  .ov-begin{margin-top:24px;background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 26px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit}
+  .ov-begin:hover{background:var(--green-d)}
+
+  .toc-group{border-bottom:1px solid var(--line)}
+  .toc-group > .grp-btn{width:100%;display:flex;align-items:center;gap:12px;background:var(--band);
+    border:none;padding:14px 18px;cursor:pointer;text-align:left;font-family:inherit}
+  .grp-btn .toggle{flex:0 0 26px;height:26px;border-radius:50%;background:var(--green);color:#fff;
+    display:grid;place-items:center;font-size:1rem;transition:transform .25s}
+  .toc-group[aria-expanded="false"] .toggle{transform:rotate(-90deg)}
+  .grp-btn .grp-title{font-weight:800;font-size:1rem;color:var(--ink)}
+  .grp-title-static{margin:0;padding:14px 18px 8px;font-size:1rem;color:var(--ink)}
+  .grp-list{list-style:none;margin:0;padding:6px 0 12px}
+  .toc-group[aria-expanded="false"] .grp-list{display:none}
+  .grp-list li{position:relative;padding-left:44px}
+  /* dotted connector line */
+  .grp-list li::before{content:"";position:absolute;left:29px;top:0;bottom:0;
+    border-left:2px dotted #c8d0d6}
+  .grp-list li:first-child::before{top:50%}
+  .grp-list li:last-child::before{bottom:50%}
+  .sub-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;
+    padding:9px 16px 9px 0;text-align:left;cursor:pointer;font-family:inherit;font-size:.86rem;color:var(--ink);border-radius:6px}
+  .sub-btn:hover{background:var(--green-bg)}
+  .node{position:absolute;left:20px;width:20px;height:20px;border-radius:50%;background:#fff;
+    border:2px solid #b9c2c9;display:grid;place-items:center;font-size:1rem;color:#fff}
+  .sub-btn .lbl-num{color:var(--muted);font-weight:700;margin-right:2px}
+  li.active .sub-btn{color:var(--green-d);font-weight:700}
+  li.active .node{border-color:var(--green);background:var(--green-l)}
+  li.done .node{border-color:var(--green);background:var(--green);}
+  li.done .node::after{content:"✓"}
+  li.active .sub-btn .lbl-num{color:var(--green-d)}
+
+  /* ---------- MAIN ---------- */
+  main{padding:0;min-height:calc(100vh - var(--head-h));display:flex;flex-direction:column}
+  main:focus{outline:none}
+  .topic-wrap{max-width:820px;width:100%;margin:0 auto;padding:30px 30px 20px;flex:1}
+  .crumb{font-size:1rem;color:var(--muted);margin-bottom:6px}
+  .crumb b{color:var(--green-d)}
+  .topic h2{font-size:1.8rem}
+  .topic h2 .tnum{color:var(--green);font-weight:800}
+  .topic h3{font-size:1.2rem;margin-top:1.6em;color:var(--green-d)}
+  .topic h4{font-size:1.02rem;margin-top:1.2em}
+  .topic > p, .topic .prose p{font-size:1.02rem}
+  .lead-in{font-size:1.1rem;color:var(--muted)}
+  .topic{display:none;max-width:820px;margin:0 auto;padding:24px 18px 40px}
+  @media(max-width:640px){.topic{padding:18px 14px 32px}.overview{padding:18px 14px 32px}}
+  .topic.showing{display:block;animation:fade .3s}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* full-bleed navy "bookend" topics (opening + closing), echoing the deck's title/closing slides */
+  main.dark-topic{background:var(--navy)}
+  .topic.dark > p, .topic.dark .lead-in{color:#cfe0f2}
+  .topic.dark h2{color:#fff}
+  .topic.dark h2 .tnum{color:var(--gold)}
+  .topic.dark h3, .topic.dark h4{color:var(--gold)}
+  .topic.dark .crumb{color:#9db8d6}
+  .topic.dark .crumb b{color:var(--gold)}
+  .topic.dark .keyterm{color:var(--gold)}
+  .topic.dark ul.clean li{color:#cfe0f2}
+  .topic.dark #scoreLine{color:#fff}
+  .topic.dark .pc{color:#fff}
+  .topic.dark #ringFill{stroke:var(--gold)}
+  .topic.dark .ring svg circle:first-of-type{stroke:rgba(255,255,255,.22)}
+
+  .figure{background:var(--band);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin:18px 0;font-size:.9rem;color:var(--muted)}
+  .figure .cap{font-weight:700;color:var(--ink);font-size:1rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+  /* callouts */
+  .note{border-left:5px solid var(--blue);background:var(--blue-bg);padding:14px 18px;border-radius:8px;margin:18px 0}
+  .note.tip{border-left-color:var(--green);background:var(--green-bg)}
+  .note.warn{border-left-color:var(--amber);background:var(--amber-bg)}
+  .note.danger{border-left-color:var(--bad);background:var(--bad-bg)}
+  .note .nt{font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+  .note p:last-child{margin-bottom:0}
+  .uptime{border:1px dashed var(--green);background:var(--green-bg);border-radius:8px;padding:12px 16px;margin:16px 0;font-size:.95rem}
+  .uptime b{color:var(--green-d)}
+
+  ul.clean{margin:0 0 1em;padding-left:22px}
+  ul.clean li{margin-bottom:8px}
+  .keyterm{font-weight:700;color:var(--green-d)}
+
+  /* ---------- COMPONENTS ---------- */
+  /* tabs */
+  .tabs{margin:20px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .tablist{display:flex;flex-wrap:wrap;background:var(--band);border-bottom:1px solid var(--line)}
+  .tablist button{background:none;border:none;padding:12px 18px;font-family:inherit;font-size:.9rem;font-weight:600;
+    color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+  .tablist button[aria-selected="true"]{color:var(--green-d);border-bottom-color:var(--green-l);background:#fff}
+  .tabpanel{padding:18px 20px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel h4{margin-top:0}
+
+  /* accordion */
+  .acc{margin:18px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}
+  .acc h4{margin:0}
+  .acc .ac-btn{width:100%;text-align:left;background:#fff;border:none;border-top:1px solid var(--line);
+    padding:14px 18px;font-family:inherit;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;
+    justify-content:space-between;align-items:center;gap:12px;color:var(--ink)}
+  .acc > div:first-child .ac-btn{border-top:none}
+  .ac-btn .chev{color:var(--green);font-size:1.1rem;transition:transform .25s}
+  .ac-btn[aria-expanded="true"] .chev{transform:rotate(90deg)}
+  .ac-panel{padding:0 18px 16px;color:var(--ink)}
+  .ac-panel[hidden]{display:none}
+
+  /* reveal cards (click to expand — robust, no 3D transform) */
+  .cards.stack{grid-template-columns:1fr}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin:20px 0;align-items:start}
+  .rcard{display:flex;flex-direction:column;text-align:left;width:100%;background:#fff;border:1px solid var(--line);
+    border-radius:var(--radius);box-shadow:var(--shadow);padding:0;cursor:pointer;font-family:inherit;color:var(--ink);
+    overflow:hidden;transition:border-color .15s}
+  .rcard:hover{border-color:var(--green-l)}
+  .rcard[aria-expanded="true"]{border-color:var(--green)}
+  .rcard > span{display:block}
+  .rcard-ttl{font-weight:800;font-size:1.05rem;padding:15px 16px 0;border-top:4px solid var(--green)}
+  .rcard-sub{color:var(--muted);font-size:1rem;padding:3px 16px 12px}
+  .rcard-detail{padding:12px 16px 14px;background:var(--green-bg);margin-top:12px;border-top:1px solid var(--line)}
+  .rcard-detail ul{margin:0;padding-left:18px;font-size:1rem}
+  .rcard-detail li{margin-bottom:6px}
+  .rcard-detail[hidden]{display:none}
+  .longdesc{margin:0 0 18px;border:1px solid var(--line);border-radius:var(--radius);background:#fff}
+  .longdesc summary{padding:12px 16px;font-weight:700;font-size:1rem;cursor:pointer;color:var(--green-d)}
+  .longdesc summary:hover{background:var(--band)}
+  .longdesc > :not(summary){padding:0 16px;font-size:1rem}
+  .longdesc ol{padding:0 16px 4px 34px;font-size:1rem}
+  .longdesc li{margin-bottom:8px}
+  .rcard-cue{font-size:1rem;color:var(--green-d);font-weight:700;padding:12px 16px 14px;margin-top:auto}
+  /* version badge */
+  .ver{font-size:1rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;letter-spacing:.3px}
+
+  /* matching */
+  .match{margin:20px 0}
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  @media(max-width:620px){.match-cols{grid-template-columns:1fr;gap:12px}}
+  .match .col-h{font-size:1rem;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid var(--line);border-radius:9px;
+    padding:12px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .chip:hover:not(.done){border-color:var(--green-l)}
+  .chip.sel{border-color:var(--amber);background:var(--amber-bg)}
+  .chip.done{border-color:var(--green);background:var(--green-bg);color:var(--green-d);cursor:default}
+  .chip.done::after{content:" ✓";font-weight:800}
+  .chip.wrong{border-color:var(--bad);background:var(--bad-bg)}
+  .activity-status{margin-top:8px;font-weight:700;font-size:1rem;color:var(--muted)}
+  .activity-status.good{color:var(--green-d)}
+  .activity-status.bad{color:var(--bad)}
+
+  /* ordering */
+  .order{margin:20px 0}
+  .order ol{list-style:none;margin:0;padding:0}
+  .order .step{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--line);
+    border-radius:9px;padding:11px 14px;margin-bottom:9px;cursor:pointer;font-size:1rem;transition:.12s}
+  .order .step:hover{border-color:var(--green-l)}
+  .order .step .seq{flex:0 0 28px;height:28px;border-radius:50%;background:var(--band);color:var(--muted);
+    display:grid;place-items:center;font-weight:800;font-size:.85rem}
+  .order .step.picked .seq{background:var(--amber);color:#fff}
+  .order .step.correct{border-color:var(--green);background:var(--green-bg)}
+  .order .step.incorrect{border-color:var(--bad);background:var(--bad-bg)}
+
+  /* compare */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+  @media(max-width:620px){.compare{grid-template-columns:1fr}}
+  .compare .box{border-radius:var(--radius);padding:18px}
+  .compare .safe{background:var(--ok-bg);border:1.5px solid var(--ok)}
+  .compare .danger{background:var(--bad-bg);border:1.5px solid var(--bad)}
+  .compare h4{margin-top:0}
+  .compare .safe h4{color:var(--green-d)} .compare .danger h4{color:var(--bad)}
+  .compare ul{margin:0;padding-left:18px;font-size:1rem} .compare li{margin-bottom:6px}
+
+  /* power flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch;margin:20px 0}
+  .flow .node2{flex:1 1 110px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;
+    text-align:center;font-size:.8rem;color:var(--muted);box-shadow:var(--shadow)}
+  .flow .node2 b{display:block;color:var(--green-d);font-size:.88rem;margin-bottom:3px}
+  .flow .ar{align-self:center;color:var(--green-l);font-weight:800;font-size:1.1rem}
+
+  /* tables */
+  table.tbl{width:100%;border-collapse:collapse;background:#fff;font-size:1rem;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin:18px 0}
+  table.tbl caption{text-align:left;font-weight:700;color:var(--muted);font-size:1rem;padding:0 0 8px}
+  .tbl th{background:var(--green-d);color:#fff;text-align:left;padding:10px 13px;font-size:1rem}
+  .tbl td{padding:10px 13px;border-top:1px solid var(--line);vertical-align:top}
+  .tbl tr:nth-child(even) td{background:#f8fafb}
+  .tbl .tm{font-weight:700;color:var(--green-d);white-space:nowrap}
+  .tbl-scroll{overflow-x:auto}
+
+  /* CYU quiz */
+  .cyu{background:#fff;border:1px solid var(--line);border-left:5px solid var(--green-l);border-radius:var(--radius);
+    padding:20px 22px;margin:24px 0 8px}
+  .cyu .cyu-h{font-size:1rem;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .cyu .cyu-q{font-weight:700;margin-bottom:12px}
+  .cyu .multi-note{font-size:.8rem;color:var(--muted);margin:-6px 0 10px}
+  .opt{display:block;width:100%;text-align:left;background:#fafbfc;border:2px solid var(--line);border-radius:9px;
+    padding:11px 14px;margin-bottom:8px;cursor:pointer;font-size:1rem;font-family:inherit;color:var(--ink);transition:.12s}
+  .opt:hover:not(.locked){border-color:var(--green-l)}
+  .opt.chosen{border-color:var(--amber);background:var(--amber-bg)}
+  .opt .mk{display:inline-grid;place-items:center;width:28px;height:28px;border:1.5px solid var(--muted);border-radius:50%;
+    margin-right:9px;font-size:1rem;line-height:1;font-weight:800;color:var(--muted);vertical-align:middle}
+  .opt.correct{border-color:var(--ok);background:var(--ok-bg);color:var(--green-d);font-weight:600}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}
+  .opt.incorrect{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+  .opt.incorrect .mk{background:var(--bad);border-color:var(--bad);color:#fff}
+  .opt.locked{cursor:default}
+  .cyu-fb{margin-top:10px;padding:12px 14px;border-radius:8px;font-size:1rem;display:none}
+  .cyu-fb.show{display:block}
+  .cyu-fb.right{background:var(--ok-bg);border-left:4px solid var(--ok);color:var(--green-d)}
+  .cyu-fb.wrong{background:var(--bad-bg);border-left:4px solid var(--bad);color:var(--bad)}
+  .btn{background:var(--green);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;
+    cursor:pointer;font-size:1rem;font-family:inherit}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--green-d);border:1.5px solid var(--green)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+
+  /* footer nav */
+  .topnav{border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0;z-index:40}
+  .topnav .inner{max-width:820px;margin:0 auto;padding:12px 30px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .navbtn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;
+    padding:11px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:1rem;font-family:inherit}
+  .navbtn:hover:not(:disabled){background:var(--green-d)}
+  .navbtn.prev{background:#fff;color:var(--green-d);border:1.5px solid var(--line)}
+  .navbtn:disabled{opacity:.45;cursor:not-allowed}
+  .gate-msg{font-size:1rem;color:var(--amber);font-weight:700;text-align:center;flex:1;min-width:0}
+  .gate-msg.ok{color:var(--green-d)}
+
+  /* results */
+  .ring{width:170px;height:170px;position:relative;margin:10px auto}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;color:var(--green-d)}
+
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(140px);background:var(--green-d);
+    color:#fff;padding:11px 20px;border-radius:30px;font-weight:700;z-index:200;transition:transform .35s;font-size:1rem;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* mobile drawer */
+  @media(max-width:900px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:fixed;top:var(--head-h);left:0;width:min(360px,86vw);height:calc(100vh - var(--head-h));
+      z-index:70;transform:translateX(-105%);transition:transform .3s;box-shadow:6px 0 24px rgba(0,0,0,.18)}
+    nav.toc.open{transform:none}
+    .scrim{position:fixed;inset:var(--head-h) 0 0 0;background:rgba(0,0,0,.35);z-index:65;display:none}
+    .scrim.show{display:block}
+  }
+
+  /* presentation photos */
+  .photo{margin:20px auto;text-align:center;max-width:560px}
+  .photo img{max-width:100%;max-height:360px;width:auto;height:auto;border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .photo figcaption{font-size:1rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .photo-row{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin:20px 0}
+  .photo-row .photo{margin:0;max-width:210px}
+  .photo-row .photo img{max-height:280px}
+  .topic.dark .photo figcaption{color:#9db8d6}
+  /* (reveal-card styles defined in the cards block above) */
+  /* click-to-enlarge images */
+  .photo img{cursor:zoom-in}
+  .photo img:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+  .zoom-hint{display:block;font-size:1rem;color:var(--green-d);font-weight:700;margin-top:4px;letter-spacing:.2px}
+  .topic.dark .zoom-hint{color:var(--gold)}
+  .lightbox{position:fixed;inset:0;z-index:300;background:rgba(10,27,51,.93);display:flex;align-items:center;justify-content:center;padding:34px}
+  .lightbox[hidden]{display:none}
+  .lb-fig{margin:0;display:flex;flex-direction:column;align-items:center;max-width:94vw;max-height:94vh}
+  .lb-fig img{max-width:94vw;max-height:80vh;width:auto;height:auto;border-radius:8px;box-shadow:0 12px 44px rgba(0,0,0,.55);background:#fff}
+  .lb-fig figcaption{color:#dfe9f5;margin-top:14px;font-size:1rem;text-align:center;max-width:820px;line-height:1.5}
+  .lb-close{position:absolute;top:16px;right:20px;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35);color:#fff;cursor:pointer;display:grid;place-items:center}
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-close svg{width:20px;height:20px}
+
+/* ============================================================
+   Module-page additions: multi-lesson nav + WCAG 2.1 AA fixes
+   ============================================================ */
+
+/* --- visually hidden (available to screen readers only) --- */
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* --- contrast-corrected tokens (all >=4.5:1 on white) ------
+   Audited: --muted was #5a6772 (5.6:1 ok). --gold text never used on white.
+   Added --amber-ink and --ok-ink for text that must sit on tinted panels. */
+:root{
+  --amber-ink:#6b4a00;    /* on --amber-bg #fdf6e3  -> 7.4:1 */
+  --ok-ink:#0a4a70;       /* on --ok-bg   #e3f0fa  -> 7.1:1 */
+  --bad-ink:#8f2418;      /* on --bad-bg  #fbeae8  -> 6.6:1 */
+  --lesson-h:44px;
+}
+
+/* --- three-level TOC: lesson > section > topic --- */
+.toc-lesson{border-bottom:1px solid var(--line)}
+.les-btn{display:flex;align-items:center;gap:8px;width:100%;background:var(--navy);color:#fff;
+  border:0;padding:11px 14px;font:600 14px/1.3 inherit;text-align:left;cursor:pointer}
+.les-btn:hover{background:#12294a}
+.les-btn .les-num{background:rgba(255,255,255,.18);border-radius:4px;padding:2px 7px;
+  font-variant-numeric:tabular-nums;font-size:1rem;flex:0 0 auto}
+.les-btn .les-ttl{flex:1 1 auto}
+.les-btn .les-pc{font-size:1rem;opacity:.9;flex:0 0 auto;font-variant-numeric:tabular-nums}
+.les-btn .toggle{transition:transform .18s}
+.toc-lesson[aria-expanded="false"] .les-btn .toggle{transform:rotate(-90deg)}
+.toc-lesson[aria-expanded="false"] .les-body{display:none}
+.toc-lesson.current .les-btn{background:var(--green-d)}
+
+/* --- lesson banner at the top of each lesson's first topic --- */
+.les-banner{background:var(--green-bg);border-left:5px solid var(--green);
+  border-radius:var(--radius);padding:14px 18px;margin:0 0 18px}
+.les-banner .lb-k{font:700 12px/1 inherit;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--green-d);display:block;margin-bottom:6px}
+.les-banner h3{margin:0 0 6px;font-size:19px}
+.les-banner p{margin:0;color:var(--muted);font-size:1rem}
+.les-banner .lb-meta{margin-top:10px;font-size:1rem;color:var(--muted)}
+.les-banner .lb-meta b{color:var(--ink)}
+
+/* --- module progress: two bars in the header --- */
+.progress-wrap .pbar.module i{background:var(--gold)}
+.prog-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.prog-row .lbl{min-width:0}
+
+/* --- keyboard/AT support for activities --------------------- */
+.chip[aria-pressed="true"]{outline:3px solid var(--green-d);outline-offset:2px}
+.activity-help{font-size:1rem;color:var(--muted);margin:0 0 10px}
+.step .pos{display:inline-block;min-width:1.6em;font-weight:700;color:var(--green-d);
+  font-variant-numeric:tabular-nums}
+.step.correct::after{content:"correct";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:#0a5c2e;background:#dff3e6;
+  padding:4px 7px;border-radius:4px}
+.step.incorrect::after{content:"wrong place";margin-left:auto;font:700 11px/1 inherit;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--bad-ink);background:var(--bad-bg);
+  padding:4px 7px;border-radius:4px}
+.opt .opt-mark{margin-left:auto;font:700 11px/1 inherit;letter-spacing:.06em;
+  text-transform:uppercase;padding:4px 7px;border-radius:4px;flex:0 0 auto}
+.opt.correct .opt-mark{color:#0a5c2e;background:#dff3e6}
+.opt.incorrect .opt-mark{color:var(--bad-ink);background:var(--bad-bg)}
+
+/* --- photo buttons (real button, not img[role=button]) --- */
+.photo .zoom-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+.photo .zoom-btn:focus-visible{outline:3px solid var(--green-l);outline-offset:3px}
+
+/* --- video placeholder slots --- */
+.vslot{border:2px dashed var(--green-l);border-radius:var(--radius);background:var(--green-bg);
+  padding:0;overflow:hidden;margin:16px 0}
+.vslot figure{margin:0}
+.vslot img{display:block;width:100%;height:auto}
+.vslot .vs-tag{display:flex;align-items:center;gap:8px;background:var(--green-d);color:#fff;
+  padding:8px 14px;font:600 13px/1.3 inherit}
+.vslot .vs-body{padding:12px 16px}
+.vslot .vs-body p{margin:0 0 8px;font-size:14.5px}
+.vslot .vs-body p:last-child{margin:0}
+.vslot details{margin-top:10px;font-size:14px}
+.vslot summary{cursor:pointer;font-weight:600;color:var(--green-d);padding:4px 0}
+.vslot summary:focus-visible{outline:3px solid var(--green-l);outline-offset:2px}
+
+/* --- attribution / credits --- */
+.cap .attrib{display:block;margin-top:4px;font-size:12.5px;color:var(--muted)}
+.credits li{margin-bottom:8px;font-size:14px}
+
+/* --- nested sub-headings ------------------------------------
+   The 528.6 pilot used <h4> inside tab panels, comparison boxes and callouts
+   with no intervening <h3>, which skipped a heading level. Those are now <h3>
+   for a valid outline; these rules keep them looking exactly as they did. */
+.tabpanel h3,.compare h3,.box h3,.acc h3,.note h3{
+  font-size:1.02rem;margin-top:1.2em;color:var(--ink)}
+.tabpanel h3:first-child,.compare h3:first-child,.box h3:first-child,
+.acc h3:first-child,.note h3:first-child{margin-top:0}
+.topic.dark .tabpanel h3,.topic.dark .compare h3,.topic.dark .box h3{color:#fff}
+.compare .safe h3{color:var(--green-d)}
+.compare .danger h3{color:var(--bad)}
+
+/* --- print --- */
+@media print{
+  .toc,.topnav,header.site,.scrim,.toast{display:none!important}
+  .topic{display:block!important;page-break-after:always}
+}
+
+</style>
+<style>
+  /* Console transcript block. Light card, navy title bar, monospace body that
+     scrolls sideways on a narrow screen rather than wrapping a command line.
+     Appended after the engine stylesheet so the engine stays untouched. */
+  .cli{background:#fbfcfd;border:1.6px solid #c8d4de;border-radius:8px;
+    margin:18px 0;box-shadow:var(--shadow);overflow:hidden}
+  .cli .cli-ttl{background:#09507C;color:#fff;font-weight:700;font-size:.95rem;
+    padding:9px 14px;letter-spacing:.01em}
+  .cli .cli-body{overflow-x:auto;padding:12px 14px}
+  .cli pre{margin:0;min-width:520px;color:#1b2a3a;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.94rem;line-height:1.8}
+  .cli .pr{color:#5a6772}
+  .cli .cmd{color:#09507C;font-weight:700}
+  .cli .cmt{color:#5a6772;font-style:italic}
+  .cli .out{color:#3c4956}
+  .cli .cli-foot{border-top:1px solid #dbe4ec;padding:10px 14px;
+    color:#3c4956;font-size:.95rem;background:#f4f7fa}
+  .cli .cli-foot p{margin:0}
+  /* Read-back strips that list one line per port rather than running as prose. */
+  .cli .cli-foot ul{margin:0 0 9px;padding-left:20px}
+  .cli .cli-foot li{margin:4px 0}
+  /* Inline command names in running prose and in table cells. */
+  .topic code, .overview code, .longdesc code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.92em;color:#09507C;background:#eef4f9;border:1px solid #dbe4ec;
+    border-radius:4px;padding:1px 5px;white-space:nowrap}
+  .tbl th code, .tbl td code{background:#f4f7fa}
+  kbd{font-family:inherit;font-size:.9em;color:#1b2a3a;background:#f4f7fa;
+    border:1px solid #c8d4de;border-bottom-width:2px;border-radius:4px;padding:1px 6px}
+  /* A .cli sitting inside a note keeps the note's margins from doubling. */
+  .note .cli{margin:14px 0 4px}
+</style>
+<style>
+  /* Port map panel - white card, blue rule, navy title, plain gray column labels. */
+  .portmap-panel{background:#fff;border:1.6px solid var(--green);border-radius:8px;
+    padding:14px 16px 6px;margin:18px 0;box-shadow:var(--shadow)}
+  .portmap-panel .tbl-scroll{overflow-x:auto}
+  .portmap-panel table.tbl{border:none;border-radius:0;margin:0;background:transparent}
+  .portmap-panel table.tbl caption{color:var(--green-d);font-weight:700;font-size:1.05rem;
+    text-align:left;padding:0 0 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="col"]{background:transparent;color:var(--muted);font-weight:400;
+    padding:10px 10px;border-bottom:1px solid #7f8b95}
+  .portmap-panel .tbl th[scope="row"]{background:transparent;color:var(--ink);font-weight:400;
+    padding:10px 10px;border-top:none}
+  .portmap-panel .tbl td{padding:10px 10px;border-top:none;color:var(--ink)}
+  .portmap-panel .tbl tr:nth-child(even) td{background:transparent}
+  .portmap-panel .tbl tbody tr + tr th,
+  .portmap-panel .tbl tbody tr + tr td{border-top:1px solid var(--line)}
+</style>
+
+</head>
+<body>
+<a href="#main" class="skip">Skip to lesson content</a>
+
+<header class="site">
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="toc">Contents</button>
+  <div class="brand">
+    <img class="ps-logo" id="psLogo" alt="Per Scholas logo." src="data:image/jpeg;base64,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">
+  </div>
+  <div class="head-mid">
+    <div><b>Module 528</b> · Lesson 528.3 — Fiber LAN Build, Troubleshooting, and Network Integration</div></div>
+  <div class="progress-wrap">
+    <span class="ver" title="Version">v0.3.1</span>
+    <span class="lbl" id="progText">0% of lesson complete</span>
+    <div class="pbar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="pbarFill"></i></div>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="toc" id="toc" aria-label="Lesson contents">
+    <div class="toc-tabs" role="tablist" aria-label="Sidebar view">
+      <button role="tab" id="tab-overview" aria-controls="overviewPanel" aria-selected="true">Overview</button>
+      <button role="tab" id="tab-curriculum" aria-controls="tocList" aria-selected="false">Curriculum</button>
+    </div>
+    <div id="tocList" role="tabpanel" aria-labeledby="tab-curriculum"></div>
+  </nav>
+
+  <main id="main" tabindex="-1">
+
+    <section id="overviewPanel" class="overview" role="tabpanel" aria-labelledby="tab-overview" hidden="hidden"><p class="crumb"><b>UCI 2107.1 · Low Voltage Fiber Technician</b> · Module 528 — Fiber Optics Systems</p><h2 id="ovh" tabindex="-1">Lesson 528.3 — Fiber LAN Build, Troubleshooting, and Network Integration</h2><p class="lead-in">Plan, build, test, activate, troubleshoot, and document a compatible fiber LAN path.</p><p>Complete this lesson before supervised installation and integration. The approved work order, equipment documents, lab specification, and acceptance sources control the hands-on work.</p><p><b>Estimated completion time:</b> 60–75 minutes, including the formative activities. Your reading and technology needs may change the time required.</p><h3>How the lesson is organized</h3><ul><li><b>Plan the Build.</b> Convert requirements into a compatible BOM and route.</li><li><b>Install and Terminate.</b> Place, protect, identify, and finish the cable.</li><li><b>Test and Troubleshoot.</b> Produce valid passive-link evidence.</li><li><b>Integrate Active Equipment.</b> Match and activate the optical interfaces.</li><li><b>Verify and Handover.</b> Separate claims and preserve evidence.</li><li><b>Wrapping Up.</b> Review the complete chain.</li></ul><div class="ov-grid"><div class="ov-stat"><b>6</b><span>Sections</span></div><div class="ov-stat"><b>18</b><span>Topics</span></div><div class="ov-stat"><b>18</b><span>Activities</span></div><div class="ov-stat"><b>3</b><span>Diagrams</span></div></div><h3>How this page works</h3><p>Use the contents list or Previous and Next. Complete the visible activity to continue. Wrong answers provide feedback and do not block progress.</p><h3>Accessibility</h3><p>Use the skip link to move to the lesson. All controls are keyboard operable, and status changes are announced.</p><button class="btn" id="ovBegin" type="button">Begin Lesson 528.3</button></section><div id="topicWrap"><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="1" data-group-title="Plan the Build" data-num="528.3.1" data-title="Translate the work order into a build plan"><p class="crumb">Lesson 528.3 · Section 1 Plan the Build</p><h2><span class="tnum">528.3.1</span> Translate the work order into a build plan</h2><div class="les-banner"><span class="lb-k">Lesson 528.3</span><h3>Fiber LAN Build, Troubleshooting, and Network Integration</h3><p>Build a compatible passive path, integrate its active interfaces, and support every conclusion with the right evidence.</p><p class="lb-meta"><b>6</b> sections  ·  <b>18</b> topics  ·  <b>18</b> activities</p></div><div class="note note"><div class="nt">By the end of Lesson 528.3 you will be able to</div><ul><li><b>Plan</b> a compatible 12-fiber multimode local area network run.</li><li><b>Construct</b> the passive fiber path within approved routing, termination, splicing, enclosure, polarity, and labeling requirements.</li><li><b>Inspect</b> every fiber connection before mating.</li><li><b>Clean</b> every fiber connection when required.</li><li><b>Test</b> the completed passive link against the approved loss budget.</li><li><b>Troubleshoot</b> injected faults using controlled evidence.</li><li><b>Select</b> compatible optical transceivers for the fiber, distance, interface, and host equipment.</li><li><b>Install</b> selected transceivers and patch cords safely.</li><li><b>Verify</b> 1-gigabit-per-second interface state and end-to-end reachability.</li><li><b>Document</b> the as-built installation and test evidence.</li></ul></div><p class="lead-in">Plan the complete signal path before selecting or installing a component.</p>
+<p>Identify the endpoints, route, environment, fiber count and type, connector or splice plan, polarity method, equipment interfaces, wavelengths, supported Ethernet application, labeling scheme, test requirements, records, and handoff criteria. Mark every transition between outside plant, entrance facility, backbone, telecommunications room, and equipment connection.</p>
+<p>Optical Multimode (OM) designations identify standardized multimode-fiber categories. OM1 uses a nominal 62.5/125 micrometer core/cladding size, while OM3 uses 50/125 micrometers. They are not interchangeable parts of one acceptance-test path.</p>
+<p>Compare the plan with the actual cable, pigtails, connectors, adapters, panels, splice trays, test cords, transceivers, and instruments. Resolve mismatches before installation. A mechanically compatible component can still create a core-size, polish, polarity, wavelength, or performance mismatch.</p>
+<p>For the supervised build described by the job task, the planned medium is a 12-fiber OM1 multimode distribution cable. The termination plan uses Subscriber Connector (SC) and Straight Tip (ST) connector interfaces. Assign all 12 fiber positions before cable preparation, even if only one duplex pair will be activated initially. Reserve pairs must remain identifiable, protected, and testable.</p>
+<figure class="photo"><img src="images/528.3.1_cable-jacket-marking.jpg" loading="lazy" alt="Close view of an orange cable jacket marked 12 MMF 62.5."><figcaption>This supplied example supports the planned 12-fiber 62.5-micrometer multimode build. Read and record the complete marking on the actual cable before installation.</figcaption></figure>
+<div class="note danger"><div class="nt">Core-size conflict</div><p>Do not build or certify a path that combines OM1 62.5/125 micrometer cable with OM3 50/125 micrometer patch or test cords. Use compatible OM1 components throughout, or redesign the complete link as OM3 and update every affected component, budget, and test requirement.</p></div>
+<div class="cyu gate" data-answer="1" data-fb="OM1 and OM3 use different core sizes. The complete link and test path must be intentionally compatible; an adapter or averaged result does not correct the launch mismatch."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">The planned cable is OM1, but the supplied launch cords are OM3. What is the correct action?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Use them because both are multimode.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Stop and resolve the complete fiber-path mismatch before building or testing.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Use an adapter to change the core size.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Average the test results from both directions.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="1" data-group-title="Plan the Build" data-num="528.3.2" data-title="Create a task-level bill of materials"><p class="crumb">Lesson 528.3 · Section 1 Plan the Build</p><h2><span class="tnum">528.3.2</span> Create a task-level bill of materials</h2><p class="lead-in">A usable bill of materials ties every component to a specific task and interface.</p>
+<p>For each endpoint, list the cable, enclosure, panel, adapter, pigtail or field connector, splice method, protection, patch cord, transceiver, and labeling material. For each tool, list the approved manufacturer and model, accessories, settings, consumables, manual, Safety Data Sheet (SDS) where applicable, calibration requirement, and inspection status.</p>
+<p>Do not begin when the work package fails to identify a compatible termination path, chemical system, test interface, or required assembly tool. Record the missing requirement and obtain an approved selection before preparing the cable.</p>
+<p>Stage the bill of materials in signal-path order: cable, termination or splice, adapter panel, patch cord, optical module, and network port. Then stage the associated preparation, inspection, cleaning, termination, and test tools. This sequence makes a missing adapter, polish mismatch, or unsupported interface visible before irreversible work begins.</p>
+<figure class="photo"><img src="images/528.3.2_fiber-components.jpg" loading="lazy" alt="Assorted fiber patch cords and connector components arranged on a work surface."><figcaption>Group components by their intended interface, then verify fiber type, connector family, polish, and equipment compatibility from markings and approved documentation.</figcaption></figure>
+<div class="tbl-scroll"><table class="tbl"><caption>Minimum task-level BOM checks.</caption><thead><tr><th scope="col">Task</th><th scope="col">Required match</th></tr></thead><tbody><tr><th scope="row">Cable preparation</th><td>Cable construction, opening tool, fiber holders, stripper, cleaver</td></tr><tr><th scope="row">Termination</th><td>Fiber and buffer size, connector, adapter, polish, retention, kit, chemicals</td></tr><tr><th scope="row">Splicing</th><td>Fiber type, splice system, assembly tool or splicer program, sleeve, tray</td></tr><tr><th scope="row">Testing</th><td>Fiber type, connector interfaces, launch/receive cords, wavelengths, reference method</td></tr><tr><th scope="row">Activation</th><td>Transceiver interface, fiber, wavelength, reach, power window, polarity</td></tr></tbody></table></div>
+<div class="cyu gate" data-answer="3" data-fb="Stop and obtain an approved, documented selection. Connector shape, color, or test equipment cannot resolve missing compatibility requirements."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">The work package does not identify a compatible connector kit. What should happen?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Choose any kit with the same connector shape.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Select a kit by connector color.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Let the test instrument choose the kit.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Stop and obtain an approved selection supported by the design and manufacturer documents.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="1" data-group-title="Plan the Build" data-num="528.3.3" data-title="Pathway, support, and installation limits"><p class="crumb">Lesson 528.3 · Section 1 Plan the Build</p><h2><span class="tnum">528.3.3</span> Pathway, support, and installation limits</h2><p class="lead-in">The cable datasheet, pathway rating, drawings, project specification, and applicable code control installation.</p>
+<p>Survey the route for capacity, accessibility, sharp edges, water exposure, heat, electromagnetic or physical hazards, fire-rated boundaries, and required transitions. Confirm the cable listing for each environment. Armor alone does not establish direct-burial, wet-location, riser, or plenum suitability.</p>
+<p>Use the cable manufacturer’s support-spacing limit, the pathway-system rating, project drawings, and applicable code. A spacing of 1.2 to 1.5 meters may be used only when it is explicitly stated in the lab specification and consistent with the installed products.</p>
+<p>Use the manufacturer and project minimum bend radius and maximum pulling tension. Values such as 20 times the cable diameter during pulling and 10 times after installation may be used only when the current standard, product datasheet, and project specification permit them. Use a swivel, pulling eye, lubricant, and communication method where the approved plan requires them.</p>
+<div class="cyu gate" data-answer="2" data-fb="Support spacing must be derived from the installed products and governing documents. A course distance is valid only when explicitly adopted and compatible with them."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">What determines cable support spacing for an actual installation?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>A universal 1.2-meter rule</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Jacket color alone</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The cable limit, pathway-system rating, drawings, project specification, and applicable code</button><button class="opt"><span class="mk" aria-hidden="true">D</span>The number of learners on the crew</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="2" data-group-title="Install and Terminate" data-num="528.3.4" data-title="Pull, place, and protect the cable"><p class="crumb">Lesson 528.3 · Section 2 Install and Terminate</p><h2><span class="tnum">528.3.4</span> Pull, place, and protect the cable</h2><p class="lead-in">Control tension, bend, twist, identification, and firestopping throughout the route.</p>
+<p>Inspect and prepare the route before pulling. Establish roles, communications, stop signals, pulling direction, tension control, and intermediate-feed points. Protect cable at edges and transitions. Apply pulling force only through the manufacturer-approved member or grip, not through connectors or exposed fibers.</p>
+<p>Monitor tension and bend radius during the pull. Do not jerk the cable, exceed sidewall pressure limits, drag it over contaminants, or allow uncontrolled twisting. Preserve service loops only where the plan provides a protected storage location and permitted radius.</p>
+<p>After placement, inspect the jacket and route, secure the cable without deformation, seal penetrations with the approved system, and transfer identification before removing any marked jacket. Record damage or excessive force; do not conceal it behind an enclosure.</p>
+<p>Place the cable-placement controls in order.</p>
+<div class="order gate"><div class="step" data-pos="1">Inspect the route and confirm the approved cable and pathway.</div><div class="step" data-pos="2">Establish crew roles, communication, tension control, and edge protection.</div><div class="step" data-pos="3">Pull through the approved strength member while controlling tension, bend, and twist.</div><div class="step" data-pos="4">Inspect and support the placed cable without deformation.</div><div class="step" data-pos="5">Firestop, identify, and document the completed route and any exception.</div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="2" data-group-title="Install and Terminate" data-num="528.3.5" data-title="Prepare the enclosure and fiber"><p class="crumb">Lesson 528.3 · Section 2 Install and Terminate</p><h2><span class="tnum">528.3.5</span> Prepare the enclosure and fiber</h2><p class="lead-in">The enclosure must manage entry, strength, bend, identification, and service access.</p>
+<p>Mount the enclosure in the approved orientation and maintain working clearance. Use the correct entry hardware, bushings, glands, and strain relief. Bond or ground metallic cable members and enclosures where required by the applicable code and design.</p>
+<p>Open the cable using its manufacturer instructions. Preserve the required strength member, buffer tubes, subunits, and slack. Confirm the fiber-count sequence before assigning tray positions. Route fibers in smooth paths and keep bare, coated, buffered, and jacketed bend limits distinct.</p>
+<p>Select pigtail splicing or field termination from the approved design. Do not use a single-mode connector kit for an OM1 termination merely because the connector shape appears compatible. Verify fiber, ferrule, polish, buffer, adapter, and tool compatibility.</p>
+<figure class="photo"><img src="images/528.3.5_fibers-into-organizer.jpg" loading="lazy" alt="Color-coded fibers entering a numbered organizer during preparation."><figcaption>Maintain fiber identity and controlled routing while transferring fibers into the approved organizer or tray.</figcaption></figure>
+<figure class="photo"><img src="images/528.3.5_splice-enclosure.jpg" loading="lazy" alt="Opened fiber enclosure with adapters, splice storage, and routed fibers."><figcaption>Use the approved enclosure layout to protect splices, preserve bend radius, and keep fiber positions traceable.</figcaption></figure>
+<div class="cyu gate" data-answer="0" data-fb="SC is a connector family, not a fiber specification. The complete OM1-compatible termination path must be approved and documented."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">The available Subscriber Connector/Ultra Physical Contact (SC/UPC) connector kit is specified for single-mode fiber, while the planned cable is OM1. What should happen?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Verify and supply an approved OM1-compatible termination path before work begins.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Use the kit because SC identifies the fiber type.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Change only the dust-cap color.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Use an Optical Time-Domain Reflectometer (OTDR) to convert the connector.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="2" data-group-title="Install and Terminate" data-num="528.3.6" data-title="Manage polarity and identification"><p class="crumb">Lesson 528.3 · Section 2 Install and Terminate</p><h2><span class="tnum">528.3.6</span> Manage polarity and identification</h2><p class="lead-in">Polarity is a planned end-to-end relationship, not a last-minute patching guess.</p>
+<p>For a duplex link, the transmitter at one end must reach the receiver at the other. Document the fiber positions and equipment ports at both ends. Preserve the pair through panels, cassettes, patch cords, and equipment. Test polarity before activation.</p>
+<p>For Multi-fiber Push On (MPO) systems, qualify every label: <strong>MPO polarity Method A, B, or C</strong>. Those labels describe array-cabling polarity arrangements and are unrelated to historical Optical Loss Test Set (OLTS) reference Method A/B/C terminology. Identify trunk keying, pinned and unpinned interfaces, cassette behavior, and patch-cord orientation as one system.</p>
+<p>Do not reverse fibers without updating the records and confirming that the change follows the approved method. An undocumented local fix creates the next fault.</p>
+<figure class="figure source-diagram" data-source-diagram="51"><div class="cap">Duplex polarity—conceptual end-to-end example</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Duplex polarity—conceptual end-to-end example — scrollable diagram">
+  <svg style="min-width:1095px" viewbox="0 0 800 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two conceptual duplex paths compare a transmitter-to-receiver mapping with a transmitter-to-transmitter mispatch. A full text description follows." aria-describedby="m528-528-3-6-diagram-51-desc"><rect width="800" height="430" fill="#f5f8fb"></rect><style>text{font-family:sans-serif;fill:#071E39;font-size:11px}.b{font-weight:700}.c{text-anchor:middle}.w{fill:#fff}.n{fill:#09507C}.o{fill:#8a4a00}.r{fill:#8a2b2b}.l{fill:#dff0fb}.g{fill:#6a6a6a}.h{font-size:13.5px}.m{font-size:12px}.s{font-size:10px}.mo{font-family:monospace}</style><rect x="20" y="30" width="760" height="172" rx="10" fill="#fff" stroke="#0079C0" stroke-width="2.5"></rect><text x="30" y="22" class="b n h">EXAMPLE — each transmitter reaches the far receiver</text><rect x="36" y="58" width="96" height="118" rx="7" fill="#071E39"></rect><text x="84" y="78" class="c b w" font-size="13">SWITCH A</text><rect x="46" y="90" width="76" height="28" rx="4" fill="#FF8000"></rect><text x="84" y="109" class="c b w m">Tx</text><rect x="46" y="136" width="76" height="28" rx="4" fill="#009CDB"></rect><text x="84" y="155" class="c b w m">Rx</text><rect x="668" y="58" width="96" height="118" rx="7" fill="#071E39"></rect><text x="716" y="78" class="c b w" font-size="13">SWITCH B</text><rect x="678" y="90" width="76" height="28" rx="4" fill="#009CDB"></rect><text x="716" y="109" class="c b w m">Rx</text><rect x="678" y="136" width="76" height="28" rx="4" fill="#FF8000"></rect><text x="716" y="155" class="c b w m">Tx</text><rect x="330" y="80" width="140" height="92" rx="7" fill="#FEC14F"></rect><text x="400" y="102" class="c b o">BACKBONE</text><text x="400" y="120" class="c o s" font-size="13">straight through</text><text x="400" y="142" class="c b o">A → A</text><text x="400" y="160" class="c b o">B → B</text><path d="M122 104 C 210 104, 240 150, 328 150" fill="none" stroke="#FF8000" stroke-width="3"></path><path d="M122 150 C 210 150, 240 105, 328 105" fill="none" stroke="#009CDB" stroke-width="3"></path><text x="226" y="76" class="c b n s">patch cord: A-to-B (the crossover)</text><path d="M470 105 H 676 M470 150 H 676" fill="none" stroke="#FF8000" stroke-width="3"></path><text x="573" y="76" class="c b n s" font-size="13">patch cord: straight at this end</text><text x="400" y="192" class="c b n" font-size="13">Tx A reaches Rx B and Tx B reaches Rx A. The interfaces come up.</text><rect x="20" y="226" width="760" height="172" rx="10" fill="#fff" stroke="#8a2b2b" stroke-width="2.5"></rect><text x="30" y="218" class="b r h">MISPATCH EXAMPLE — like interfaces are connected</text><rect x="36" y="254" width="96" height="118" rx="7" fill="#071E39"></rect><text x="84" y="274" class="c b w" font-size="13">SWITCH A</text><rect x="46" y="286" width="76" height="28" rx="4" fill="#FF8000"></rect><text x="84" y="305" class="c b w m">Tx</text><rect x="46" y="332" width="76" height="28" rx="4" fill="#009CDB"></rect><text x="84" y="351" class="c b w m">Rx</text><rect x="668" y="254" width="96" height="118" rx="7" fill="#071E39"></rect><text x="716" y="274" class="c b w" font-size="13">SWITCH B</text><rect x="678" y="286" width="76" height="28" rx="4" fill="#FF8000"></rect><text x="716" y="305" class="c b w m">Tx</text><rect x="678" y="332" width="76" height="28" rx="4" fill="#009CDB"></rect><text x="716" y="351" class="c b w m">Rx</text><rect x="330" y="276" width="140" height="92" rx="7" fill="#FEC14F"></rect><text x="400" y="304" class="c b o">BACKBONE</text><text x="400" y="322" class="c o s" font-size="13">straight through</text><text x="400" y="342" class="c o s" font-size="13">(unchanged in this example)</text><path d="M122 300 H 328 M470 301 H 676" fill="none" stroke="#FF8000" stroke-width="3"></path><path d="M122 346 H 328 M470 345 H 676" fill="none" stroke="#009CDB" stroke-width="3"></path><circle cx="226" cy="323" r="17" fill="none" stroke="#8a2b2b" stroke-width="2.5"></circle><text x="226" y="329" class="c b r h">same</text><text x="400.0" y="388" class="c b r" text-anchor="middle">Tx A arrives at Tx B. Neither receiver sees light. Every fiber still passes its loss test.</text><text x="400.0" y="420" class="c b n m" text-anchor="middle">Verify the complete end-to-end mapping. Do not rely on counting local flips without the component map.</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> Treat this as one illustrative arrangement. The approved polarity plan and actual components control the build.</p><details class="longdesc" id="m528-528-3-6-diagram-51-desc"><summary>Text description of this diagram</summary><p>Two panels illustrate one duplex polarity arrangement. The acceptable path connects each transmitter to the receiver at the opposite end. The unacceptable path connects like positions and leaves transmitter-to-transmitter and receiver-to-receiver paths.</p></details></figure>
+<div class="cyu gate" data-answer="2" data-fb="The label is ambiguous across domains. Always identify MPO polarity or the historical OLTS reference context explicitly."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">What does “Method B” mean without a domain label?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>It always means the same procedure.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>It always means single-mode testing.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>It is ambiguous; state whether it means MPO polarity or a historical OLTS reference label.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>It proves the link polarity passes.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="2" data-group-title="Install and Terminate" data-num="528.3.7" data-title="Labels and as-built records"><p class="crumb">Lesson 528.3 · Section 2 Install and Terminate</p><h2><span class="tnum">528.3.7</span> Labels and as-built records</h2><p class="lead-in">A label must remain legible, accurate, and connected to the system record.</p>
+<p>Use the identifier scheme required by the project and applicable administration standard. Coordinate cable, fiber, panel, port, enclosure, pathway, and equipment identifiers so that each endpoint can be traced. Verify labels against the work order before applying them.</p>
+<p>Use permanent machine-printed labels when the governing specification requires them. Choose material and adhesive for the surface and environment, apply to a clean location, and keep text readable after doors and covers are closed. A temporary handwritten label may support an emergency or controlled interim state only when the procedure allows it and the permanent replacement is tracked.</p>
+<p>Update the as-built route, label schedule, splice plan, port map, component record, and test-file references. A correct label on an incorrect drawing is not a completed record.</p>
+<figure class="photo"><img src="images/528.3.7_labeled-pigtails.jpg" loading="lazy" alt="Numbered labels attached to blue fiber pigtails near an enclosure."><figcaption>Labels support traceability only when the printed identifiers agree with the enclosure positions, port map, and as-built record.</figcaption></figure>
+<figure class="figure source-diagram" data-source-diagram="52"><div class="cap">Example label schedule and identifier fields</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Example label schedule and identifier fields — scrollable diagram">
+  <svg style="min-width:1265px" viewbox="0 0 924.25 445.92" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Worked example of an ANSI/TIA-606 style label schedule for a twelve fiber backbone. A full text description follows." aria-describedby="m528-528-3-7-diagram-52-desc"><rect width="800" height="420" fill="#f5f8fb"></rect><style>text{font-family:sans-serif;fill:#071E39;font-size:11px}.b{font-weight:700}.c{text-anchor:middle}.w{fill:#fff}.n{fill:#09507C}.o{fill:#8a4a00}.r{fill:#8a2b2b}.l{fill:#dff0fb}.g{fill:#6a6a6a}.h{font-size:13.5px}.m{font-size:12px}.s{font-size:10px}.mo{font-family:monospace}</style><text x="400" y="24" class="c b n h" font-size="13">Identifier anatomy — the fields, and what each one names</text><rect x="40" y="38" width="330" height="118" rx="9" fill="#fff" stroke="#0079C0" stroke-width="2.5"></rect><text x="205" y="58" class="c b n">TERMINATION POSITION</text><text x="98" y="96" class="mo b" font-size="28">1A</text><text x="140" y="96" class="mo g" font-size="28">-</text><text x="160" y="96" class="mo b" font-size="28" fill="#0079C0">A</text><text x="187" y="96" class="mo b" font-size="28" fill="#e57300">02</text><path d="M108 104 V120 H70" stroke="#071E39" stroke-width="1.5" fill="none"></path><text x="66" y="124" text-anchor="end" class="s">space</text><path d="M166 104 V132 H232" stroke="#0079C0" stroke-width="1.5" fill="none"></path><text x="236" y="136" class="s" fill="#0079C0" font-size="13">patch panel in that space</text><path d="M199 104 V148 H232" stroke="#FF8000" stroke-width="1.5" fill="none"></path><text x="236" y="152" class="s o" font-size="13">port position on the panel</text><rect x="404" y="38" width="356" height="118" rx="9" fill="#fff" stroke="#0079C0" stroke-width="2.5"></rect><text x="582" y="58" class="c b n">BACKBONE CABLE</text><text x="470" y="96" class="mo b" font-size="28">1A</text><text x="512" y="96" class="mo g" font-size="28">/</text><text x="532" y="96" class="mo b" font-size="28" fill="#0079C0">2B</text><text x="574" y="96" class="mo g" font-size="28">-</text><text x="594" y="96" class="mo b" font-size="28" fill="#e57300">1</text><path d="M480 104 V120 H440" stroke="#071E39" stroke-width="1.5" fill="none"></path><text x="436" y="124" text-anchor="end" class="s" font-size="13">near end</text><path d="M542 104 V132 H628" stroke="#0079C0" stroke-width="1.5" fill="none"></path><text x="632" y="136" class="s" fill="#0079C0">far end</text><path d="M598 104 V148 H628" stroke="#FF8000" stroke-width="1.5" fill="none"></path><text x="632" y="152" class="s o">cable number</text><text x="400" y="186" class="c b n h" font-size="13">Label schedule — written and checked BEFORE anything is printed</text><rect x="60" y="198" width="680" height="28" fill="#09507C"></rect><text x="106" y="217" class="c b w">Fiber</text><text x="216" y="217" class="c b w">Color (TIA-598-D)</text><text x="376" y="217" class="c b w">Near-end ID</text><text x="530" y="217" class="c b w">Far-end ID</text><text x="672" y="217" class="c b w" font-size="13">Duplex pair</text><rect x="60" y="226" width="680" height="26" fill="#fff"></rect><text x="106" y="244" class="c mo m">01</text><text x="216" y="244" class="c m">Blue</text><text x="376" y="244" class="c mo m">1A-A01</text><text x="530" y="244" class="c mo m">2B-A01</text><text x="672" y="244" class="c b m" fill="#0079C0" font-size="13">Pair 1 — A</text><rect x="60" y="252" width="680" height="26" fill="#EAE7DF"></rect><text x="106" y="270" class="c mo m">02</text><text x="216" y="270" class="c m">Orange</text><text x="376" y="270" class="c mo m">1A-A02</text><text x="530" y="270" class="c mo m">2B-A02</text><text x="672" y="270" class="c b m" fill="#006cac" font-size="13">Pair 1 — B</text><rect x="60" y="278" width="680" height="26" fill="#fff"></rect><text x="106" y="296" class="c mo m">03</text><text x="216" y="296" class="c m">Green</text><text x="376" y="296" class="c mo m">1A-A03</text><text x="530" y="296" class="c mo m">2B-A03</text><text x="672" y="296" class="c b m" fill="#0079C0" font-size="13">Pair 2 — A</text><rect x="60" y="304" width="680" height="26" fill="#EAE7DF"></rect><text x="106" y="322" class="c mo m">04</text><text x="216" y="322" class="c m">Brown</text><text x="376" y="322" class="c mo m">1A-A04</text><text x="530" y="322" class="c mo m">2B-A04</text><text x="672" y="322" class="c b m" fill="#006cac" font-size="13">Pair 2 — B</text><rect x="60" y="330" width="680" height="22" fill="#fff"></rect><text x="400" y="346" class="c g m" font-size="13">fibers 05 to 10 continue: slate, white, red, black, yellow, violet — pairs 3, 4 and 5</text><rect x="60" y="352" width="680" height="26" fill="#EAE7DF"></rect><text x="106" y="370" class="c mo m">11</text><text x="216" y="370" class="c m">Rose</text><text x="376" y="370" class="c mo m">1A-A11</text><text x="530" y="370" class="c mo m">2B-A11</text><text x="672" y="370" class="c b m" fill="#006cac" font-size="13">Pair 6 — A</text><rect x="60" y="378" width="680" height="26" fill="#fff"></rect><text x="106" y="396" class="c mo m">12</text><text x="216" y="396" class="c m">Aqua</text><text x="376" y="396" class="c mo m">1A-A12</text><text x="530" y="396" class="c mo m">2B-A12</text><text x="672" y="396" class="c b m" fill="#0079C0" font-size="13">Pair 6 — B</text><rect x="60" y="198" width="680" height="206" fill="none" stroke="#09507C" stroke-width="2"></rect><text x="400.0" y="418" class="c b n" text-anchor="middle"><tspan x="400.0">The same identifiers appear on the label, in the as-built, and in the test record. If they disagree,</tspan><tspan x="400.0" dy="17.9">the scheme has failed.</tspan></text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> This is an example structure, not a universal naming rule. Use the project-approved administration scheme.</p><details class="longdesc" id="m528-528-3-7-diagram-52-desc"><summary>Text description of this diagram</summary><p>An example breaks identifiers into location, panel, port, endpoint, and cable fields. A sample schedule then maps fiber positions and colors to near-end and far-end identifiers. The layout illustrates traceability rather than prescribing project names.</p></details></figure>
+<div class="cyu gate" data-answer="1" data-fb="Separate the project requirement from a general preference. Follow the governing specification and approved administration plan."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">When is a permanent machine-printed label required?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Always, solely because it is best practice</button><button class="opt"><span class="mk" aria-hidden="true">B</span>When the governing specification or approved project requirement requires it</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Only when the cable is single-mode</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Only after a link fails</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="3" data-group-title="Test and Troubleshoot" data-num="528.3.8" data-title="Test the completed passive link"><p class="crumb">Lesson 528.3 · Section 3 Test and Troubleshoot</p><h2><span class="tnum">528.3.8</span> Test the completed passive link</h2><p class="lead-in">Test identity, polarity, length, insertion loss, and event detail as required by the work package.</p>
+<p>Inspect and clean all test and link interfaces. Confirm compatible launch and receive cords, wavelengths, reference method, encircled-flux control where required, direction requirements, and acceptance budget. Test each scheduled fiber and preserve the result under its correct identifier.</p>
+<p>Use OLTS evidence for end-to-end insertion-loss acceptance. Use OTDR evidence when required for event location or Tier 2 documentation. Record each required direction. Do not average OLTS directions for pass/fail unless the governing specification explicitly defines that method.</p>
+<p>A <strong>loss budget</strong> is the maximum total insertion loss permitted for the planned link under the governing design. Build it before testing by adding the approved allowances for fiber length, mated connector pairs, splices, and any other permitted passive elements. A <strong>design allowance</strong> is the amount reserved in that calculation for an element; it is not a goal for workmanship. A <strong>workmanship target</strong> is the organization’s expected result for a properly installed component and may be tighter than the maximum allowance.</p>
+<div class="note note"><div class="nt">Illustrative loss-budget calculation</div><p>Assume the approved lab specification allows 3.5 dB/km for 0.025 km of fiber, 0.75 dB for each of two mated connector pairs, and 0.30 dB for each of two splices. The calculated maximum is (0.025 × 3.5) + (2 × 0.75) + (2 × 0.30) = 2.19 dB after rounding. A connector measuring 0.74 dB is below the example allowance, but that does not automatically make it acceptable workmanship; apply the approved workmanship target and inspection criteria. The values in this example must not replace the current lab specification.</p></div>
+<p>The complete OM1 or OM3 design must be resolved before any acceptance answer can be keyed. A budget or test result based on mixed 62.5/125 and 50/125 micrometer components is not a defensible lab result.</p>
+<p>For a 12-fiber cable, build a result matrix before testing. Each row should identify one fiber position and color; each required wavelength and direction should have its own result field. Compare every recorded value with the approved limit for that link. A passing duplex pair does not establish that the remaining ten fibers pass.</p>
+<figure class="photo"><img src="images/528.3.8_loss-test-setup.jpg" loading="lazy" alt="Optical source and power meter connected to a fiber enclosure with orange test cords."><figcaption>A connected test setup is not automatically valid. Verify the source, meter, wavelengths, reference, cords, adapters, direction, and fiber identifier before recording a result.</figcaption></figure>
+<div class="cyu gate" data-answer="3" data-fb="Insertion loss answers one acceptance question. Identity, polarity, length, documentation, and other specified criteria must also be satisfied."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">An OLTS result passes, but polarity is reversed. Is the passive link complete?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Yes; loss is the only acceptance criterion.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Yes, if the OTDR has no reflective events.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Yes, if the cable is armored.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>No; correct polarity and every other specified acceptance item are still required.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="3" data-group-title="Test and Troubleshoot" data-num="528.3.9" data-title="Diagnose the injected or field fault"><p class="crumb">Lesson 528.3 · Section 3 Test and Troubleshoot</p><h2><span class="tnum">528.3.9</span> Diagnose the injected or field fault</h2><p class="lead-in">Follow a repeatable order that protects good evidence.</p>
+<p>Define the symptom and affected scope. Confirm the job record, endpoints, expected fiber and interface, and whether the fault is passive, active, or unknown. Inspect simple physical conditions—power, seating, labels, polarity, caps, and visible damage—without randomly remating every interface.</p>
+<p>Validate the test reference and cords before condemning the installed link. Compare wavelengths and directions. Use a Visual Fault Locator (VFL) for suitable nearby continuity or leakage questions, OLTS for quantitative end-to-end loss, and OTDR for event location. Change one variable at a time.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Symptom-led diagnostic examples.</caption><thead><tr><th scope="col">Symptom</th><th scope="col">Confirm first</th><th scope="col">Next evidence</th></tr></thead><tbody><tr><th scope="row">No continuity</th><td>Correct endpoints, polarity, seating, visible damage</td><td>VFL where safe and suitable, then OTDR if location is needed</td></tr><tr><th scope="row">High loss both directions</th><td>Reference, test cords, cleanliness, component compatibility</td><td>OLTS repeat, inspection, then event location</td></tr><tr><th scope="row">High loss mainly at longer wavelength</th><td>Bend condition and test validity</td><td>Inspect route and compare controlled wavelength results</td></tr><tr><th scope="row">Unexpected reflective event</th><td>Known connector/splice layout and OTDR settings</td><td>Trace review from both ends where required</td></tr><tr><th scope="row">Passive link passes; active link down</th><td>Transceiver compatibility, polarity, configuration, power</td><td>Device diagnostics and measured power window</td></tr></tbody></table></div>
+<div class="cyu gate" data-answer="0" data-fb="Controlled changes preserve diagnostic evidence. Random changes can erase the original condition or introduce a second fault."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Why should a technician change one variable at a time?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>To preserve cause-and-effect evidence and avoid adding faults</button><button class="opt"><span class="mk" aria-hidden="true">B</span>To make every repair slower</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Because connectors may never be remated</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Because OTDRs can test only one wavelength</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="3" data-group-title="Test and Troubleshoot" data-num="528.3.10" data-title="Close out the passive plant"><p class="crumb">Lesson 528.3 · Section 3 Test and Troubleshoot</p><h2><span class="tnum">528.3.10</span> Close out the passive plant</h2><p class="lead-in">A technically passing link is not complete until it is protected, documented, and usable by the next person.</p>
+<p>Verify enclosure routing, caps, strain relief, bend radius, splice protection, labels, bonding, covers, and housekeeping. Confirm that every fiber and test file maps to the approved schedule. Record unused fibers and their protected condition.</p>
+<p>Package the work order, approved deviation records, as-built route, port and splice maps, label schedule, component identities, OLTS results, OTDR files where required, inspection records, and unresolved issues. State the standards and project documents used for acceptance.</p>
+<p>Handover must distinguish accepted work, deferred work, limitations, and required escalation. Never convert “not tested” into “passed” or leave the next technician to recreate missing evidence.</p>
+<div class="cyu gate" data-answer="1" data-fb="The handover must state exactly what was tested, accepted, deferred, or held. Untested work cannot be reported as passed."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Which statement is acceptable in a handover?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>All fibers passed, including those not tested.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Fibers 1–10 passed the stated tests; fibers 11–12 remain protected and untested under the documented hold.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The link looked good, so records were unnecessary.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Labels and records can be completed later without documenting responsibility.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="4" data-group-title="Integrate Active Equipment" data-num="528.3.11" data-title="Treat the transceiver as a specification"><p class="crumb">Lesson 528.3 · Section 4 Integrate Active Equipment</p><h2><span class="tnum">528.3.11</span> Treat the transceiver as a specification</h2><p class="lead-in">A form factor is a mechanical package, not a complete optical identity.</p>
+<p>Small Form-factor Pluggable (SFP), enhanced Small Form-factor Pluggable (SFP+), and Quad Small Form-factor Pluggable (QSFP) families describe form factors and electrical host interfaces. They do not uniquely identify Ethernet type, wavelength, reach, lane count, connector, fiber type, transmitter power, receiver sensitivity, or overload level. Read the complete module label and manufacturer datasheet.</p>
+<p>Match modules at both ends for the intended standard and lane behavior. Confirm the network device supports the module and software. Verify fiber type, connector, polish, wavelength, reach, polarity, and the complete optical power window.</p>
+<p>The approved build specification identifies a Cisco Catalyst 3750 with SFP uplinks for the 1-gigabit-per-second build. The Catalyst 3750 family includes different chassis and uplink configurations, so record the exact switch model and supported port type before selecting a module. Do not place an SFP+ 10-gigabit module into an SFP-only port or assume that a family name proves module support.</p>
+<p>For 1000BASE-LX over installed multimode fiber, verify transceiver and vendor requirements. Use the specified mode-conditioning patch cord where required; do not substitute a standard duplex patch cord.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Common interface families—verify the actual module datasheet.</caption><thead><tr><th scope="col">Interface</th><th scope="col">Nominal wavelength and fiber</th><th scope="col">Selection control</th></tr></thead><tbody><tr><th scope="row">1000BASE-SX</th><td>850 nm over multimode fiber</td><td>Match the installed multimode grade, supported reach, connector, and module power specifications.</td></tr><tr><th scope="row">1000BASE-LX</th><td>1310 nm, normally over single-mode fiber; some implementations support multimode</td><td>For legacy multimode, use the specified mode-conditioning patch cord where required.</td></tr><tr><th scope="row">10GBASE-SR</th><td>850 nm over multimode fiber</td><td>Match the OM grade and supported reach; do not infer support from an SFP-shaped module.</td></tr></tbody></table></div>
+<div class="cyu gate" data-answer="3" data-fb="SFP identifies a form-factor family. The complete interface and optical specifications must match at both ends."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Two modules are both SFP. Does that make them link-compatible?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Yes; form factor determines every optical parameter.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Yes, if either one supports copper.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Yes, if their latches have the same color.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>No; verify the interface, wavelength, reach, fiber, connector, power, and host support at both ends.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="4" data-group-title="Integrate Active Equipment" data-num="528.3.12" data-title="Check the optical power window"><p class="crumb">Lesson 528.3 · Section 4 Integrate Active Equipment</p><h2><span class="tnum">528.3.12</span> Check the optical power window</h2><p class="lead-in">A receiver can fail from too little power or too much power.</p>
+<p>Use the actual transceiver datasheets. Determine the applicable transmitter power range, receiver minimum, receiver maximum or overload level, supported fiber and wavelength, and any required attenuation. Account for the complete path loss and uncertainty.</p>
+<p>A decibel (dB) expresses a power ratio or gain/loss difference. A decibel-milliwatt (dBm) expresses an absolute optical power level referenced to one milliwatt. Subtract a loss stated in dB from a transmit level stated in dBm to predict a receive level in dBm; do not label the result in dB.</p>
+<div class="figure"><div class="cap">Canonical power checks</div><p><strong>Predicted received power (dBm)</strong> = transmit power (dBm) − total path loss (dB).</p><p><strong>Lower-limit margin (dB)</strong> = predicted received power − receiver minimum.</p><p style="margin-bottom:0"><strong>Overload margin (dB)</strong> = receiver maximum − predicted received power.</p></div>
+<p>Both margins must satisfy the approved design. If predicted or measured power exceeds the maximum receiver input, use only an approved attenuator and verify the resulting power at the applicable wavelengths. Do not add attenuation merely because a link is short.</p>
+<div class="note note"><div class="nt">Worked boundary check</div><p>If the predicted receive level is −5 dBm, the receiver minimum is −17 dBm, and the maximum input is −3 dBm, the lower-limit margin is 12 dB and the overload margin is 2 dB. The example is acceptable only if the approved design requires no greater margin. These numbers illustrate the calculation; they are not universal transceiver limits.</p></div>
+<div class="cyu gate" data-answer="0" data-fb="Subtract the 3 dB path loss from −2 dBm to obtain −5 dBm. Then compare that value with both receiver limits."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Transmit power is −2 dBm and path loss is 3 dB. What is predicted received power?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>−5 dBm</button><button class="opt"><span class="mk" aria-hidden="true">B</span>+1 dBm</button><button class="opt"><span class="mk" aria-hidden="true">C</span>3 dB</button><button class="opt"><span class="mk" aria-hidden="true">D</span>−1 dB</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="4" data-group-title="Integrate Active Equipment" data-num="528.3.13" data-title="Insert, patch, and verify safely"><p class="crumb">Lesson 528.3 · Section 4 Integrate Active Equipment</p><h2><span class="tnum">528.3.13</span> Insert, patch, and verify safely</h2><p class="lead-in">Protect eyes, end faces, device ports, and polarity while activating the link.</p>
+<p>Follow the device and transceiver handling instructions, including electrostatic-discharge controls. Confirm the correct module and port before insertion. Keep optical ports capped until the controlled inspection and cleaning step. Never look into a transceiver or fiber end.</p>
+<p>Inspect and clean both sides of each patch connection as required. Verify that transmit maps to receive and that patch cords match fiber type, connector, and polish. Support cords without tension, pinching, or bend violations.</p>
+<figure class="photo"><img src="images/528.3.13_patch-cords-coiled.jpg" loading="lazy" alt="Two optical test instruments connected through orange patch cords and a fiber under test."><figcaption>Representative connected test path. Verify every cord, adapter, wavelength, reference, and interface before relying on the reading.</figcaption></figure>
+<p>After activation, record module identity and port, interface state, negotiated or configured speed, and diagnostic optical levels when supported. A link-state indicator is evidence, not a substitute for the acceptance record.</p>
+<figure class="figure source-diagram" data-source-diagram="56"><div class="cap">Transmitter-to-receiver polarity at the equipment end</div><div class="tbl-scroll" role="group" tabindex="0" aria-label="Transmitter-to-receiver polarity at the equipment end — scrollable diagram">
+  <svg style="min-width:1246px" viewbox="0 0 910.15 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two conceptual equipment-end paths compare transmitter-to-receiver mapping with a transmitter-to-transmitter mispatch. A full text description follows." aria-describedby="m528-528-3-13-diagram-56-desc"><rect width="800" height="300" fill="#f5f8fb"></rect><style>text{font-family:sans-serif;fill:#071E39;font-size:11px}.b{font-weight:700}.c{text-anchor:middle}.w{fill:#fff}.n{fill:#09507C}.o{fill:#8a4a00}.r{fill:#8a2b2b}.l{fill:#dff0fb}.g{fill:#6a6a6a}.e{text-anchor:end}.h{font-size:13.5px}.m{font-size:12px}.s{font-size:10px}.mo{font-family:monospace}</style><rect x="20" y="26" width="760" height="112" rx="10" fill="#fff" stroke="#0079C0" stroke-width="2.5"></rect><text x="30" y="20" class="b n h">EXAMPLE — Tx reaches the far receiver</text><rect x="40" y="46" width="104" height="72" rx="7" fill="#FF8000"></rect><text x="92" y="64" class="c b w">SFP</text><rect x="50" y="72" width="84" height="18" rx="3" fill="#fff"></rect><text x="92" y="86" class="c b m" font-size="13">Tx bore</text><rect x="50" y="94" width="84" height="18" rx="3" fill="#fff"></rect><text x="92" y="108" class="c b m" font-size="13">Rx bore</text><path d="M144 81 H360" stroke="#FF8000" stroke-width="3"></path><path d="M144 103 H360" stroke="#009CDB" stroke-width="3"></path><text x="252" y="70" class="c b n s">duplex patch cord, A-B clipped as marked</text><rect x="360" y="52" width="120" height="60" rx="6" fill="#0079C0"></rect><text x="420" y="74" class="c b w" font-size="13.5">PANEL A</text><text x="420" y="92" class="c b w" font-size="13.5">PANEL B</text><rect x="520" y="52" width="240" height="60" rx="6" fill="#e6f2fb" stroke="#0079C0" stroke-width="2"></rect><text x="640" y="74" class="c b n" font-size="13">A reaches the far Rx</text><text x="640" y="94" class="c b n" font-size="13">B carries the far Tx</text><path d="M480 82 H516" stroke="#09507C" stroke-width="2.5"></path><rect x="20" y="162" width="760" height="112" rx="10" fill="#fff" stroke="#8a2b2b" stroke-width="2.5"></rect><text x="30" y="156" class="b r h">MISPATCH EXAMPLE — Tx reaches Tx at the far end</text><rect x="40" y="182" width="104" height="72" rx="7" fill="#FF8000"></rect><text x="92" y="200" class="c b w">SFP</text><rect x="50" y="208" width="84" height="18" rx="3" fill="#fff"></rect><text x="92" y="222" class="c b m" font-size="13">Tx bore</text><rect x="50" y="230" width="84" height="18" rx="3" fill="#fff"></rect><text x="92" y="244" class="c b m" font-size="13">Rx bore</text><path d="M144 217 C 240 217, 260 239, 360 239" fill="none" stroke="#FF8000" stroke-width="3"></path><path d="M144 239 C 240 239, 260 218, 360 218" fill="none" stroke="#009CDB" stroke-width="3"></path><rect x="360" y="188" width="120" height="60" rx="6" fill="#0079C0"></rect><text x="420" y="210" class="c b w" font-size="13.5">PANEL A</text><text x="420" y="228" class="c b w" font-size="13.5">PANEL B</text><rect x="520" y="188" width="240" height="60" rx="6" fill="#fff" stroke="#8a2b2b" stroke-width="2"></rect><text x="640" y="208" class="c b r" font-size="13">Tx arrives at the far Tx</text><text x="640" y="226" class="c r s" font-size="13">both interfaces stay down — and every fiber</text><text x="640" y="240" class="c r s" font-size="13">still passes its loss test</text><path d="M480 218 H516" stroke="#8a2b2b" stroke-width="2.5"></path><text x="400.0" y="292" class="c b n m" text-anchor="middle">Correct the documented end-to-end polarity plan, update the records, and retest. Do not make an undocumented local flip.</text></svg>
+      </div>
+      <p class="small"><strong>Use note:</strong> Verify the actual module ports, patch-cord orientation, panel mapping, and approved polarity plan before activation.</p><details class="longdesc" id="m528-528-3-13-diagram-56-desc"><summary>Text description of this diagram</summary><p>Two panels compare equipment-end patching. The acceptable example carries each transmitter to the far receiver. The unacceptable example reverses the local orientation and prevents the transmit and receive paths from meeting correctly.</p></details></figure>
+<p>Place the activation sequence in order.</p>
+<div class="order gate"><div class="step" data-pos="1">Verify device, port, transceiver, fiber, wavelength, connector, and host compatibility.</div><div class="step" data-pos="2">Apply optical-safety and electrostatic-discharge controls.</div><div class="step" data-pos="3">Inspect and clean the controlled interfaces.</div><div class="step" data-pos="4">Insert and patch according to the approved polarity plan.</div><div class="step" data-pos="5">Power or enable the link, then record state and supported diagnostics.</div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="5" data-group-title="Verify and Handover" data-num="528.3.14" data-title="Separate passive, optical, and network evidence"><p class="crumb">Lesson 528.3 · Section 5 Verify and Handover</p><h2><span class="tnum">528.3.14</span> Separate passive, optical, and network evidence</h2><p class="lead-in">“The fiber passed” and “the service works” are different claims.</p>
+<p>A passive cabling result establishes only the items measured under its test plan. A device link indicator establishes physical-interface state as interpreted by the equipment. Digital optical monitoring reports module estimates whose accuracy and calibration limits come from the vendor. A ping tests selected network-layer reachability, not cabling compliance or complete application performance.</p>
+<p>Before the network check, confirm the expected port identifiers, interface configuration, speed, duplex or autonegotiation behavior, and Internet Protocol (IP) addressing supplied by the lab plan. A successful <strong>ping</strong> shows that selected endpoints exchanged IP echo traffic at that time. A <strong>traceroute</strong> attempts to reveal the routed hops toward a destination; it may be incomplete when a device filters or deprioritizes its probe traffic. Neither command replaces passive-link acceptance or sustained traffic testing.</p>
+<p>If installed cabling exceeds its specified acceptance limit while the active link is currently up, reject or remediate the installation. The link has less documented margin. Current operation does not prove compliance or predict exactly when errors will occur.</p>
+<div class="tbl-scroll"><table class="tbl"><caption>Evidence and the claim it supports.</caption><thead><tr><th scope="col">Evidence</th><th scope="col">Supported claim</th><th scope="col">Does not prove</th></tr></thead><tbody><tr><th scope="row">OLTS pass</th><td>Specified end-to-end loss criterion met under the recorded method</td><td>Active configuration or application operation</td></tr><tr><th scope="row">OTDR trace</th><td>Recorded event behavior and distance under stated settings</td><td>Automatic Tier 1 acceptance</td></tr><tr><th scope="row">Link up/up</th><td>Physical interface is operational at that moment</td><td>Cabling compliance or error-free service</td></tr><tr><th scope="row">Digital optical level</th><td>Module-reported receive/transmit estimate</td><td>Independent calibrated acceptance result</td></tr><tr><th scope="row">Ping reply</th><td>Selected IP path responded</td><td>Complete network or application health</td></tr></tbody></table></div>
+<div class="cyu gate" data-answer="2" data-fb="The cabling fails its stated acceptance requirement and has less documented margin. Link operation is not permission to discard the failed result."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">The active link is up, but OLTS loss exceeds the specified cabling limit. What is the correct disposition?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Accept it because link state overrides the specification.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Delete the OLTS result.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Reject or remediate it because current operation does not prove compliance or adequate margin.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Average the result with the transceiver power.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="5" data-group-title="Verify and Handover" data-num="528.3.15" data-title="Troubleshoot “link down” in a controlled order"><p class="crumb">Lesson 528.3 · Section 5 Verify and Handover</p><h2><span class="tnum">528.3.15</span> Troubleshoot “link down” in a controlled order</h2><p class="lead-in">Move from scope and compatibility to physical path, power, configuration, and escalation.</p>
+<p>Confirm the affected endpoints, ports, and expected service. Check device power, administrative state, alarms, and whether the modules are recognized. Verify module compatibility at both ends, including Ethernet interface, wavelength, fiber, reach, lane behavior, and vendor support.</p>
+<p>Verify seating, connector condition, patch path, and transmit-to-receive polarity. Compare measured or module-reported optical power with both receiver limits while respecting the accuracy of each source. Confirm the passive link record and investigate any changed condition.</p>
+<p>Then check speed, duplex or autonegotiation requirements, port configuration, and network settings. Escalate with evidence when a device, software, design, or upstream network issue lies outside the technician’s authority.</p>
+<p>For the specified 1-gigabit-per-second link, record both ends rather than relying on one status light. Confirm that the intended uplink ports are operational at the required rate, then run the approved ping and traceroute checks from the stated endpoints. If addressing, routing, access control, or switch configuration is not supplied, record the missing prerequisite instead of inventing values.</p>
+<div class="cyu gate" data-answer="1" data-fb="Passive acceptance does not establish active compatibility or configuration. Continue with the transceiver, optical, device, and configuration evidence."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">A passive link passed, but the active link remains down. Which check is still required?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>None; a passive pass proves the device must be working.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>Transceiver compatibility, polarity, optical power window, device state, and port configuration</button><button class="opt"><span class="mk" aria-hidden="true">C</span>Only the cable jacket color</button><button class="opt"><span class="mk" aria-hidden="true">D</span>Only the OTDR index setting</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="5" data-group-title="Verify and Handover" data-num="528.3.16" data-title="Troubleshoot “link up but erroring”"><p class="crumb">Lesson 528.3 · Section 5 Verify and Handover</p><h2><span class="tnum">528.3.16</span> Troubleshoot “link up but erroring”</h2><p class="lead-in">Intermittent or erroring service requires time-correlated evidence.</p>
+<p>Record the error counters, timestamps, traffic conditions, interface state changes, alarms, and optical diagnostics. Check connectors for contamination or instability, cords for bend or strain, modules for temperature or support issues, and the passive test record for marginal results.</p>
+<p>Do not assume every error is optical. Check speed, duplex, autonegotiation, forward-error-correction requirements where applicable, software, congestion, and upstream faults. Change one factor at a time and clear or snapshot counters according to the diagnostic plan.</p>
+<p>Correlate a corrective action with the observed change. “Reseated everything and it improved” is weak evidence because the responsible interface is unknown and contamination may have moved.</p>
+<div class="cyu gate" data-answer="0" data-fb="Baseline counters and timestamps support cause-and-effect analysis. They do not repair the problem or prove its domain."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Why should counters and timestamps be captured before making changes?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>They help correlate the symptom and corrective action.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>They permanently repair contamination.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>They prove every fault is optical.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>They replace the work order.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="5" data-group-title="Verify and Handover" data-num="528.3.17" data-title="Complete the integrated handover"><p class="crumb">Lesson 528.3 · Section 5 Verify and Handover</p><h2><span class="tnum">528.3.17</span> Complete the integrated handover</h2><p class="lead-in">The final record connects the installed plant, active interface, observed service, and remaining responsibility.</p>
+<p>Identify the cable, fibers, endpoints, panels and ports, polarity, labels, connector and splice types, transceivers, test equipment, test files, acceptance documents, optical levels, device state, and network verification performed. Record approved deviations and unresolved issues with an owner and next action.</p>
+<p>State each conclusion at the level supported by evidence: passive cabling accepted; optical power within the documented window; interface operational; selected network reachability verified. Do not expand one result into a broader promise.</p>
+<p>Leave the enclosure and equipment usable: fibers routed and protected, caps installed, patch cords supported, labels visible, doors secure, debris removed, and records accessible to the next authorized person.</p>
+<div class="cyu gate" data-answer="2" data-fb="The statement separates each claim and names its supporting evidence. The other choices overstate what a single observation proves."><p class="cyu-h">Check Your Understanding</p><p class="cyu-q">Which handover wording is most defensible?</p><button class="opt"><span class="mk" aria-hidden="true">A</span>Everything works perfectly.</button><button class="opt"><span class="mk" aria-hidden="true">B</span>The ping passed, so all cabling standards were met.</button><button class="opt"><span class="mk" aria-hidden="true">C</span>The passive link passed the cited OLTS limit; receive power was within the documented transceiver window; the interface was up and the specified ping check succeeded at handover.</button><button class="opt"><span class="mk" aria-hidden="true">D</span>The link was up, so test records were discarded.</button><div class="cyu-fb" role="status"></div></div></section><section class="topic" data-lesson-num="528.3" data-lesson-title="Fiber LAN Build, Troubleshooting, and Network Integration" data-group-num="6" data-group-title="Wrapping Up" data-num="528.3.18" data-title="What you covered"><p class="crumb">Lesson 528.3 · Section 6 Wrapping Up</p><h2><span class="tnum">528.3.18</span> What you covered</h2><p class="lead-in">Use the complete evidence chain from work order through handover.</p>
+<ul><li>Use a compatible fiber system and a complete task-level bill of materials before work begins.</li><li>Apply product, project, pathway, code, tension, bend, and support requirements during installation.</li><li>Identify MPO polarity methods separately from historical OLTS reference labels.</li><li>Accept the passive link only through valid tests against the governing specification.</li><li>Match transceivers by the complete interface and power specification, not form factor alone.</li><li>Separate passive, optical, link-state, and network evidence in troubleshooting and handover.</li></ul>
+<div class="note warn"><div class="nt">Readiness boundary</div><p>These activities are formative and unrecorded. They do not replace supervised installation, an approved lab specification, or a performance rubric.</p></div>
+<button class="ack gate btn" data-done-label="Lesson complete">I have worked through this lesson</button></section></div><nav class="topnav" aria-label="Topic navigation">
+      <button class="navbtn" id="prevBtn" type="button">‹ Previous</button>
+      <span class="gate-msg" id="gateMsg" role="status" aria-live="polite"></span>
+      <button class="navbtn" id="nextBtn" type="button">Next ›</button>
+    </nav>
+  </main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="srAnnounce" class="vh" role="status" aria-live="polite"></div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Enlarged image">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Close enlarged image">
+    <svg viewbox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+  </button>
+  <figure class="lb-fig">
+    <img id="lbImg" src="" alt="">
+    <figcaption id="lbCap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* =========================================================
+   UCI 2107.1 · Module 528 self-study engine
+   Multi-lesson topic reader. WCAG 2.1 AA target.
+   Deliberate changes from the 528.6 pilot engine:
+     - #main no longer carries aria-live. A whole-region live
+       area makes screen readers re-read the entire topic on
+       every change; topic changes now go through a dedicated
+       polite status region (#srAnnounce).
+     - Three-level contents: lesson > section > topic.
+     - Correctness is never signalled by color alone. Every
+       right/wrong state also carries text.
+     - Matching chips expose aria-pressed; wrong attempts are
+       announced in text, not only as a color flash.
+     - Ordering positions are announced instead of aria-hidden.
+     - Lightbox traps focus and restores it on close.
+     - Enlargeable photos use real buttons, not img[role=button].
+   ========================================================= */
+(function(){
+  "use strict";
+  const topics   = Array.from(document.querySelectorAll('.topic'));
+  const tocList  = document.getElementById('tocList');
+  const prevBtn  = document.getElementById('prevBtn');
+  const nextBtn  = document.getElementById('nextBtn');
+  const gateMsg  = document.getElementById('gateMsg');
+  const pbarFill = document.getElementById('pbarFill');
+  const pbar     = document.querySelector('.pbar');
+  const progText = document.getElementById('progText');
+  const announcer= document.getElementById('srAnnounce');
+  let current = 0;
+
+  function announce(msg){
+    if(!announcer) return;
+    announcer.textContent='';
+    setTimeout(function(){ announcer.textContent=msg; },60);
+  }
+
+  /* ---------- sidebar view: Overview / Curriculum ---------- */
+  const tabOverview  = document.getElementById('tab-overview');
+  const tabCurriculum= document.getElementById('tab-curriculum');
+  const overviewPanel= document.getElementById('overviewPanel');
+  const topicWrap    = document.getElementById('topicWrap');
+  const topnav       = document.querySelector('.topnav');
+  function setView(overview){
+    tabOverview.setAttribute('aria-selected',String(overview));
+    tabCurriculum.setAttribute('aria-selected',String(!overview));
+    tabOverview.tabIndex  = overview?0:-1;
+    tabCurriculum.tabIndex= overview?-1:0;
+    overviewPanel.hidden=!overview;
+    topicWrap.style.display=overview?'none':'';
+    if(topnav) topnav.style.display=overview?'none':'';
+    if(overview){ const h=document.getElementById('ovh'); if(h) h.focus({preventScroll:true}); }
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  tabOverview.addEventListener('click',function(){ setView(true); });
+  tabCurriculum.addEventListener('click',function(){ setView(false); });
+  [tabOverview,tabCurriculum].forEach(function(b,i,arr){
+    b.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+        e.preventDefault();
+        const n=arr[(i+1)%2]; n.focus(); setView(n===tabOverview);
+      }
+    });
+  });
+
+  /* ---------- gating + scoring state ---------- */
+  const gateNeeded    = topics.map(function(t){ return t.querySelectorAll('.gate').length; });
+  const gateDone      = topics.map(function(){ return new Set(); });
+  const topicComplete = topics.map(function(t,i){ return gateNeeded[i]===0; });
+  let score=0, scoreMax=0;
+  document.querySelectorAll('.cyu').forEach(function(c){ if(c.dataset.scored!=='false') scoreMax++; });
+
+  function toast(msg){
+    const t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t);
+    t._t=setTimeout(function(){ t.classList.remove('show'); },1900);
+  }
+
+  /* ---------- build three-level contents ---------- */
+  const lessons=[];
+  topics.forEach(function(t,i){
+    const ln=t.dataset.lessonNum, lt=t.dataset.lessonTitle;
+    let L=lessons.find(function(x){ return x.num===ln; });
+    if(!L){ L={num:ln,title:lt,groups:[],items:[]}; lessons.push(L); }
+    L.items.push(i);
+    const gn=t.dataset.groupNum, gt=t.dataset.groupTitle;
+    let g=L.groups.find(function(x){ return x.num===gn; });
+    if(!g){ g={num:gn,title:gt,items:[]}; L.groups.push(g); }
+    g.items.push(i);
+  });
+  const lessonOf = topics.map(function(t){
+    return lessons.findIndex(function(L){ return L.num===t.dataset.lessonNum; });
+  });
+
+  lessons.forEach(function(L,li){
+    const wrap=document.createElement('div');
+    wrap.className='toc-lesson';
+    wrap.setAttribute('aria-expanded', li===0?'true':'false');
+    wrap.id='tl-'+li;
+    const btn=document.createElement('button');
+    btn.className='les-btn'; btn.type='button';
+    btn.setAttribute('aria-expanded', li===0?'true':'false');
+    btn.innerHTML='<span class="toggle" aria-hidden="true">&#9662;</span>'+
+      '<span class="les-num">'+L.num+'</span>'+
+      '<span class="les-ttl">'+L.title+'</span>'+
+      '<span class="les-pc" id="lespc-'+li+'">0%</span>';
+    const body=document.createElement('div');
+    body.className='les-body'; body.id='lb-'+li;
+    btn.setAttribute('aria-controls',body.id);
+    btn.addEventListener('click',function(){
+      const open=wrap.getAttribute('aria-expanded')==='true';
+      wrap.setAttribute('aria-expanded',String(!open));
+      btn.setAttribute('aria-expanded',String(!open));
+    });
+    L.groups.forEach(function(g){
+      const gh=document.createElement('div'); gh.className='grp-title-static';
+      gh.innerHTML='<span class="grp-title">'+g.num+' '+g.title+'</span>';
+      const ul=document.createElement('ul'); ul.className='grp-list';
+      g.items.forEach(function(ti){
+        const t=topics[ti];
+        const item=document.createElement('li');
+        item.dataset.idx=ti; item.id='li-'+ti;
+        const sb=document.createElement('button');
+        sb.className='sub-btn'; sb.type='button';
+        sb.innerHTML='<span class="node" aria-hidden="true"></span><span>'+
+          '<span class="lbl-num">'+t.dataset.num+'</span> '+t.dataset.title+'</span>';
+        sb.addEventListener('click',function(){ setView(false); goTo(ti); closeDrawer(); });
+        item.appendChild(sb); ul.appendChild(item);
+      });
+      body.appendChild(gh); body.appendChild(ul);
+    });
+    wrap.appendChild(btn); wrap.appendChild(body); tocList.appendChild(wrap);
+  });
+
+  function refreshTOC(){
+    topics.forEach(function(t,i){
+      const item=document.getElementById('li-'+i); if(!item) return;
+      item.classList.toggle('active',i===current);
+      item.classList.toggle('done',topicComplete[i]);
+      const sb=item.querySelector('.sub-btn');
+      if(i===current) sb.setAttribute('aria-current','step');
+      else sb.removeAttribute('aria-current');
+    });
+    lessons.forEach(function(L,li){
+      const done=L.items.filter(function(i){ return topicComplete[i]; }).length;
+      const pc=Math.round(done/L.items.length*100);
+      const el=document.getElementById('lespc-'+li);
+      if(el){
+        el.textContent=pc+'%';
+        el.setAttribute('aria-label','Lesson '+L.num+' '+pc+' percent complete');
+      }
+      const wrap=document.getElementById('tl-'+li);
+      if(wrap) wrap.classList.toggle('current', li===lessonOf[current]);
+    });
+  }
+  function openLessonOf(idx){
+    const wrap=document.getElementById('tl-'+lessonOf[idx]);
+    if(wrap && wrap.getAttribute('aria-expanded')==='false'){
+      wrap.setAttribute('aria-expanded','true');
+      wrap.querySelector('.les-btn').setAttribute('aria-expanded','true');
+    }
+  }
+
+  /* ---------- navigation ---------- */
+  function updateProgress(){
+    const done=topicComplete.filter(Boolean).length;
+    const pct=Math.round(done/topics.length*100);
+    pbarFill.style.width=pct+'%';
+    pbar.setAttribute('aria-valuenow',pct);
+    progText.textContent=pct+'% of lesson complete';
+  }
+  function updateNav(){
+    prevBtn.disabled = current===0;
+    const last = current===topics.length-1;
+    nextBtn.style.visibility = last?'hidden':'visible';
+    const gated = !topicComplete[current];
+    nextBtn.disabled = gated;
+    if(last){
+      /* Completion is a whole-lesson claim, so test every topic, not just this
+         one. Reaching the final topic by the sidebar and clicking its
+         acknowledgement used to report the lesson complete on its own. */
+      const remaining = topicComplete.filter(function(v){return !v;}).length;
+      if(remaining===0){
+        gateMsg.textContent='✓ Lesson complete';
+        gateMsg.className='gate-msg ok';
+      } else if(topicComplete[current]){
+        gateMsg.textContent = remaining===1
+          ? '1 topic still has an activity to complete — use the Curriculum tab to find it'
+          : remaining+' topics still have activities to complete — use the Curriculum tab to find them';
+        gateMsg.className='gate-msg';
+      } else {
+        gateMsg.textContent='';
+        gateMsg.className='gate-msg';
+      }
+    } else if(gated){
+      gateMsg.textContent='Complete the activity to continue ('+
+        gateDone[current].size+' of '+gateNeeded[current]+')';
+      gateMsg.className='gate-msg';
+    } else {
+      gateMsg.textContent='✓ Topic complete — continue';
+      gateMsg.className='gate-msg ok';
+    }
+  }
+  function goTo(i){
+    if(i<0||i>=topics.length) return;
+    topics[current].classList.remove('showing');
+    current=i;
+    const t=topics[current];
+    t.classList.add('showing');
+    openLessonOf(i); refreshTOC(); updateNav();
+    const h=t.querySelector('h2');
+    if(h){ h.setAttribute('tabindex','-1'); h.focus({preventScroll:true}); }
+    announce('Topic '+t.dataset.num+', '+t.dataset.title+'. Lesson '+t.dataset.lessonNum+'.');
+    window.scrollTo({top:0,behavior:'auto'});
+  }
+  prevBtn.addEventListener('click',function(){ goTo(current-1); });
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) goTo(current+1); });
+
+  function markGate(topicIdx,gateEl){
+    const gid=gateEl.dataset.gid||
+      Array.prototype.indexOf.call(gateEl.parentNode.querySelectorAll('.gate'),gateEl);
+    const set=gateDone[topicIdx];
+    if(set.has(gid)) return;
+    set.add(gid);
+    if(set.size>=gateNeeded[topicIdx] && !topicComplete[topicIdx]){
+      topicComplete[topicIdx]=true;
+      toast('Topic complete ✓');
+      announce('Topic complete. You can continue.');
+    }
+    refreshTOC(); updateProgress();
+    if(topicIdx===current) updateNav();
+    updateResults();
+  }
+  function topicIndexOf(el){ return topics.indexOf(el.closest('.topic')); }
+
+  /* ---------- tabs (WAI-ARIA pattern) ---------- */
+  document.querySelectorAll('.tabs').forEach(function(tabs){
+    const btns=Array.from(tabs.querySelectorAll('[role="tab"]'));
+    const panels=Array.from(tabs.querySelectorAll('[role="tabpanel"]'));
+    const viewed=new Set([0]);
+    panels.forEach(function(p){ p.tabIndex=0; });
+    function select(idx){
+      btns.forEach(function(b,i){
+        b.setAttribute('aria-selected',String(i===idx));
+        b.tabIndex=i===idx?0:-1;
+        panels[i].hidden=i!==idx;
+      });
+      viewed.add(idx);
+      if(tabs.classList.contains('gate') && viewed.size>=btns.length){
+        markGate(topicIndexOf(tabs),tabs);
+      }
+    }
+    btns.forEach(function(b,i){
+      b.addEventListener('click',function(){ select(i); });
+      b.addEventListener('keydown',function(e){
+        let n=null;
+        if(e.key==='ArrowRight'||e.key==='ArrowDown') n=(i+1)%btns.length;
+        else if(e.key==='ArrowLeft'||e.key==='ArrowUp') n=(i-1+btns.length)%btns.length;
+        else if(e.key==='Home') n=0;
+        else if(e.key==='End') n=btns.length-1;
+        if(n!==null){ e.preventDefault(); select(n); btns[n].focus(); }
+      });
+    });
+    select(0);
+  });
+
+  /* ---------- reveal cards ---------- */
+  document.querySelectorAll('.revealset').forEach(function(set){
+    const cards=Array.from(set.querySelectorAll('.rcard'));
+    const seen=new Set();
+    cards.forEach(function(c,idx){
+      c.addEventListener('click',function(){
+        const exp=c.getAttribute('aria-expanded')==='true';
+        c.setAttribute('aria-expanded',String(!exp));
+        const d=c.querySelector('.rcard-detail'); if(d) d.hidden=exp;
+        const cue=c.querySelector('.rcard-cue');
+        if(cue) cue.textContent=exp?'Select to reveal ›':'Hide details';
+        if(!exp){
+          seen.add(idx);
+          if(seen.size>=cards.length && set.classList.contains('gate')){
+            markGate(topicIndexOf(set),set);
+          }
+        }
+      });
+    });
+  });
+
+  /* ---------- matching ---------- */
+  function shuffle(a){
+    a=a.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      const tmp=a[i]; a[i]=a[j]; a[j]=tmp;
+    }
+    return a;
+  }
+  document.querySelectorAll('.match').forEach(function(m){
+    const pairs=Array.from(m.querySelectorAll('.pair')).map(function(p,i){
+      return {l:p.dataset.left,r:p.dataset.right,i:i};
+    });
+    m.querySelectorAll('.pair').forEach(function(p){ p.remove(); });
+    const lh=(m.dataset.left||'Item'), rh=(m.dataset.right||'Match');
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Choose an item on the left, then choose its match on the right. '+
+      'Every option is a button, so Tab moves between them and Enter or Space selects.';
+    const cols=document.createElement('div'); cols.className='match-cols';
+    const cL=document.createElement('div'), cR=document.createElement('div');
+    cL.innerHTML='<div class="col-h">'+lh+'</div>';
+    cR.innerHTML='<div class="col-h">'+rh+'</div>';
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    let sel=null, matched=0;
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.l;
+      b.dataset.i=o.i; b.setAttribute('aria-pressed','false');
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        cL.querySelectorAll('.chip').forEach(function(x){
+          x.classList.remove('sel'); x.setAttribute('aria-pressed','false');
+        });
+        b.classList.add('sel'); b.setAttribute('aria-pressed','true'); sel=b;
+        status.textContent='Selected '+b.textContent+'. Now choose its match under '+rh+'.';
+        status.className='activity-status';
+      });
+      cL.appendChild(b);
+    });
+    shuffle(pairs).forEach(function(o){
+      const b=document.createElement('button');
+      b.type='button'; b.className='chip'; b.innerHTML=o.r; b.dataset.i=o.i;
+      b.addEventListener('click',function(){
+        if(b.classList.contains('done')) return;
+        if(!sel){
+          status.textContent='Choose an item under '+lh+' first.';
+          status.className='activity-status bad'; return;
+        }
+        if(+sel.dataset.i===o.i){
+          const lbl=sel.textContent;
+          b.classList.add('done'); b.disabled=true;
+          sel.classList.add('done'); sel.classList.remove('sel');
+          sel.setAttribute('aria-pressed','false'); sel.disabled=true;
+          const mk=document.createElement('span');
+          mk.className='vh'; mk.textContent=' — matched';
+          b.appendChild(mk);
+          sel=null; matched++;
+          if(matched===pairs.length){
+            status.textContent='✓ All '+pairs.length+' matched correctly.';
+            status.className='activity-status good';
+            markGate(topicIndexOf(m),m);
+          } else {
+            status.textContent='Correct — '+lbl+' matched. '+matched+' of '+pairs.length+' done.';
+            status.className='activity-status good';
+          }
+        } else {
+          b.classList.add('wrong');
+          setTimeout(function(){ b.classList.remove('wrong'); },450);
+          status.textContent='Not a match. '+sel.textContent+
+            ' is still selected — try another option.';
+          status.className='activity-status bad';
+        }
+      });
+      cR.appendChild(b);
+    });
+    cols.appendChild(cL); cols.appendChild(cR);
+    m.appendChild(help); m.appendChild(cols); m.appendChild(status);
+    status.textContent='Matched 0 of '+pairs.length+'.';
+  });
+
+  /* ---------- ordering ---------- */
+  document.querySelectorAll('.order').forEach(function(o){
+    const steps=Array.from(o.querySelectorAll('.step')).map(function(s){
+      return {txt:s.innerHTML,pos:+s.dataset.pos};
+    });
+    o.querySelectorAll('.step').forEach(function(s){ s.remove(); });
+    const help=document.createElement('p');
+    help.className='activity-help';
+    help.textContent='Select the steps in the order they should be carried out. '+
+      'Each step is a button — Tab to move, Enter or Space to add or remove it. '+
+      'Its position is read out as you go.';
+    const ol=document.createElement('ol');
+    const picks=[];
+    const status=document.createElement('div');
+    status.className='activity-status'; status.setAttribute('role','status');
+    function renumber(){
+      picks.forEach(function(x,n){
+        x.querySelector('.pos').textContent=(n+1)+'.';
+        x.querySelector('.pos-sr').textContent='position '+(n+1)+' of '+steps.length+', ';
+        x.setAttribute('aria-pressed','true');
+      });
+      o.querySelectorAll('.step:not(.picked)').forEach(function(s){
+        s.querySelector('.pos').textContent='';
+        s.querySelector('.pos-sr').textContent='not yet placed, ';
+        s.setAttribute('aria-pressed','false');
+      });
+    }
+    shuffle(steps).forEach(function(st){
+      const item=document.createElement('li');
+      item.className='step'; item.dataset.pos=st.pos;
+      item.innerHTML='<span class="pos" aria-hidden="true"></span>'+
+        '<span class="pos-sr vh">not yet placed, </span><span>'+st.txt+'</span>';
+      item.setAttribute('role','button'); item.tabIndex=0;
+      item.setAttribute('aria-pressed','false');
+      function toggle(){
+        if(item.classList.contains('picked')){
+          item.classList.remove('picked');
+          const k=picks.indexOf(item); if(k>-1) picks.splice(k,1);
+          status.textContent='Removed. '+picks.length+' of '+steps.length+' placed.';
+        } else {
+          item.classList.add('picked'); picks.push(item);
+          status.textContent='Placed at position '+picks.length+'. '+
+            picks.length+' of '+steps.length+' placed.';
+        }
+        status.className='activity-status'; renumber();
+      }
+      item.addEventListener('click',toggle);
+      item.addEventListener('keydown',function(e){
+        if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }
+      });
+      ol.appendChild(item);
+    });
+    const row=document.createElement('div'); row.className='btn-row';
+    const check=document.createElement('button');
+    check.type='button'; check.className='btn'; check.textContent='Check order';
+    const reset=document.createElement('button');
+    reset.type='button'; reset.className='btn ghost'; reset.textContent='Reset';
+    check.addEventListener('click',function(){
+      if(picks.length!==steps.length){
+        status.textContent='Select all '+steps.length+' steps in order first. '+
+          picks.length+' placed so far.';
+        status.className='activity-status bad'; return;
+      }
+      let ok=true; const wrongAt=[];
+      picks.forEach(function(x,n){
+        const c=(+x.dataset.pos===n+1);
+        x.classList.toggle('correct',c);
+        x.classList.toggle('incorrect',!c);
+        if(!c){ ok=false; wrongAt.push(n+1); }
+      });
+      if(ok){
+        status.textContent='✓ Correct sequence.';
+        status.className='activity-status good';
+        markGate(topicIndexOf(o),o);
+      } else {
+        status.textContent='Not quite. Position'+(wrongAt.length>1?'s ':' ')+
+          wrongAt.join(', ')+(wrongAt.length>1?' are':' is')+
+          ' in the wrong place — each wrong step is also labeled. Adjust and check again.';
+        status.className='activity-status bad';
+      }
+    });
+    reset.addEventListener('click',function(){
+      picks.length=0;
+      o.querySelectorAll('.step').forEach(function(x){ x.className='step'; });
+      renumber();
+      status.textContent='Reset. 0 of '+steps.length+' placed.';
+      status.className='activity-status';
+    });
+    row.appendChild(check); row.appendChild(reset);
+    o.appendChild(help); o.appendChild(ol); o.appendChild(row); o.appendChild(status);
+    renumber();
+  });
+
+  /* ---------- knowledge check ---------- */
+  document.querySelectorAll('.cyu').forEach(function(cyu,ci){
+    const multi=cyu.dataset.multi==='true';
+    const ans=(cyu.dataset.answer||'').split(',').map(function(s){ return +s.trim(); });
+    const aset=new Set(ans);
+    const fbText=cyu.dataset.fb||'';
+    const opts=Array.from(cyu.querySelectorAll('.opt'));
+    const fb=cyu.querySelector('.cyu-fb');
+    const scored=cyu.dataset.scored!=='false';
+    const tIdx=topicIndexOf(cyu);
+    const sub=cyu.querySelector('.cyu-submit');
+    let awarded=false, solved=false, chosen=new Set();
+
+    /* group semantics so options read as one question */
+    const qEl=cyu.querySelector('.cyu-q');
+    if(qEl){
+      const qid='cyuq-'+ci; qEl.id=qid;
+      cyu.setAttribute('role','group');
+      cyu.setAttribute('aria-labeledby',qid);
+    }
+    opts.forEach(function(o){
+      o.type='button';
+      if(multi) o.setAttribute('aria-pressed','false');
+      const mk=document.createElement('span'); mk.className='opt-mark'; o.appendChild(mk);
+    });
+    function setMark(o,txt){
+      const m=o.querySelector('.opt-mark'); if(m) m.textContent=txt;
+    }
+    const retry=document.createElement('button');
+    retry.type='button'; retry.className='btn ghost cyu-retry';
+    retry.textContent='Try again';
+    retry.style.display='none'; retry.style.marginTop='10px';
+    fb.after(retry);
+    function reset(){
+      opts.forEach(function(o){
+        o.classList.remove('locked','chosen','correct','incorrect');
+        setMark(o,'');
+        if(multi) o.setAttribute('aria-pressed','false');
+      });
+      fb.className='cyu-fb'; fb.innerHTML='';
+      retry.style.display='none';
+      chosen=new Set();
+      if(sub) sub.disabled=false;
+      if(opts[0]) opts[0].focus();
+    }
+    retry.addEventListener('click',reset);
+    function resolve(correct){
+      if(cyu.classList.contains('gate')) markGate(tIdx,cyu);
+      opts.forEach(function(o,oi){
+        if(aset.has(oi)){ o.classList.add('correct'); setMark(o,'correct answer'); }
+      });
+      if(correct){
+        solved=true;
+        opts.forEach(function(o){ o.classList.add('locked'); });
+        if(sub) sub.disabled=true;
+        fb.className='cyu-fb show right';
+        fb.innerHTML='<strong>✓ Correct.</strong> '+fbText;
+        if(scored && !awarded){ awarded=true; score++; }
+        retry.style.display='none';
+      } else {
+        fb.className='cyu-fb show wrong';
+        fb.innerHTML='<strong>✗ Not quite.</strong> The correct answer is marked above. '+
+          'Review the topic and try again — this does not block your progress.';
+        if(sub) sub.disabled=true;
+        retry.style.display='inline-block';
+        retry.focus();
+      }
+      updateResults();
+    }
+    if(!multi){
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(!aset.has(oi)){ o.classList.add('incorrect'); setMark(o,'your answer'); }
+          resolve(aset.has(oi));
+        });
+      });
+    } else {
+      opts.forEach(function(o,oi){
+        o.addEventListener('click',function(){
+          if(solved||retry.style.display!=='none') return;
+          if(chosen.has(oi)){
+            chosen.delete(oi); o.classList.remove('chosen'); o.setAttribute('aria-pressed','false');
+          } else {
+            chosen.add(oi); o.classList.add('chosen'); o.setAttribute('aria-pressed','true');
+          }
+        });
+      });
+      if(sub) sub.addEventListener('click',function(){
+        if(solved) return;
+        let ok=chosen.size===aset.size;
+        chosen.forEach(function(i){ if(!aset.has(i)) ok=false; });
+        if(!ok){
+          chosen.forEach(function(i){
+            if(!aset.has(i)){ opts[i].classList.add('incorrect'); setMark(opts[i],'your answer'); }
+          });
+        }
+        resolve(ok);
+      });
+    }
+  });
+
+  /* ---------- acknowledge ---------- */
+  document.querySelectorAll('.ack.gate').forEach(function(a){
+    a.addEventListener('click',function(){
+      a.disabled=true;
+      a.textContent='✓ '+(a.dataset.doneLabel||'Reviewed');
+      markGate(topicIndexOf(a),a);
+    });
+  });
+
+  /* ---------- results ring ---------- */
+  function updateResults(){
+    const ring=document.getElementById('ringFill'); if(!ring) return;
+    const pct=scoreMax?Math.round(score/scoreMax*100):0;
+    const circ=2*Math.PI*70;
+    ring.style.strokeDasharray=circ;
+    ring.style.strokeDashoffset=circ-(circ*pct/100);
+    const pc=document.getElementById('ringPc');
+    if(pc) pc.textContent=pct+'%';
+    const sc=document.getElementById('scoreLine');
+    if(sc) sc.textContent=score+' of '+scoreMax+' knowledge checks correct';
+    const rg=document.getElementById('ringWrap');
+    if(rg) rg.setAttribute('aria-label','Knowledge check score '+pct+
+      ' percent, '+score+' of '+scoreMax+' correct');
+    const msg=document.getElementById('resultMsg');
+    if(msg){
+      if(pct>=90) msg.textContent='Outstanding — you are working at field-standard level and are ready for the lab.';
+      else if(pct>=75) msg.textContent='Strong work. Revisit anything you missed and you will be field-ready.';
+      else if(pct>=50) msg.textContent='Good progress. Go back over the cards and applied scenarios to close the gaps.';
+      else msg.textContent='Keep going — work through the knowledge checks to build your score.';
+    }
+  }
+
+  /* ---------- lightbox with focus trap ---------- */
+  (function(){
+    const lb=document.getElementById('lightbox'); if(!lb) return;
+    const lbImg=document.getElementById('lbImg');
+    const lbCap=document.getElementById('lbCap');
+    const lbCloseBtn=document.getElementById('lbClose');
+    let opener=null;
+    function openLB(img,cap){
+      opener=document.activeElement;
+      lbImg.src=img.currentSrc||img.src;
+      lbImg.alt=img.alt||'';
+      lbCap.textContent=cap||img.alt||'';
+      lb.hidden=false;
+      document.body.style.overflow='hidden';
+      lbCloseBtn.focus();
+    }
+    function closeLB(){
+      lb.hidden=true;
+      document.body.style.overflow='';
+      if(opener && opener.focus) opener.focus();
+    }
+    lbCloseBtn.addEventListener('click',closeLB);
+    lb.addEventListener('click',function(e){ if(e.target===lb) closeLB(); });
+    document.addEventListener('keydown',function(e){
+      if(lb.hidden) return;
+      if(e.key==='Escape'){ closeLB(); return; }
+      if(e.key==='Tab'){ e.preventDefault(); lbCloseBtn.focus(); }
+    });
+    document.querySelectorAll('.photo img').forEach(function(img){
+      const fig=img.closest('figure');
+      const capEl=fig?fig.querySelector('figcaption'):null;
+      const capTxt=capEl?capEl.textContent.trim():(img.alt||'');
+      const btn=document.createElement('button');
+      btn.type='button'; btn.className='zoom-btn';
+      btn.setAttribute('aria-label','Enlarge image: '+(img.alt||'photograph'));
+      img.parentNode.insertBefore(btn,img);
+      btn.appendChild(img);
+      btn.addEventListener('click',function(){ openLB(img,capTxt); });
+      if(capEl){
+        const h=document.createElement('span');
+        h.className='zoom-hint'; h.textContent='Select to enlarge';
+        capEl.appendChild(h);
+      }
+    });
+  })();
+
+  /* ---------- mobile drawer ---------- */
+  const menuBtn=document.getElementById('menuBtn');
+  const toc=document.getElementById('toc');
+  const scrim=document.getElementById('scrim');
+  function openDrawer(){
+    toc.classList.add('open'); scrim.classList.add('show');
+    menuBtn.setAttribute('aria-expanded','true');
+  }
+  function closeDrawer(){
+    toc.classList.remove('open'); scrim.classList.remove('show');
+    menuBtn.setAttribute('aria-expanded','false');
+  }
+  menuBtn.addEventListener('click',function(){
+    if(toc.classList.contains('open')) closeDrawer(); else openDrawer();
+  });
+  scrim.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && toc.classList.contains('open')){ closeDrawer(); menuBtn.focus(); }
+  });
+
+  /* ---------- init ---------- */
+  topics.forEach(function(t){ t.classList.remove('showing'); });
+  goTo(0); updateProgress(); updateResults();
+  const ovBegin=document.getElementById('ovBegin');
+  if(ovBegin) ovBegin.addEventListener('click',function(){ setView(false); goTo(current); });
+  setView(true);
+})();
+
+</script>
+</body>
+</html>
